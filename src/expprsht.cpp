@@ -159,8 +159,8 @@ BOOL CALLBACK CExpPropSheet::DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM 
 								HWND hwndMsg = ::GetDlgItem(hwnd, IDC_MSG);
 								int nLen = ::GetWindowTextLength(hwndMsg);
 								vector<TCHAR> vecBuff(nLen);
-								nLen = ::GetWindowText(hwndMsg, vecBuff.begin(), nLen);
-								file.Write(vecBuff.begin(), nLen);
+								nLen = ::GetWindowText(hwndMsg, &vecBuff.front(), nLen);
+								file.Write(&vecBuff.front(), nLen);
 							} else {
 								CString strLine;
 								CListCtrl list;

@@ -99,7 +99,7 @@ bool CAnalyzer::Open(HWND hwnd, LPCTSTR lpszPath)
 							DWORD dwSecOffset = dwPeHdrOffset + sizeof(DWORD) + sizeof(IMAGE_FILE_HEADER) + m_nt_hdr.FileHeader.SizeOfOptionalHeader;
 							m_file.Seek(dwSecOffset, CFile::begin);
 							m_vecSecHdr.resize(dwSecEntry);
-							m_file.Read(m_vecSecHdr.begin(), IMAGE_SIZEOF_SECTION_HEADER * dwSecEntry); // read section hdr. block.
+							m_file.Read(&m_vecSecHdr.front(), IMAGE_SIZEOF_SECTION_HEADER * dwSecEntry); // read section hdr. block.
 							return true;
 						} else {
 							::MsgBox(hwnd, m_file.GetFilePath(), IDS_NOT_OPT_HDR);
@@ -140,7 +140,7 @@ bool CAnalyzer::ReadSection(HWND hwnd, int nDirectory)
 			if (dwOffset < dwSecSize) {
 				m_file.Seek(it->PointerToRawData, CFile::begin); // seek to start of target section.
 				m_vecBuff.resize(dwSecSize);
-				m_file.Read(m_vecBuff.begin(), dwSecSize); // read target section.
+				m_file.Read(&m_vecBuff.front(), dwSecSize); // read target section.
 				return true;
 			}
 		}
@@ -282,7 +282,7 @@ void CAnalyzer::AnalyzeExeHdrInit(HWND hwndHdrList, HWND hwndDirList, HWND hwndS
 //	lvcolumn.fmt = LVCFMT_LEFT;
 	lvcolumn.pszText = _T("Flags");
 //	lvcolumn.iSubItem = 0;
-	lvcolumn.cx = 80;
+	lvcolumn.cx = 160;	//80
 	list.InsertColumn(9, &lvcolumn);
 
 	list.Detach();
@@ -365,7 +365,7 @@ LPCTSTR alpszDirName[IMAGE_NUMBEROF_DIRECTORY_ENTRIES] = {
 	_T("Ld.Config"),
 	_T("BoundImp"),
 	_T("ImpAdrTbl"),
-	_T("#0000000d"),
+	_T("DelayImp"),		//	_T("#0000000d")
 	_T("#0000000e"),
 	_T("#0000000f"),
 };
@@ -798,9 +798,9 @@ bool CAnalyzer::AnalyzeExport(HWND hwndMsg, HWND hwndList, bool bDecode)
 	CString strMsg, strOrdinal, strName;
 	m_mapCls.clear();
 	PIMAGE_EXPORT_DIRECTORY pExpDir = reinterpret_cast<PIMAGE_EXPORT_DIRECTORY>(&m_vecBuff[m_dwDirAddr - m_dwSecAddr]);
-	DWORD dwAddrOfNameOrds = reinterpret_cast<DWORD>(pExpDir->AddressOfNameOrdinals);
+	DWORD dwAddrOfNameOrds = /*reinterpret_cast<DWORD>*/(pExpDir->AddressOfNameOrdinals);
 	LPWORD lpwOrdTable = reinterpret_cast<LPWORD>(&m_vecBuff[dwAddrOfNameOrds - m_dwSecAddr]);
-	DWORD dwAddrOfNames = reinterpret_cast<DWORD>(pExpDir->AddressOfNames);
+	DWORD dwAddrOfNames = /*reinterpret_cast<DWORD>*/(pExpDir->AddressOfNames);
 	LPDWORD lpdwNameTable = reinterpret_cast<LPDWORD>(&m_vecBuff[dwAddrOfNames - m_dwSecAddr]);
 	for (DWORD dwCount = 0; dwCount < pExpDir->NumberOfNames; dwCount++) {
 		strOrdinal.Format(szHex4Fmt, *lpwOrdTable++ + pExpDir->Base);
@@ -841,14 +841,17 @@ bool CAnalyzer::AnalyzeImport(HWND hwndList, bool bFunc, bool bDecode)
 	list.Attach(hwndList);
 	list.DeleteAllItems();
 	int nCount = 0;
+	bool bIAT = (m_nt_hdr.OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IAT].VirtualAddress != 0);
 	CString strOrdinal, strName;
 	PIMAGE_IMPORT_DESCRIPTOR pImpDesc = reinterpret_cast<PIMAGE_IMPORT_DESCRIPTOR>(&m_vecBuff[m_dwDirAddr - m_dwSecAddr]);
-	for (int nDesc = 0; pImpDesc[nDesc].Characteristics; nDesc++) {
+//	for (int nDesc = 0; pImpDesc[nDesc].Characteristics; nDesc++) {
+	for (int nDesc = 0; pImpDesc[nDesc].FirstThunk; nDesc++) {
 		LPTSTR lpszServer = reinterpret_cast<LPTSTR>(&m_vecBuff[pImpDesc[nDesc].Name - m_dwSecAddr]);
 		if (!bFunc) {
 			list.InsertItem(nCount++, lpszServer);
 		} else {
-			DWORD dwFirstThunk = reinterpret_cast<DWORD>(pImpDesc[nDesc].OriginalFirstThunk);
+//			DWORD dwFirstThunk = /*reinterpret_cast<DWORD>*/(pImpDesc[nDesc].OriginalFirstThunk);
+			DWORD dwFirstThunk = (bIAT) ? pImpDesc[nDesc].OriginalFirstThunk : pImpDesc[nDesc].FirstThunk;
 			PIMAGE_THUNK_DATA pThkDat = reinterpret_cast<PIMAGE_THUNK_DATA>(&m_vecBuff[dwFirstThunk - m_dwSecAddr]);
 			bool bLoadedExpFile = false;
 			DWORD dwOrdinal;

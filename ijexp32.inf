@@ -32,6 +32,8 @@ ijgdi32.exp = 55
 mfc30.exp = 55
 mfc40.exp = 55
 mfc42.exp = 55
+mfc70.exp = 55
+mfc71.exp = 55
 oleaut32.exp = 55
 olepro32.exp = 55
 shdocvw.exp = 55
@@ -51,6 +53,8 @@ ijgdi32.exp
 mfc30.exp
 mfc40.exp
 mfc42.exp
+mfc70.exp
+mfc71.exp
 oleaut32.exp
 olepro32.exp
 shdocvw.exp

@@ -1,5 +1,5 @@
 # Microsoft Developer Studio Project File - Name="ijexp32" - Package Owner=<4>
-# Microsoft Developer Studio Generated Build File, Format Version 5.00
+# Microsoft Developer Studio Generated Build File, Format Version 6.00
 # ** ï“èWÇµÇ»Ç¢Ç≈Ç≠ÇæÇ≥Ç¢ **
 
 # TARGTYPE "Win32 (x86) Dynamic-Link Library" 0x0102
@@ -22,6 +22,7 @@ CFG=ijexp32 - Win32 Debug
 !MESSAGE 
 
 # Begin Project
+# PROP AllowPerConfigDependencies 0
 # PROP Scc_ProjName ""
 # PROP Scc_LocalPath ""
 CPP=cl.exe
@@ -43,8 +44,8 @@ RSC=rc.exe
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_WINDLL" /D "_AFXDLL" /Yu"stdafx.h" /FD /c
 # ADD CPP /nologo /MD /W3 /GX /O1 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXEXT" /D "_WINDLL" /D "_AFXDLL" /Yu"stdafx.h" /FD /c
-# ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o NUL /win32
-# ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o NUL /win32
+# ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
+# ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
 # ADD BASE RSC /l 0x411 /d "NDEBUG" /d "_AFXDLL"
 # ADD RSC /l 0x411 /d "NDEBUG" /d "_AFXDLL"
 BSC32=bscmake.exe
@@ -52,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /dll /machine:I386
-# ADD LINK32 ijdll32.lib ole32.lib /nologo /base:"0x23d00000" /subsystem:windows /dll /machine:I386
+# ADD LINK32 ole32.lib /nologo /base:"0x23d00000" /subsystem:windows /dll /machine:I386
 # SUBTRACT LINK32 /map /nodefaultlib
 
 !ELSEIF  "$(CFG)" == "ijexp32 - Win32 Debug"
@@ -69,9 +70,9 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_WINDLL" /D "_AFXDLL" /Yu"stdafx.h" /FD /c
-# ADD CPP /nologo /MDd /W3 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_WINDLL" /D "_AFXDLL" /D "_AFXEXT" /Yu"stdafx.h" /FD /c
-# ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o NUL /win32
-# ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o NUL /win32
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_WINDLL" /D "_AFXDLL" /D "_AFXEXT" /Yu"stdafx.h" /FD /c
+# ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
+# ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
 # ADD BASE RSC /l 0x411 /d "_DEBUG" /d "_AFXDLL"
 # ADD RSC /l 0x411 /d "_DEBUG" /d "_AFXDLL"
 BSC32=bscmake.exe
@@ -79,7 +80,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /dll /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 ijdll32d.lib ole32.lib /nologo /base:"0x23d00000" /subsystem:windows /dll /debug /machine:I386 /out:"Debug/ijexp32d.dll" /pdbtype:sept
+# ADD LINK32 ole32.lib /nologo /base:"0x23d00000" /subsystem:windows /dll /debug /machine:I386 /out:"Debug/ijexp32d.dll" /pdbtype:sept
 
 !ENDIF 
 
@@ -117,13 +118,6 @@ SOURCE=.\ijexp32.def
 # Begin Source File
 
 SOURCE=.\ijexp32.rc
-
-!IF  "$(CFG)" == "ijexp32 - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "ijexp32 - Win32 Debug"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
