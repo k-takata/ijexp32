@@ -1,0 +1,14 @@
+#
+# i.j Shell Property Sheets Export/Import 32 : Export Name List : olepro32.dll
+#
+00f8, OleIconToCursor
+00f9, OleCreatePropertyFrameIndirect
+00fa, OleCreatePropertyFrame
+00fb, OleLoadPicture
+00fc, OleCreatePictureIndirect
+00fd, OleCreateFontIndirect
+00fe, OleTranslateColor
+00ff, DllCanUnloadNow
+0100, DllGetClassObject
+0101, DllRegisterServer
+0102, DllUnregisterServer

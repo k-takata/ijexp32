@@ -1,0 +1,109 @@
+;
+; i.j Shell Property Sheets Export/Import 32 ver.1.01
+; Copyright (C) 1999 i.j , All rights reserved.
+;
+
+[Version]
+Signature  = "$CHICAGO$"
+SetupClass = BASE
+
+[Strings]
+SubDir         = "ShellExt"
+ShellExtCLSID1 = "{00000001-23D0-0001-8000-004026419740}"
+ShellExtDesc1  = "i.j Shell Property Sheet ExeHdr 32"
+ShellExtCLSID2 = "{00000002-23D0-0001-8000-004026419740}"
+ShellExtDesc2  = "i.j Shell Property Sheet Export 32"
+ShellExtCLSID3 = "{00000003-23D0-0001-8000-004026419740}"
+ShellExtDesc3  = "i.j Shell Property Sheet Import 32"
+PropSheetHdlr  = "shellex\PropertySheetHandlers"
+ShellExtNT     = "SoftWare\Microsoft\Windows NT\CurrentVersion\ShellExtensions\Approved"
+Uninstall      = "SoftWare\Microsoft\Windows\CurrentVersion\Uninstall\ijexp32"
+UninstDispName = "i.j Shell Property Sheets Export/Import 32 (Remove only)"
+
+[SourceDisksNames]
+55 = "ijexp32 v1.01",,
+
+[SourceDisksFiles]
+ijexp32.dll = 55
+ijexp32.inf = 55
+comctl32.exp = 55
+ijdll32.exp = 55
+ijgdi32.exp = 55
+mfc30.exp = 55
+mfc40.exp = 55
+mfc42.exp = 55
+oleaut32.exp = 55
+olepro32.exp = 55
+shdocvw.exp = 55
+shell32.exp = 55
+shlwapi.exp = 55
+wsock32.exp = 55
+
+[DestinationDirs]
+Files1 = 11,%SubDir%
+
+[Files1]
+ijexp32.dll
+ijexp32.inf
+comctl32.exp
+ijdll32.exp
+ijgdi32.exp
+mfc30.exp
+mfc40.exp
+mfc42.exp
+oleaut32.exp
+olepro32.exp
+shdocvw.exp
+shell32.exp
+shlwapi.exp
+wsock32.exp
+
+[ShellExtReg1]
+HKCR,"CLSID\%ShellExtCLSID1%",,,"%ShellExtDesc1%"
+HKCR,"CLSID\%ShellExtCLSID1%\InProcServer32",,,"%11%\%SubDir%\ijexp32.dll"
+HKCR,"CLSID\%ShellExtCLSID1%\InProcServer32","ThreadingModel",,"Apartment"
+HKCR,"dllfile\%PropSheetHdlr%\%ShellExtCLSID1%",,,"%ShellExtDesc1%"
+HKCR,"exefile\%PropSheetHdlr%\%ShellExtCLSID1%",,,"%ShellExtDesc1%"
+HKLM,"%ShellExtNT%","%ShellExtCLSID1%",,"%ShellExtDesc1%"
+
+[ShellExtReg2]
+HKCR,"CLSID\%ShellExtCLSID2%",,,"%ShellExtDesc2%"
+HKCR,"CLSID\%ShellExtCLSID2%\InProcServer32",,,"%11%\%SubDir%\ijexp32.dll"
+HKCR,"CLSID\%ShellExtCLSID2%\InProcServer32","ThreadingModel",,"Apartment"
+HKCR,"dllfile\%PropSheetHdlr%\%ShellExtCLSID2%",,,"%ShellExtDesc2%"
+HKLM,"%ShellExtNT%","%ShellExtCLSID2%",,"%ShellExtDesc2%"
+
+[ShellExtReg3]
+HKCR,"CLSID\%ShellExtCLSID3%",,,"%ShellExtDesc3%"
+HKCR,"CLSID\%ShellExtCLSID3%\InProcServer32",,,"%11%\%SubDir%\ijexp32.dll"
+HKCR,"CLSID\%ShellExtCLSID3%\InProcServer32","ThreadingModel",,"Apartment"
+HKCR,"dllfile\%PropSheetHdlr%\%ShellExtCLSID3%",,,"%ShellExtDesc3%"
+HKCR,"exefile\%PropSheetHdlr%\%ShellExtCLSID3%",,,"%ShellExtDesc3%"
+HKLM,"%ShellExtNT%","%ShellExtCLSID3%",,"%ShellExtDesc3%"
+
+[UninstReg1]
+HKLM,"%Uninstall%",,,
+HKLM,"%Uninstall%","DisplayName",,"%UninstDispName%"
+HKLM,"%Uninstall%","UninstallString",,"rundll.exe setupx.dll,InstallHinfSection DefaultUnInstall 4 %11%\%SubDir%\ijexp32.inf"
+
+[UninstReg1NT]
+HKLM,"%Uninstall%",,,
+HKLM,"%Uninstall%","DisplayName",,"%UninstDispName%"
+HKLM,"%Uninstall%","UninstallString",,"RunDll32 syssetup.dll,SetupInfObjectInstallAction DefaultUnInstall.NT 4 %11%\%SubDir%\ijexp32.inf"
+
+[DefaultInstall]
+CopyFiles = Files1
+AddReg    = ShellExtReg1, ShellExtReg2, ShellExtReg3, UninstReg1
+
+[DefaultInstall.NT]
+CopyFiles = Files1
+AddReg    = ShellExtReg1, ShellExtReg2, ShellExtReg3, UninstReg1NT
+
+[DefaultUninstall]
+DelFiles = Files1
+DelReg   = ShellExtReg1, ShellExtReg2, ShellExtReg3, UninstReg1
+
+[DefaultUninstall.NT]
+DelFiles = Files1
+DelReg   = ShellExtReg1, ShellExtReg2, ShellExtReg3, UninstReg1NT
+

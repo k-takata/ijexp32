@@ -1,0 +1,17 @@
+#
+# i.j Shell Property Sheets Export/Import 32 : Export Name List : shdocvw.dll
+#
+0068, DoAddToFavDlg
+0069, DoFileDownload
+006a, DoFileDownloadEx
+006b, DoOrganizeFavDlg
+006c, HlinkFrameNavigate
+006d, InstallReg_RunDLL
+006e, URLQualifyA
+006f, URLQualifyW
+0070, DllCanUnloadNow
+0071, DllGetClassObject
+0072, DllGetVersion
+0073, DllRegisterServer
+0074, DllUnregisterServer
+0075, IEAboutBox

@@ -1,0 +1,337 @@
+
+# VC++ のエクスポート名の解析
+# これは独自調査の元に作成しました。内容の保証はしません。
+# Copyright (C) 1999 i.j , All rights reserved.
+
+<エクスポート名> :=
+	\?<メンバー名><クラス名><属性>
+
+<なし> :=
+	
+
+<シンボル> :=
+	[_A-Za-z][_0-9A-Za-z]*@			# '@' で終わっている。
+
+<シンボル繰返し> :=
+	[0-9]					# 以前のシンボルを間接的に参照している。
+
+<名前空間> :=
+	<なし>					# グローバル名前空間::
+	<シンボル繰返し>			# シンボル::
+	<シンボル>				# シンボル::
+
+<タグ名> :=
+	<シンボル繰返し>+<名前空間>@		# 名前空間::シンボル
+	<シンボル>+<名前空間>@			# 名前空間::シンボル
+	<テンプレート名><名前空間>@		# 名前空間::テンプレート名
+
+<テンプレート名> :=
+	\?$<シンボル><型>+@			# '@' で終わっている。
+
+<メンバー名> :=
+	<特殊メンバー名>
+	<シンボル>
+
+<クラス名> :=
+	@			# グローバル関数
+	<タグ名>		# クラス関数
+
+<特殊メンバー名> :=
+	\?0			# constructor
+	\?1			# destructor
+	\?2			# operator new
+	\?3			# operator delete
+	\?4			# operator =
+	\?5			# operator >>
+	\?6			# operator <<
+	\?7			# operator !
+	\?8			# operator ==
+	\?9			# operator !=
+	\?A			# operator []
+	\?B			# operator char, int, long,...
+	\?C			# operator ->
+	\?D			# operator *
+	\?E			# operator ++
+	\?F			# operator --
+	\?G			# operator -
+	\?H			# operator +
+	\?I			# operator &
+	\?J			# operator ->*
+	\?K			# operator /
+	\?L			# operator %
+	\?M			# operator <
+	\?N			# operator <=
+	\?O			# operator >
+	\?P			# operator >=
+	\?Q			# operator ,
+	\?R			# operator ()
+	\?S			# operator ~
+	\?T			# operator ^
+	\?U			# operator |
+	\?V			# operator &&
+	\?W			# operator ||
+	\?X			# operator *=
+	\?Y			# operator +=
+	\?Z			# operator -=
+	\?_0			# operator /=
+	\?_1			# operator %=
+	\?_2			# operator >>=
+	\?_3			# operator <<=
+	\?_4			# operator &=
+	\?_5			# operator |=
+	\?_6			# operator ^=
+	\?_7			# vftable
+	\?_8			# virtual base class
+	\?_9			# ???
+	\?_A			# ???
+	\?_B			# ???
+	\?_C			# string
+	\?_D			# ???
+	\?_E			# vector deleting destructor
+	\?_F			# ???
+	\?_G			# scalar deleting destructor
+	\?_H			# ???
+	\?_I			# ???
+	\?_J			# ???
+	\?_K			# ???
+	\?_L			# eh vector constructor iterator
+	\?_M			# eh vector destructor iterator
+	\?_N			# ???
+	\?_O			# ???
+	\?_P			# ???
+	\?_Q			# ???
+	\?_R			# 例外関係
+	\?_S			# ???
+	\?_T			# ???
+	\?_U			# operator new[]
+	\?_V			# operator delete[]
+
+<属性> :=
+	A<修飾子><関数定義>		# private: ();
+	B				# ???
+	C<関数定義>			# private: static ();
+	D				# ???
+	E<修飾子><関数定義>		# private: virtual ();
+	F				# ???
+	G				# ???
+	H				# ???
+	I<修飾子><関数定義>		# protected: ();
+	J				# ???
+	K<関数定義>			# protected: static ();
+	L				# ???
+	M<修飾子><関数定義>		# protected: virtual ();
+	N				# ???
+	O				# ???
+	P				# ???
+	Q<修飾子><関数定義>		# public: ();
+	R				# ???
+	S<関数定義>			# public: static ();
+	T				# ???
+	U<修飾子><関数定義>		# public: virtual ();
+	V				# ???
+	W				# ???
+	X				# ???
+	Y<関数定義>			# __declspec(dllexport) ();
+	Z				# ???
+	0<変数定義>			# private:   static var;
+	1<変数定義>			# protected: static var;
+	2<変数定義>			# public:    static var;
+	3<変数定義>			# __declspec(dllexport) var;
+	4				# ???
+	5				# ???
+	6B<クラス名>			# vftable
+	7B<クラス名>			# virtual base class
+	8				# 例外関係
+	9				# ???
+	_0<長さ><不明><ラベル>		# 無名文字列(_C)で使われている。
+
+<変数定義> :=
+	<型><修飾子>
+
+<関数定義> :=
+	<呼出し規約><返り値><引数>Z		# 'Z' で終わっている。
+
+<呼出し規約> :=
+	A			# __cdecl
+	B			# ???
+	C			# ???
+	D			# ???
+	E			# __thiscall
+	F			# ???
+	G			# __stdcall
+	H			# ???
+	I			# __fastcall
+	J			# ???
+
+<返り値> :=
+	@			# 返り値なし
+	<型>
+
+<引数> :=
+	X			# 引数無し, (void)
+	<型>+@			# '@' で終わっている。
+	<型>+Z			# 最後の引数は可変長 f(int, ...)
+
+<修飾子> :=
+	A			# なし
+	B			# const
+	C			# volatile
+	D			# const volatile
+
+<型> :=
+	A<修飾子><型>			# <型> <修飾子> &
+	B				# ???
+	C				# signed char
+	D				# char
+	E				# unsigned char
+	F				# short
+	G				# unsigned short
+	H				# int
+	I				# unsigned int
+	J				# long
+	K				# unsigned long
+	L				# ???
+	M				# float
+	N				# double
+	O				# long double
+	P<修飾子><型>			# <型> <修飾子> *
+	P6<関数定義>			# (*)()
+	P8<クラス名><修飾子><関数定義>	# (<クラス名>::*)() <修飾子>
+	Q<修飾子><型>			# (<型> <修飾子> *)	意味あるのか？
+	R				# ???
+	S				# ???
+	T<タグ名>			# union <タグ名>
+	U<タグ名>			# struct <タグ名>
+	V<タグ名>			# class <タグ名>
+	W<長さ><タグ名>			# 多重継承時、２つ目以降の基底クラスなら１つ目を呼び出す。
+	W4<タグ名>			# enum <タグ名>
+	W7<タグ名>			# ???
+	X				# void
+	Y				# ???
+	Z				# ...
+	?<修飾子><型>			# <型> <修飾子>		T, U, V, W の返り値？
+	_J				# __int64
+	_K				# unsigned __int64
+	_N				# bool
+	[0-9]				# 以前の引数内の A, P, T, U, V, W, ? を間接的に参照している。
+
+<長さ> :=
+	[0-9]			# 
+	[A-P]+@			# １６進数
+
+<不明> :=
+	[A-P]+@			# １６進数  アドレスか？
+
+<ラベル> :=
+	[_$0-9A-Za-z<特殊文字>]+@	# '@' で終わっている。
+
+<特殊文字> :=
+	?0		# ','
+	?1		# '/'
+	?2		# '\\'
+	?3		# ':'
+	?4		# '.'
+	?5		# ' '
+	?6		# '\n'
+	?7		# '\t'
+	?8		# '\''
+	?9		# '-'
+	?$AA		# '\0'
+	?$AH		# '\a'
+	?$AI		# '\b'
+	?$AM		# '\f'
+	?$AN		# '\r'
+	?$AL		# '\v'
+	?$CB		# '!'
+	?$CC		# '\"'
+	?$CD		# '#'
+	?$CF		# '%'
+	?$CG		# '&'
+	?$CI		# '('
+	?$CJ		# ')'
+	?$CK		# '*'
+	?$CL		# '+'
+	?$DL		# ';'
+	?$DM		# '<'
+	?$DN		# '='
+	?$DO		# '>'
+	?$DP		# '?'
+	?$EA		# '@'
+	?$FL		# '['
+	?$FN		# ']'
+	?$FO		# '^'
+	?$GA		# '`'
+	?$HL		# '{'
+	?$HM		# '|'
+	?$HN		# '}'
+	?$HO		# '~'
+
+
+############################################################################################################
+
+<タグ名> の例 :
+	0@				::str0
+	01@				str1::str0
+	0std@@				std::str0
+	CTest@@				::CTest
+	Ctest@0@			str0::CTest
+	CTest@std@@			std::CTest
+
+<テンプレート名> の例 :
+	?$allocator@VCTest@@@					allocate< ::CTest >
+	?$vector@VCTest@@V?$allocator@VCTest@@@std@@@		vector< ::CTest, class std::allocator<::CTest> >
+
+<型> の例 :
+	PAX				void *
+	PBD				const char *
+	PBX				const void *
+	AAV0@				class ::str0 &
+	AAV01@				class str1::str0 &
+	ABV0@				const class ::str0 &
+	ABV01@				const class str1::str0 &
+	ABVCString@@			const class ::CString &
+	V0@				class ::str0
+	ABUABC@@			const struct ::ABC &
+	?AVCString@@			class ::CString
+	?BVCString@@			const class ::CString
+	AAE				uchar &
+	AAVCWnd@@			class ::CWnd &
+	AAN0				double &, double &
+	AAN00				double &, double &, double &
+
+<属性> の例 :
+	QAEPBDH@Z			public: const char * __thiscall (int);
+	QBEPBXXZ			public: const void * __thiscall (void) const;
+	QAEAAV0@ABUABC@@@Z		public: class ::str0 & __thiscall (const struct ::ABC &);
+	QAEAAV0@ABV0@@Z			public: class ::str0 & __thiscall (const class ::str0 &);
+	QAEAAV01@ABV01@@Z		public: class str1::str0 & __thiscall (const class str1::str0 &);
+	QAEAAV0@XZ			public: class ::str0 & __thiscall (void);
+	QBEABVCBitmap@@XZ		public: const class ::CBitmap & __thiscall (void) const;
+	QBE?AVCString@@XZ		public: class ::CString __thiscall (void) const;
+	QAEHPBD@Z			public: int __thiscall (const char *);
+	QAEHH@Z				public: int __thiscall (int);
+	QBEHXZ				public: int __thiscall (void) const;
+	QAEAAEH@Z			public: uchar & __thiscall (int);
+	QBEHV0@@Z			public: uchar __thiscall (class ::str0) const;
+	QAE@XZ				public: __thiscall (void);
+	QAE@ABV0@@Z			public: __thiscall (const class ::str0 &);
+	QAE@ABUABC@@@Z			public: __thiscall (const struct ::ABC &);
+	QAE@H@Z				public: __thiscall (int);
+	UAE@XZ				public: virtual __thiscall (void);
+	QAEXH@Z				public: void __thiscall (int);
+	AAE@XZ				private: __thiscall (void);
+	QAEAAV01@ABV01@@Z		public: str1::str0 & __thiscall (const str1::str0 &);
+	SANNH@Z				public: static double __cdecl (double, int);
+	SAHN@Z				public: static int __cdecl (double);
+
+<エクスポート名> の例 :
+	??0CTest@@QAE@H@Z			public: __thiscall ::CTest::CTest(int);
+	??0CTest@@QAE@ABV0@@Z			public: __thiscall ::CTest::CTest(const ::CTest &);
+	??1CTest@@UAE@XZ			public: virtual __thiscall ::CTest::~CTest();
+	?AfxMessageBox@@YGHPBDII@Z		__declspec(dllexport) int __stdcall ::AfxMessageBox(const char *, uint, uint);
+	?OnOK@CDialog@@MAEXXZ			protected: virtual void __thiscall ::CDialog::OnOK(void);
+	??2@YAPAXI@Z				__declspec(dllexport) void * __cdecl ::new(uint);
+	??3@YAXPAX@Z				__declspec(dllexport) void __cdecl ::delete(void *);
+	?theApp@@3VCTestApp@@A			__declspec(dllexport) ::CTestApp ::theApp;
+	?messageMap@CDialog@@1UAFX_MSGMAP@@B	protected: static const struct ::AFX_MSGMAP ::CDialog::messageMap;
+
