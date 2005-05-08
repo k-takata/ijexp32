@@ -40,6 +40,8 @@ shdocvw.exp = 55
 shell32.exp = 55
 shlwapi.exp = 55
 wsock32.exp = 55
+ws2_32.exp = 55
+kernel32.exp = 55
 
 [DestinationDirs]
 Files1 = 11,%SubDir%
@@ -61,6 +63,8 @@ shdocvw.exp
 shell32.exp
 shlwapi.exp
 wsock32.exp
+ws2_32.exp
+kernel32.exp
 
 [ShellExtReg1]
 HKCR,"CLSID\%ShellExtCLSID1%",,,"%ShellExtDesc1%"

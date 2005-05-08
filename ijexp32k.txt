@@ -1,7 +1,7 @@
 
 
-         i.j Shell Property Sheets Export/Import 32 ver.1.01k1
-                 Copyright (C) 1999 i.j, 2004 K.Takata
+         i.j Shell Property Sheets Export/Import 32 ver.1.01k2
+               Copyright (C) 1999 i.j, 2004-2005 K.Takata
 
 １．概要
     　i.j 氏の i.j Shell Property Sheets Export/Import 32 (ijexp32) (*1)
@@ -49,8 +49,8 @@
     　Perl を使う場合は、例えば以下のようにすると良いでしょう。（途中で
     改行されていますが、１行で入力してください。）
 
-        > perl -ne 'if(/\s+;?(.*)\s+\@\s*(\d+)/){printf "%04x, %s\n", $2,
-        $1;}' < mfc42d.def > mfc42d.exp
+      > perl -ne "if(/\s+;?([^\s]+)\s+\@\s*(\d+)/){printf \"%04x, %s\n\",
+      $2, $1;}" < mfc42d.def > mfc42d.exp
 
 
 ７．ソースファイル
@@ -70,6 +70,12 @@
         ・Delphi 製プログラムのインポート情報を表示できるように変更。
         ・mfc42.exp を最新の mfc42.dll に対応させたものに変更。
         ・mfc70.exp, mfc71.exp を追加。
+
+    2005/05/09  ver.1.01k2
+        ・ws2_32.exp を追加。（WinSock2 用）
+        ・kernel32.exp を追加。（Win9x の非公開 API）
+        ・oleaut32.exp を更新。
+        ・一部の実行ファイルで落ちるのを修正。
 
 
 ９．注意事項、その他

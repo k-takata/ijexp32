@@ -841,7 +841,6 @@ bool CAnalyzer::AnalyzeImport(HWND hwndList, bool bFunc, bool bDecode)
 	list.Attach(hwndList);
 	list.DeleteAllItems();
 	int nCount = 0;
-	bool bIAT = (m_nt_hdr.OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IAT].VirtualAddress != 0);
 	CString strOrdinal, strName;
 	PIMAGE_IMPORT_DESCRIPTOR pImpDesc = reinterpret_cast<PIMAGE_IMPORT_DESCRIPTOR>(&m_vecBuff[m_dwDirAddr - m_dwSecAddr]);
 //	for (int nDesc = 0; pImpDesc[nDesc].Characteristics; nDesc++) {
@@ -851,7 +850,7 @@ bool CAnalyzer::AnalyzeImport(HWND hwndList, bool bFunc, bool bDecode)
 			list.InsertItem(nCount++, lpszServer);
 		} else {
 //			DWORD dwFirstThunk = /*reinterpret_cast<DWORD>*/(pImpDesc[nDesc].OriginalFirstThunk);
-			DWORD dwFirstThunk = (bIAT) ? pImpDesc[nDesc].OriginalFirstThunk : pImpDesc[nDesc].FirstThunk;
+			DWORD dwFirstThunk = (pImpDesc[nDesc].OriginalFirstThunk) ? pImpDesc[nDesc].OriginalFirstThunk : pImpDesc[nDesc].FirstThunk;
 			PIMAGE_THUNK_DATA pThkDat = reinterpret_cast<PIMAGE_THUNK_DATA>(&m_vecBuff[dwFirstThunk - m_dwSecAddr]);
 			bool bLoadedExpFile = false;
 			DWORD dwOrdinal;
