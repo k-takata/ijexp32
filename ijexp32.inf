@@ -72,6 +72,7 @@ HKCR,"CLSID\%ShellExtCLSID1%\InProcServer32",,,"%11%\%SubDir%\ijexp32.dll"
 HKCR,"CLSID\%ShellExtCLSID1%\InProcServer32","ThreadingModel",,"Apartment"
 HKCR,"dllfile\%PropSheetHdlr%\%ShellExtCLSID1%",,,"%ShellExtDesc1%"
 HKCR,"exefile\%PropSheetHdlr%\%ShellExtCLSID1%",,,"%ShellExtDesc1%"
+HKCR,"sysfile\%PropSheetHdlr%\%ShellExtCLSID1%",,,"%ShellExtDesc1%"
 HKLM,"%ShellExtNT%","%ShellExtCLSID1%",,"%ShellExtDesc1%"
 
 [ShellExtReg2]
@@ -87,6 +88,7 @@ HKCR,"CLSID\%ShellExtCLSID3%\InProcServer32",,,"%11%\%SubDir%\ijexp32.dll"
 HKCR,"CLSID\%ShellExtCLSID3%\InProcServer32","ThreadingModel",,"Apartment"
 HKCR,"dllfile\%PropSheetHdlr%\%ShellExtCLSID3%",,,"%ShellExtDesc3%"
 HKCR,"exefile\%PropSheetHdlr%\%ShellExtCLSID3%",,,"%ShellExtDesc3%"
+HKCR,"sysfile\%PropSheetHdlr%\%ShellExtCLSID3%",,,"%ShellExtDesc3%"
 HKLM,"%ShellExtNT%","%ShellExtCLSID3%",,"%ShellExtDesc3%"
 
 [UninstReg1]

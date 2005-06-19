@@ -1,6 +1,6 @@
 
 
-         i.j Shell Property Sheets Export/Import 32 ver.1.01k2
+         i.j Shell Property Sheets Export/Import 32 ver.1.01k3
                Copyright (C) 1999 i.j, 2004-2005 K.Takata
 
 １．概要
@@ -76,6 +76,10 @@
         ・kernel32.exp を追加。（Win9x の非公開 API）
         ・oleaut32.exp を更新。
         ・一部の実行ファイルで落ちるのを修正。
+
+    2005/06/20  ver.1.01k3
+        ・sys ファイルでも、ヘッダ情報とインポート情報を表示するように変
+          更。
 
 
 ９．注意事項、その他
