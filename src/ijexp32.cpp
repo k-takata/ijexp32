@@ -44,7 +44,7 @@ DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
 #ifdef ICC_LISTVIEW_CLASSES
 		HMODULE hmodComCtl = ::LoadLibrary(_T("comctl32.dll"));
 		if (hmodComCtl) {
-			LPFNINITCOMCTLEX lpfnInitComCtlEx = (LPFNINITCOMCTLEX)::GetProcAddress(hmodComCtl, _T("InitCommonControlsEx"));
+			LPFNINITCOMCTLEX lpfnInitComCtlEx = (LPFNINITCOMCTLEX)::GetProcAddress(hmodComCtl, "InitCommonControlsEx");
 			if (lpfnInitComCtlEx) {
 				INITCOMMONCONTROLSEX icc;
 				icc.dwSize = sizeof(INITCOMMONCONTROLSEX);

@@ -16,6 +16,7 @@ static char THIS_FILE[] = __FILE__;
 
 static TCHAR szHex4Fmt[] = _T("%04x");
 static TCHAR szHex8Fmt[] = _T("%08x");
+static TCHAR szHex16Fmt[] = _T("%016I64x");
 static TCHAR szAddrFmt[] = _T("%04x:%04x");
 static TCHAR szVerFmt [] = _T("%d.%d");
 
@@ -31,6 +32,7 @@ CAnalyzer::CAnalyzer()
 	m_dwSecAddr = 0;
 	::ZeroMemory(&m_dos_hdr, sizeof(m_dos_hdr));
 	::ZeroMemory(&m_nt_hdr,  sizeof(m_nt_hdr));
+	m_b32bit = false;
 }
 
 CAnalyzer::~CAnalyzer()
@@ -90,10 +92,15 @@ bool CAnalyzer::Open(HWND hwnd, LPCTSTR lpszPath)
 			if (m_dos_hdr.e_cparhdr >= (sizeof(IMAGE_DOS_HEADER) + 0x0f) >> 4) { // unit : paragraph
 				DWORD dwPeHdrOffset = m_dos_hdr.e_lfanew;
 				m_file.Seek(dwPeHdrOffset, CFile::begin);
-				m_file.Read(&m_nt_hdr, sizeof(IMAGE_NT_HEADERS)); // read PE hdr
+				m_file.Read(&m_nt_hdr, sizeof(IMAGE_NT_HEADERS64)); // read PE hdr
 				if (m_nt_hdr.Signature == IMAGE_NT_SIGNATURE) {
-					if ((m_nt_hdr.FileHeader.Characteristics & IMAGE_FILE_32BIT_MACHINE) && (m_nt_hdr.FileHeader.Characteristics & IMAGE_FILE_EXECUTABLE_IMAGE)) {
-						if (m_nt_hdr.OptionalHeader.Magic == IMAGE_NT_OPTIONAL_HDR_MAGIC) {
+					if (m_nt_hdr.FileHeader.Characteristics & IMAGE_FILE_EXECUTABLE_IMAGE) {
+						if (((m_nt_hdr.FileHeader.Characteristics & IMAGE_FILE_32BIT_MACHINE)
+									&& (m_nt_hdr32.OptionalHeader.Magic == IMAGE_NT_OPTIONAL_HDR32_MAGIC))
+								|| (m_nt_hdr64.OptionalHeader.Magic == IMAGE_NT_OPTIONAL_HDR64_MAGIC)) {
+							if (m_nt_hdr.FileHeader.Characteristics & IMAGE_FILE_32BIT_MACHINE) {
+								m_b32bit = true;
+							}
 //							DWORD dwPeHdrOffset = m_dos_hdr.e_lfanew;
 							DWORD dwSecEntry = m_nt_hdr.FileHeader.NumberOfSections;
 							DWORD dwSecOffset = dwPeHdrOffset + sizeof(DWORD) + sizeof(IMAGE_FILE_HEADER) + m_nt_hdr.FileHeader.SizeOfOptionalHeader;
@@ -132,7 +139,11 @@ void CAnalyzer::Close(void)
 bool CAnalyzer::ReadSection(HWND hwnd, int nDirectory)
 {
 	try {
-		m_dwDirAddr = m_nt_hdr.OptionalHeader.DataDirectory[nDirectory].VirtualAddress;
+		if (m_b32bit) {
+			m_dwDirAddr = m_nt_hdr32.OptionalHeader.DataDirectory[nDirectory].VirtualAddress;
+		} else {
+			m_dwDirAddr = m_nt_hdr64.OptionalHeader.DataDirectory[nDirectory].VirtualAddress;
+		}
 		for (vector<IMAGE_SECTION_HEADER>::const_iterator it = m_vecSecHdr.begin(); it != m_vecSecHdr.end(); ++it) {
 			m_dwSecAddr = it->VirtualAddress;
 			DWORD dwOffset = m_dwDirAddr - m_dwSecAddr; // a result is unsigned, because need to wrap-around to big number, when underflow.
@@ -448,6 +459,12 @@ bool CAnalyzer::AnalyzeExeHdr(HWND hwndHdrList, HWND hwndDirList, HWND hwndSecLi
 	case IMAGE_FILE_MACHINE_I386:
 		lpszValue = _T("x86");
 		break;
+	case IMAGE_FILE_MACHINE_IA64:
+		lpszValue = _T("IA64");
+		break;
+	case IMAGE_FILE_MACHINE_AMD64:
+		lpszValue = _T("x64");
+		break;
 	case IMAGE_FILE_MACHINE_R3000:
 		lpszValue = _T("R3000");
 		break;
@@ -463,6 +480,14 @@ bool CAnalyzer::AnalyzeExeHdr(HWND hwndHdrList, HWND hwndDirList, HWND hwndSecLi
 	case IMAGE_FILE_MACHINE_POWERPC:
 		lpszValue = _T("Power PC");
 		break;
+/*
+	case IMAGE_FILE_MACHINE_SH4:
+		lpszValue = _T("SH4");
+		break;
+	case IMAGE_FILE_MACHINE_ARM:
+		lpszValue = _T("ARM");
+		break;
+*/
 	default:
 		lpszValue = _T("unknown");
 		break;
@@ -516,7 +541,7 @@ bool CAnalyzer::AnalyzeExeHdr(HWND hwndHdrList, HWND hwndDirList, HWND hwndSecLi
 	if (m_nt_hdr.FileHeader.Characteristics & IMAGE_FILE_32BIT_MACHINE) {
 		strValue += _T("32-bit, ");
 	} else {
-		strValue += _T("16-bit, ");
+//		strValue += _T("16-bit, ");
 	}
 	if (m_nt_hdr.FileHeader.Characteristics & IMAGE_FILE_BYTES_REVERSED_LO) {
 		strValue += _T("LoBytesReversed, ");
@@ -547,80 +572,100 @@ bool CAnalyzer::AnalyzeExeHdr(HWND hwndHdrList, HWND hwndDirList, HWND hwndSecLi
 	list.SetItemText(nCount, 1, strValue);
 	nCount++;
 
-	strValue.Format(szHex4Fmt, m_nt_hdr.OptionalHeader.Magic);
+	strValue.Format(szHex4Fmt, m_nt_hdr32.OptionalHeader.Magic);
 	list.InsertItem (nCount, _T("Signeture"));
 	list.SetItemText(nCount, 1, strValue);
 	nCount++;
-	strValue.Format(szVerFmt, m_nt_hdr.OptionalHeader.MajorLinkerVersion, m_nt_hdr.OptionalHeader.MinorLinkerVersion);
+	strValue.Format(szVerFmt, m_nt_hdr32.OptionalHeader.MajorLinkerVersion, m_nt_hdr32.OptionalHeader.MinorLinkerVersion);
 	list.InsertItem (nCount, _T("Linker version"));
 	list.SetItemText(nCount, 1, strValue);
 	nCount++;
-	strValue.Format(szHex8Fmt, m_nt_hdr.OptionalHeader.SizeOfCode);
+	strValue.Format(szHex8Fmt, m_nt_hdr32.OptionalHeader.SizeOfCode);
 	list.InsertItem (nCount, _T("Code section size"));
 	list.SetItemText(nCount, 1, strValue);
 	nCount++;
-	strValue.Format(szHex8Fmt, m_nt_hdr.OptionalHeader.SizeOfInitializedData);
+	strValue.Format(szHex8Fmt, m_nt_hdr32.OptionalHeader.SizeOfInitializedData);
 	list.InsertItem (nCount, _T("Init.data section size"));
 	list.SetItemText(nCount, 1, strValue);
 	nCount++;
-	strValue.Format(szHex8Fmt, m_nt_hdr.OptionalHeader.SizeOfUninitializedData);
+	strValue.Format(szHex8Fmt, m_nt_hdr32.OptionalHeader.SizeOfUninitializedData);
 	list.InsertItem (nCount, _T("Uninit.data section size"));
 	list.SetItemText(nCount, 1, strValue);
 	nCount++;
-	strValue.Format(szHex8Fmt, m_nt_hdr.OptionalHeader.ImageBase + m_nt_hdr.OptionalHeader.AddressOfEntryPoint);
-	list.InsertItem (nCount, _T("Start address"));
-	list.SetItemText(nCount, 1, strValue);
-	nCount++;
-	strValue.Format(szHex8Fmt, m_nt_hdr.OptionalHeader.ImageBase + m_nt_hdr.OptionalHeader.BaseOfCode);
-	list.InsertItem (nCount, _T("Code section base addr."));
-	list.SetItemText(nCount, 1, strValue);
-	nCount++;
-	strValue.Format(szHex8Fmt, m_nt_hdr.OptionalHeader.ImageBase + m_nt_hdr.OptionalHeader.BaseOfData);
-	list.InsertItem (nCount, _T("Data section base addr."));
-	list.SetItemText(nCount, 1, strValue);
-	nCount++;
+	if (m_b32bit) {
+		strValue.Format(szHex8Fmt, m_nt_hdr32.OptionalHeader.ImageBase + m_nt_hdr32.OptionalHeader.AddressOfEntryPoint);
+		list.InsertItem (nCount, _T("Start address"));
+		list.SetItemText(nCount, 1, strValue);
+		nCount++;
+		strValue.Format(szHex8Fmt, m_nt_hdr32.OptionalHeader.ImageBase + m_nt_hdr32.OptionalHeader.BaseOfCode);
+		list.InsertItem (nCount, _T("Code section base addr."));
+		list.SetItemText(nCount, 1, strValue);
+		nCount++;
+		strValue.Format(szHex8Fmt, m_nt_hdr32.OptionalHeader.ImageBase + m_nt_hdr32.OptionalHeader.BaseOfData);
+		list.InsertItem (nCount, _T("Data section base addr."));
+		list.SetItemText(nCount, 1, strValue);
+		nCount++;
 
-	strValue.Format(szHex8Fmt, m_nt_hdr.OptionalHeader.ImageBase);
-	list.InsertItem (nCount, _T("Image base address"));
-	list.SetItemText(nCount, 1, strValue);
-	nCount++;
-	strValue.Format(szHex8Fmt, m_nt_hdr.OptionalHeader.SectionAlignment);
+		strValue.Format(szHex8Fmt, m_nt_hdr32.OptionalHeader.ImageBase);
+		list.InsertItem (nCount, _T("Image base address"));
+		list.SetItemText(nCount, 1, strValue);
+		nCount++;
+	} else {
+		strValue.Format(szHex16Fmt, m_nt_hdr64.OptionalHeader.ImageBase + m_nt_hdr64.OptionalHeader.AddressOfEntryPoint);
+		list.InsertItem (nCount, _T("Start address"));
+		list.SetItemText(nCount, 1, strValue);
+		nCount++;
+		strValue.Format(szHex16Fmt, m_nt_hdr64.OptionalHeader.ImageBase + m_nt_hdr64.OptionalHeader.BaseOfCode);
+		list.InsertItem (nCount, _T("Code section base addr."));
+		list.SetItemText(nCount, 1, strValue);
+		nCount++;
+//		strValue.Format(szHex16Fmt, m_nt_hdr64.OptionalHeader.ImageBase + m_nt_hdr64.OptionalHeader.BaseOfData);
+//		list.InsertItem (nCount, _T("Data section base addr."));
+//		list.SetItemText(nCount, 1, strValue);
+//		nCount++;
+
+		strValue.Format(szHex16Fmt, m_nt_hdr64.OptionalHeader.ImageBase);
+		list.InsertItem (nCount, _T("Image base address"));
+		list.SetItemText(nCount, 1, strValue);
+		nCount++;
+	}
+	strValue.Format(szHex8Fmt, m_nt_hdr32.OptionalHeader.SectionAlignment);
 	list.InsertItem (nCount, _T("Section alignment size"));
 	list.SetItemText(nCount, 1, strValue);
 	nCount++;
-	strValue.Format(szHex8Fmt, m_nt_hdr.OptionalHeader.FileAlignment);
+	strValue.Format(szHex8Fmt, m_nt_hdr32.OptionalHeader.FileAlignment);
 	list.InsertItem (nCount, _T("File alignment size"));
 	list.SetItemText(nCount, 1, strValue);
 	nCount++;
-	strValue.Format(szVerFmt, m_nt_hdr.OptionalHeader.MajorOperatingSystemVersion, m_nt_hdr.OptionalHeader.MinorOperatingSystemVersion);
-	list.InsertItem (nCount, _T("Operation system version"));
+	strValue.Format(szVerFmt, m_nt_hdr32.OptionalHeader.MajorOperatingSystemVersion, m_nt_hdr32.OptionalHeader.MinorOperatingSystemVersion);
+	list.InsertItem (nCount, _T("Operating system version"));
 	list.SetItemText(nCount, 1, strValue);
 	nCount++;
-	strValue.Format(szVerFmt, m_nt_hdr.OptionalHeader.MajorImageVersion, m_nt_hdr.OptionalHeader.MinorImageVersion);
+	strValue.Format(szVerFmt, m_nt_hdr32.OptionalHeader.MajorImageVersion, m_nt_hdr32.OptionalHeader.MinorImageVersion);
 	list.InsertItem (nCount, _T("User defined version"));
 	list.SetItemText(nCount, 1, strValue);
 	nCount++;
-	strValue.Format(szVerFmt, m_nt_hdr.OptionalHeader.MajorSubsystemVersion, m_nt_hdr.OptionalHeader.MinorSubsystemVersion);
+	strValue.Format(szVerFmt, m_nt_hdr32.OptionalHeader.MajorSubsystemVersion, m_nt_hdr32.OptionalHeader.MinorSubsystemVersion);
 	list.InsertItem (nCount, _T("Sub-system version"));
 	list.SetItemText(nCount, 1, strValue);
 	nCount++;
-	strValue.Format(szHex8Fmt, m_nt_hdr.OptionalHeader.Win32VersionValue);
+	strValue.Format(szHex8Fmt, m_nt_hdr32.OptionalHeader.Win32VersionValue);
 	list.InsertItem (nCount, _T("Reserved"));
 	list.SetItemText(nCount, 1, strValue);
 	nCount++;
-	strValue.Format(szHex8Fmt, m_nt_hdr.OptionalHeader.SizeOfImage);
+	strValue.Format(szHex8Fmt, m_nt_hdr32.OptionalHeader.SizeOfImage);
 	list.InsertItem (nCount, _T("Image size"));
 	list.SetItemText(nCount, 1, strValue);
 	nCount++;
-	strValue.Format(szHex8Fmt, m_nt_hdr.OptionalHeader.SizeOfHeaders);
+	strValue.Format(szHex8Fmt, m_nt_hdr32.OptionalHeader.SizeOfHeaders);
 	list.InsertItem (nCount, _T("Headers size"));
 	list.SetItemText(nCount, 1, strValue);
 	nCount++;
-	strValue.Format(szHex8Fmt, m_nt_hdr.OptionalHeader.CheckSum);
+	strValue.Format(szHex8Fmt, m_nt_hdr32.OptionalHeader.CheckSum);
 	list.InsertItem (nCount, _T("Check sum 32"));
 	list.SetItemText(nCount, 1, strValue);
 	nCount++;
-	switch (m_nt_hdr.OptionalHeader.Subsystem) {
+	switch (m_nt_hdr32.OptionalHeader.Subsystem) {
 	case IMAGE_SUBSYSTEM_NATIVE:
 		lpszValue = _T("Native");
 		break;
@@ -643,52 +688,96 @@ bool CAnalyzer::AnalyzeExeHdr(HWND hwndHdrList, HWND hwndDirList, HWND hwndSecLi
 	list.InsertItem (nCount, _T("Sub-system"));
 	list.SetItemText(nCount, 1, lpszValue);
 	nCount++;
-	strValue.Format(szHex4Fmt, m_nt_hdr.OptionalHeader.DllCharacteristics);
+	strValue.Format(szHex4Fmt, m_nt_hdr32.OptionalHeader.DllCharacteristics);
 	list.InsertItem (nCount, _T("DLL init.func.flags"));
 	list.SetItemText(nCount, 1, strValue);
 	nCount++;
-	strValue.Format(szHex8Fmt, m_nt_hdr.OptionalHeader.SizeOfStackReserve);
-	list.InsertItem (nCount, _T("Reserved stack size"));
-	list.SetItemText(nCount, 1, strValue);
-	nCount++;
-	strValue.Format(szHex8Fmt, m_nt_hdr.OptionalHeader.SizeOfStackCommit);
-	list.InsertItem (nCount, _T("Commit stack size"));
-	list.SetItemText(nCount, 1, strValue);
-	nCount++;
-	strValue.Format(szHex8Fmt, m_nt_hdr.OptionalHeader.SizeOfHeapReserve);
-	list.InsertItem (nCount, _T("Reserved heap size"));
-	list.SetItemText(nCount, 1, strValue);
-	nCount++;
-	strValue.Format(szHex8Fmt, m_nt_hdr.OptionalHeader.SizeOfHeapCommit);
-	list.InsertItem (nCount, _T("Commit heap size"));
-	list.SetItemText(nCount, 1, strValue);
-	nCount++;
-	strValue.Format(szHex8Fmt, m_nt_hdr.OptionalHeader.LoaderFlags);
-	list.InsertItem (nCount, _T("Loader flags"));
-	list.SetItemText(nCount, 1, strValue);
-	nCount++;
-	strValue.Format(szHex8Fmt, m_nt_hdr.OptionalHeader.NumberOfRvaAndSizes);
-	list.InsertItem (nCount, _T("Data directory No."));
-	list.SetItemText(nCount, 1, strValue);
-//	nCount++;
+	if (m_b32bit) {
+		strValue.Format(szHex8Fmt, m_nt_hdr32.OptionalHeader.SizeOfStackReserve);
+		list.InsertItem (nCount, _T("Reserved stack size"));
+		list.SetItemText(nCount, 1, strValue);
+		nCount++;
+		strValue.Format(szHex8Fmt, m_nt_hdr32.OptionalHeader.SizeOfStackCommit);
+		list.InsertItem (nCount, _T("Commit stack size"));
+		list.SetItemText(nCount, 1, strValue);
+		nCount++;
+		strValue.Format(szHex8Fmt, m_nt_hdr32.OptionalHeader.SizeOfHeapReserve);
+		list.InsertItem (nCount, _T("Reserved heap size"));
+		list.SetItemText(nCount, 1, strValue);
+		nCount++;
+		strValue.Format(szHex8Fmt, m_nt_hdr32.OptionalHeader.SizeOfHeapCommit);
+		list.InsertItem (nCount, _T("Commit heap size"));
+		list.SetItemText(nCount, 1, strValue);
+		nCount++;
+		strValue.Format(szHex8Fmt, m_nt_hdr32.OptionalHeader.LoaderFlags);
+		list.InsertItem (nCount, _T("Loader flags"));
+		list.SetItemText(nCount, 1, strValue);
+		nCount++;
+		strValue.Format(szHex8Fmt, m_nt_hdr32.OptionalHeader.NumberOfRvaAndSizes);
+		list.InsertItem (nCount, _T("Data directory No."));
+		list.SetItemText(nCount, 1, strValue);
+	//	nCount++;
+	} else {
+		strValue.Format(szHex16Fmt, m_nt_hdr64.OptionalHeader.SizeOfStackReserve);
+		list.InsertItem (nCount, _T("Reserved stack size"));
+		list.SetItemText(nCount, 1, strValue);
+		nCount++;
+		strValue.Format(szHex16Fmt, m_nt_hdr64.OptionalHeader.SizeOfStackCommit);
+		list.InsertItem (nCount, _T("Commit stack size"));
+		list.SetItemText(nCount, 1, strValue);
+		nCount++;
+		strValue.Format(szHex16Fmt, m_nt_hdr64.OptionalHeader.SizeOfHeapReserve);
+		list.InsertItem (nCount, _T("Reserved heap size"));
+		list.SetItemText(nCount, 1, strValue);
+		nCount++;
+		strValue.Format(szHex16Fmt, m_nt_hdr64.OptionalHeader.SizeOfHeapCommit);
+		list.InsertItem (nCount, _T("Commit heap size"));
+		list.SetItemText(nCount, 1, strValue);
+		nCount++;
+		strValue.Format(szHex8Fmt, m_nt_hdr64.OptionalHeader.LoaderFlags);
+		list.InsertItem (nCount, _T("Loader flags"));
+		list.SetItemText(nCount, 1, strValue);
+		nCount++;
+		strValue.Format(szHex8Fmt, m_nt_hdr64.OptionalHeader.NumberOfRvaAndSizes);
+		list.InsertItem (nCount, _T("Data directory No."));
+		list.SetItemText(nCount, 1, strValue);
+	//	nCount++;
+	}
+	list.SetColumnWidth(1, LVSCW_AUTOSIZE);
 	list.Detach();
 
 	list.Attach(hwndDirList);
 	list.DeleteAllItems();
 
 	nCount = 0;
-	for (DWORD dwEntry = 0; dwEntry < m_nt_hdr.OptionalHeader.NumberOfRvaAndSizes; dwEntry++) {
-		list.InsertItem(nCount, alpszDirName[dwEntry]);
-		DWORD dwAddr = m_nt_hdr.OptionalHeader.DataDirectory[dwEntry].VirtualAddress;
-		if (dwAddr) {
-			dwAddr += m_nt_hdr.OptionalHeader.ImageBase;
+	if (m_b32bit) {
+		for (DWORD dwEntry = 0; dwEntry < m_nt_hdr32.OptionalHeader.NumberOfRvaAndSizes; dwEntry++) {
+			list.InsertItem(nCount, alpszDirName[dwEntry]);
+			DWORD dwAddr = m_nt_hdr32.OptionalHeader.DataDirectory[dwEntry].VirtualAddress;
+			if (dwAddr) {
+				dwAddr += m_nt_hdr32.OptionalHeader.ImageBase;
+			}
+			strValue.Format(szHex8Fmt, dwAddr);
+			list.SetItemText(nCount, 1, strValue);
+			strValue.Format(szHex8Fmt, m_nt_hdr32.OptionalHeader.DataDirectory[dwEntry].Size);
+			list.SetItemText(nCount, 2, strValue);
+			nCount++;
 		}
-		strValue.Format(szHex8Fmt, dwAddr);
-		list.SetItemText(nCount, 1, strValue);
-		strValue.Format(szHex8Fmt, m_nt_hdr.OptionalHeader.DataDirectory[dwEntry].Size);
-		list.SetItemText(nCount, 2, strValue);
-		nCount++;
+	} else {
+		for (DWORD dwEntry = 0; dwEntry < m_nt_hdr64.OptionalHeader.NumberOfRvaAndSizes; dwEntry++) {
+			list.InsertItem(nCount, alpszDirName[dwEntry]);
+			ULONGLONG qwAddr = m_nt_hdr64.OptionalHeader.DataDirectory[dwEntry].VirtualAddress;
+			if (qwAddr) {
+				qwAddr += m_nt_hdr64.OptionalHeader.ImageBase;
+			}
+			strValue.Format(szHex16Fmt, qwAddr);
+			list.SetItemText(nCount, 1, strValue);
+			strValue.Format(szHex8Fmt, m_nt_hdr64.OptionalHeader.DataDirectory[dwEntry].Size);
+			list.SetItemText(nCount, 2, strValue);
+			nCount++;
+		}
 	}
+	list.SetColumnWidth(1, LVSCW_AUTOSIZE);
 	list.Detach();
 
 	list.Attach(hwndSecList);
@@ -697,7 +786,11 @@ bool CAnalyzer::AnalyzeExeHdr(HWND hwndHdrList, HWND hwndDirList, HWND hwndSecLi
 	nCount = 0;
 	for (vector<IMAGE_SECTION_HEADER>::iterator it = m_vecSecHdr.begin(); it != m_vecSecHdr.end(); ++it) {
 		list.InsertItem(nCount, CString(reinterpret_cast<LPSTR>(it->Name), IMAGE_SIZEOF_SHORT_NAME));
-		strValue.Format(szHex8Fmt, m_nt_hdr.OptionalHeader.ImageBase + it->VirtualAddress);
+		if (m_b32bit) {
+			strValue.Format(szHex8Fmt, m_nt_hdr32.OptionalHeader.ImageBase + it->VirtualAddress);
+		} else {
+			strValue.Format(szHex16Fmt, m_nt_hdr64.OptionalHeader.ImageBase + it->VirtualAddress);
+		}
 		list.SetItemText(nCount, 1, strValue);
 		strValue.Format(szHex8Fmt, it->Misc.VirtualSize);
 		list.SetItemText(nCount, 2, strValue);
@@ -778,7 +871,8 @@ bool CAnalyzer::AnalyzeExeHdr(HWND hwndHdrList, HWND hwndDirList, HWND hwndSecLi
 		list.SetItemText(nCount, 9, strValue);
 		nCount++;
 	}
-
+	list.SetColumnWidth(1, LVSCW_AUTOSIZE);
+	list.SetColumnWidth(9, LVSCW_AUTOSIZE);
 	list.Detach();
 	return true;
 }
@@ -845,45 +939,83 @@ bool CAnalyzer::AnalyzeImport(HWND hwndList, bool bFunc, bool bDecode)
 	PIMAGE_IMPORT_DESCRIPTOR pImpDesc = reinterpret_cast<PIMAGE_IMPORT_DESCRIPTOR>(&m_vecBuff[m_dwDirAddr - m_dwSecAddr]);
 //	for (int nDesc = 0; pImpDesc[nDesc].Characteristics; nDesc++) {
 	for (int nDesc = 0; pImpDesc[nDesc].FirstThunk; nDesc++) {
-		LPTSTR lpszServer = reinterpret_cast<LPTSTR>(&m_vecBuff[pImpDesc[nDesc].Name - m_dwSecAddr]);
+	//	LPTSTR lpszServer = reinterpret_cast<LPTSTR>(&m_vecBuff[pImpDesc[nDesc].Name - m_dwSecAddr]);
+		CString lpszServer = reinterpret_cast<LPSTR>(&m_vecBuff[pImpDesc[nDesc].Name - m_dwSecAddr]);
 		if (!bFunc) {
 			list.InsertItem(nCount++, lpszServer);
 		} else {
 //			DWORD dwFirstThunk = /*reinterpret_cast<DWORD>*/(pImpDesc[nDesc].OriginalFirstThunk);
 			DWORD dwFirstThunk = (pImpDesc[nDesc].OriginalFirstThunk) ? pImpDesc[nDesc].OriginalFirstThunk : pImpDesc[nDesc].FirstThunk;
-			PIMAGE_THUNK_DATA pThkDat = reinterpret_cast<PIMAGE_THUNK_DATA>(&m_vecBuff[dwFirstThunk - m_dwSecAddr]);
-			bool bLoadedExpFile = false;
-			DWORD dwOrdinal;
-			for (int nThunk = 0; dwOrdinal = pThkDat[nThunk].u1.Ordinal; nThunk++) {
-				list.InsertItem(nCount, lpszServer);
-				if (IMAGE_SNAP_BY_ORDINAL(dwOrdinal)) {
-					// 0x80000000 ... 0xffffffff
-					dwOrdinal = IMAGE_ORDINAL(dwOrdinal);
-					strOrdinal.Format(szHex4Fmt, dwOrdinal);
-					strName = _T("<unknown name>");
-					if (!bLoadedExpFile) {
-						if (m_mapExp.find(lpszServer) == m_mapExp.end()) {
-							LoadExpFile(lpszServer);
+			if (m_b32bit) {
+				PIMAGE_THUNK_DATA32 pThkDat = reinterpret_cast<PIMAGE_THUNK_DATA32>(&m_vecBuff[dwFirstThunk - m_dwSecAddr]);
+				bool bLoadedExpFile = false;
+				DWORD dwOrdinal;
+				for (int nThunk = 0; dwOrdinal = pThkDat[nThunk].u1.Ordinal; nThunk++) {
+					list.InsertItem(nCount, lpszServer);
+					if (IMAGE_SNAP_BY_ORDINAL32(dwOrdinal)) {
+						// 0x80000000 ... 0xffffffff
+						dwOrdinal = IMAGE_ORDINAL32(dwOrdinal);
+						strOrdinal.Format(szHex4Fmt, dwOrdinal);
+						strName = _T("<unknown name>");
+						if (!bLoadedExpFile) {
+							if (m_mapExp.find(lpszServer) == m_mapExp.end()) {
+								LoadExpFile(lpszServer);
+							}
+							bLoadedExpFile = true;
 						}
-						bLoadedExpFile = true;
-					}
-					if (m_mapExp.find(lpszServer) != m_mapExp.end()) {
-						if (m_mapExp[lpszServer].find(dwOrdinal) != m_mapExp[lpszServer].end()) {
-							strName = m_mapExp[lpszServer][dwOrdinal];
+						if (m_mapExp.find(lpszServer) != m_mapExp.end()) {
+							if (m_mapExp[lpszServer].find(dwOrdinal) != m_mapExp[lpszServer].end()) {
+								strName = m_mapExp[lpszServer][dwOrdinal];
+							}
 						}
+					} else {
+						// 0x00000000 ... 0x7fffffff
+						PIMAGE_IMPORT_BY_NAME pImpName = reinterpret_cast<PIMAGE_IMPORT_BY_NAME>(&m_vecBuff[dwOrdinal - m_dwSecAddr]);
+						strOrdinal.Format(_T("(%04x)"), pImpName->Hint);
+						strName = reinterpret_cast<LPSTR>(pImpName->Name);
 					}
-				} else {
-					// 0x00000000 ... 0x7fffffff
-					PIMAGE_IMPORT_BY_NAME pImpName = reinterpret_cast<PIMAGE_IMPORT_BY_NAME>(&m_vecBuff[dwOrdinal - m_dwSecAddr]);
-					strOrdinal.Format(_T("(%04x)"), pImpName->Hint);
-					strName = reinterpret_cast<LPSTR>(pImpName->Name);
+					list.SetItemText(nCount, 1, strOrdinal);
+					if (bDecode) {
+						strName = AnalyzeName(strName, false);
+					}
+					list.SetItemText(nCount, 2, strName);
+					nCount++;
 				}
-				list.SetItemText(nCount, 1, strOrdinal);
-				if (bDecode) {
-					strName = AnalyzeName(strName, false);
+			} else {
+				PIMAGE_THUNK_DATA64 pThkDat = reinterpret_cast<PIMAGE_THUNK_DATA64>(&m_vecBuff[dwFirstThunk - m_dwSecAddr]);
+				bool bLoadedExpFile = false;
+				ULONGLONG qwOrdinal;
+				for (int nThunk = 0; qwOrdinal = pThkDat[nThunk].u1.Ordinal; nThunk++) {
+					list.InsertItem(nCount, lpszServer);
+					if (IMAGE_SNAP_BY_ORDINAL64(qwOrdinal)) {
+						// 0x80000000 ... 0xffffffff
+						DWORD dwOrdinal = static_cast<DWORD>(IMAGE_ORDINAL64(qwOrdinal));
+						strOrdinal.Format(szHex4Fmt, dwOrdinal);
+						strName = _T("<unknown name>");
+						if (!bLoadedExpFile) {
+							if (m_mapExp.find(lpszServer) == m_mapExp.end()) {
+								LoadExpFile(lpszServer);
+							}
+							bLoadedExpFile = true;
+						}
+						if (m_mapExp.find(lpszServer) != m_mapExp.end()) {
+							if (m_mapExp[lpszServer].find(dwOrdinal) != m_mapExp[lpszServer].end()) {
+								strName = m_mapExp[lpszServer][dwOrdinal];
+							}
+						}
+					} else {
+						// 0x00000000 ... 0x7fffffff
+						PIMAGE_IMPORT_BY_NAME pImpName = reinterpret_cast<PIMAGE_IMPORT_BY_NAME>(&m_vecBuff[(DWORD)qwOrdinal - m_dwSecAddr]);
+						strOrdinal.Format(_T("(%04x)"), pImpName->Hint);
+						strName = reinterpret_cast<LPSTR>(pImpName->Name);
+					}
+					list.SetItemText(nCount, 1, strOrdinal);
+					if (bDecode) {
+						strName = AnalyzeName(strName, false);
+					}
+					list.SetItemText(nCount, 2, strName);
+					nCount++;
 				}
-				list.SetItemText(nCount, 2, strName);
-				nCount++;
 			}
 		}
 	}
@@ -905,7 +1037,7 @@ enum {
 };
 
 struct {
-	CHAR cName;
+	TCHAR cName;
 	BYTE bAccess;
 	BYTE bAttr;
 	bool bFunc;
@@ -913,36 +1045,38 @@ struct {
 	bool bDeco;
 	bool bClassName;
 } aAttrTable[] = {
-	'A', accessPrivate,   attrNormal,  true,  true,  true,  false,
-	'C', accessPrivate,   attrStatic,  true,  true,  false, false,
-	'E', accessPrivate,   attrVirtual, true,  true,  true,  false,
-	'I', accessProtected, attrNormal,  true,  true,  true,  false,
-	'K', accessProtected, attrStatic,  true,  true,  false, false,
-	'M', accessProtected, attrVirtual, true,  true,  true,  false,
-	'Q', accessPublic,    attrNormal,  true,  true,  true,  false,
-	'S', accessPublic,    attrStatic,  true,  true,  false, false,
-	'U', accessPublic,    attrVirtual, true,  true,  true,  false,
-	'Y', accessNone,      attrExport,  true,  true,  false, false,
-	'0', accessPrivate,   attrStatic,  false, true,  true,  false,
-	'1', accessProtected, attrStatic,  false, true,  true,  false,
-	'2', accessPublic,    attrStatic,  false, true,  true,  false,
-	'3', accessNone,      attrExport,  false, true,  true,  false,
-	'6', accessNone,      attrNormal,  false, false, true,  true,
-	'7', accessNone,      attrNormal,  false, false, true,  true,
+	_T('A'), accessPrivate,   attrNormal,  true,  true,  true,  false,
+	_T('C'), accessPrivate,   attrStatic,  true,  true,  false, false,
+	_T('E'), accessPrivate,   attrVirtual, true,  true,  true,  false,
+	_T('I'), accessProtected, attrNormal,  true,  true,  true,  false,
+	_T('K'), accessProtected, attrStatic,  true,  true,  false, false,
+	_T('M'), accessProtected, attrVirtual, true,  true,  true,  false,
+	_T('Q'), accessPublic,    attrNormal,  true,  true,  true,  false,
+	_T('S'), accessPublic,    attrStatic,  true,  true,  false, false,
+	_T('U'), accessPublic,    attrVirtual, true,  true,  true,  false,
+	_T('Y'), accessNone,      attrExport,  true,  true,  false, false,
+	_T('0'), accessPrivate,   attrStatic,  false, true,  true,  false,
+	_T('1'), accessProtected, attrStatic,  false, true,  true,  false,
+	_T('2'), accessPublic,    attrStatic,  false, true,  true,  false,
+	_T('3'), accessNone,      attrExport,  false, true,  true,  false,
+	_T('6'), accessNone,      attrNormal,  false, false, true,  true,
+	_T('7'), accessNone,      attrNormal,  false, false, true,  true,
 };
 
-CString CAnalyzer::AnalyzeName(LPCSTR lpszName, bool bPushCls)
+CString CAnalyzer::AnalyzeName(LPCTSTR lpszName, bool bPushCls)
 {
-	if (*lpszName != '\?') {
+	if (*lpszName != _T('?')) {
 		return lpszName;
 	}
 	m_bOpCast = false;
 	m_vecName.clear();
-	LPCSTR lpszStr = lpszName + 1;
+	m_className = "";
+	LPCTSTR lpszStr = lpszName + 1;
 	int nClsLen;
 	CString strName = AnalyzeVcName(&lpszStr, true, &nClsLen);
-	CHAR cAttr = *lpszStr++;
-	for (int nAttr = 0; nAttr < lengthof(aAttrTable); nAttr++) {
+	TCHAR cAttr = *lpszStr++;
+	int nAttr;
+	for (nAttr = 0; nAttr < lengthof(aAttrTable); nAttr++) {
 		if (aAttrTable[nAttr].cName == cAttr) {
 			break;
 		}
@@ -969,32 +1103,29 @@ CString CAnalyzer::AnalyzeName(LPCSTR lpszName, bool bPushCls)
 		strAll += _T("virtual ");
 		break;
 	case attrExport:
-		strAll += _T("_declspec(dllexport) ");
+		strAll += _T("__declspec(dllexport) ");
 		break;
 	}
 	if (aAttrTable[nAttr].bFunc) {
-		CHAR cDeco = '\0';
+//		TCHAR cDeco = _T('\0');
 		if (aAttrTable[nAttr].bDeco) {
-			cDeco = *lpszStr++;
+			strDeco = AnalyzeDeco(&lpszStr);
 		}
 		CString strFunc = AnalyzeFunc(&lpszStr, strName, false);
 //		if (strFunc.IsEmpty()) {
 //			return lpszName; // analyze error.
 //		}
 		strAll += strFunc;
-		if (cDeco) {
-			strDeco = AnalyzeDeco(cDeco);
-			if (!strDeco.IsEmpty()) {
-				strAll += _T(' ');
-				strAll += strDeco;
-			}
+		if (!strDeco.IsEmpty()) {
+			strAll += _T(' ');
+			strAll += strDeco;
 		}
 	} else {
 		if (aAttrTable[nAttr].bType) {
 			strType = AnalyzeVarType(&lpszStr, true);
 		}
 		if (aAttrTable[nAttr].bDeco) {
-			strDeco = AnalyzeDeco(*lpszStr++);
+			strDeco = AnalyzeDeco(&lpszStr);
 			if (!strDeco.IsEmpty()) {
 				strAll += strDeco;
 				strAll += _T(' ');
@@ -1077,40 +1208,48 @@ LPCTSTR aszSpcName2[] = {
 	_T("V@ delete[]"),
 };
 
-CString CAnalyzer::AnalyzeVcName(LPCSTR *plpszStr, bool bRec, int *pnClsLen)
+CString CAnalyzer::AnalyzeVcName(LPCTSTR *plpszStr, bool bRec, int *pnClsLen)
 {
 	bool bConstDest = false;
 	CString strName;
-	CHAR c = *(*plpszStr)++;
-	if (c == '?') {
+	TCHAR c = *(*plpszStr)++;
+	if (c == _T('?')) {
 		c = *(*plpszStr)++;
-		if (c == '$') {  // template name
+		if (c == _T('$')) {  // template name
 			c = *(*plpszStr)++;
-			if (c == '_' || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) {
+			if (c == _T('_') || _istalpha(c)) {
 				do {
 					strName += c;
 					c = *(*plpszStr)++;
-				} while (c != '@');
-				strName += _T('<');
-				bool bCommaFlag = false;
-				while (*(*plpszStr) != '@') {
-					if (bCommaFlag) {
-						strName += _T(", ");
-					}
-					strName += AnalyzeVarType(plpszStr, false);
-					bCommaFlag = true;
-				}
-				(*plpszStr)++;
-				strName += _T('>');
+				} while (c != _T('@'));
+				bool bEmpty = m_vecName.empty();
 				if (bRec) {
 					m_vecName.push_back(strName);
 				}
+				strName += _T('<');
+				bool bCommaFlag = false;
+				while (*(*plpszStr) != _T('@')) {
+					if (bCommaFlag) {
+						strName += _T(", ");
+					}
+					strName += AnalyzeVarType(plpszStr, /*false*/ true);
+					bCommaFlag = true;
+				}
+				(*plpszStr)++;
+				if (strName.Right(1) == '>') {
+					strName += ' ';
+				}
+				strName += _T('>');
+				if (bRec && bEmpty) {
+				//	m_vecName.push_back(strName);
+					m_className = strName;
+				}
 			} else {
-				strName = _T("<unknown temp name : ") + c + _T('>');
+				strName = CString(_T("<unknown temp name : ")) + c + _T('>');
 			}
 		} else {
 			LPCTSTR lpszSpcName = NULL;
-			if (c == '_') {
+			if (c == _T('_')) {
 				c = *(*plpszStr)++;
 				for (int i = 0; i < lengthof(aszSpcName2); i++) { // _0-_9, _A-_Z
 					if (aszSpcName2[i][0] == c) {
@@ -1141,39 +1280,43 @@ CString CAnalyzer::AnalyzeVcName(LPCSTR *plpszStr, bool bRec, int *pnClsLen)
 					strName = lpszSpcName;
 				}
 			} else {
-				strName = _T("<unknown spc name : ") + c + _T('>');
+				strName = CString(_T("<unknown spc name : ")) + c + _T('>');
 			}
 		}
 	} else
-	if (c >= '0' && c <= '9') { // name repeaters
-		if ((c - '0') < m_vecName.size()) {
-			strName = m_vecName[c - '0'];
+	if (_istdigit(c)) { // name repeaters
+		if ((c - _T('0')) < m_vecName.size()) {
+			strName = m_vecName[c - _T('0')];
 		} else {
-			strName = _T("<unknown rep name : ") + c + _T('>');
+			strName = CString(_T("<unknown rep name : ")) + c + _T('>');
 		}
 	} else
-	if (c == '_' || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) {
+	if (c == _T('_') || _istalpha(c)) {
 		do {
 			strName += c;
 			c = *(*plpszStr)++;
-		} while (c != '@');
+		} while (c != _T('@'));
 		if (bRec) {
 			m_vecName.push_back(strName);
+			if (m_className.IsEmpty()) {
+				m_className = strName;
+			}
 		}
 	} else
-	if (c == '@') { // for class name, namespace name.
+	if (c == _T('@')) { // for class name, namespace name.
 		return _T("");
 	} else {
-		strName = _T("<unknown name : ") + c + _T('>');
+		strName = CString(_T("<unknown name : ")) + c + _T('>');
 	}
-	if (**plpszStr != '@') { // for class name, namespace name.
+	if (**plpszStr != _T('@')) { // for class name, namespace name.
 		CString strWork = AnalyzeVcName(plpszStr, bRec, NULL);
 		if (pnClsLen) {
 			*pnClsLen = strWork.GetLength();
 		}
 		strName = strWork + _T("::") + strName;
 		if (bConstDest) {
-			strName += m_vecName[0];
+		//	strName += m_vecName[0];
+			strName += m_className;
 		}
 	} else {
 		(*plpszStr)++;
@@ -1181,10 +1324,10 @@ CString CAnalyzer::AnalyzeVcName(LPCSTR *plpszStr, bool bRec, int *pnClsLen)
 	return strName;
 }
 
-CString CAnalyzer::AnalyzeFunc(LPCSTR *plpszStr, LPCTSTR lpszName, bool bFuncPtr)
+CString CAnalyzer::AnalyzeFunc(LPCTSTR *plpszStr, LPCTSTR lpszName, bool bFuncPtr)
 {
 	CString strWork;
-	CHAR cCallSeq = *(*plpszStr)++;
+	TCHAR cCallSeq = *(*plpszStr)++;
 	if (lpszName == NULL || !m_bOpCast) {
 		strWork = AnalyzeVarType(plpszStr, true); // return value type.
 		strWork += _T(' ');
@@ -1193,17 +1336,20 @@ CString CAnalyzer::AnalyzeFunc(LPCSTR *plpszStr, LPCTSTR lpszName, bool bFuncPtr
 		strWork += _T('(');
 	}
 	switch (cCallSeq) { // calling sequence
-	case 'A':
-		strWork += _T("_cdecl ");
+	case _T('A'):
+		strWork += _T("__cdecl ");
 		break;
-	case 'E':
-		strWork += _T("_thiscall ");
+	case _T('C'):
+		strWork += _T("__pascal ");
 		break;
-	case 'G':
-		strWork += _T("_stdcall ");
+	case _T('E'):
+		strWork += _T("__thiscall ");
 		break;
-	case 'I':
-		strWork += _T("_fastcall ");
+	case _T('G'):
+		strWork += _T("__stdcall ");
+		break;
+	case _T('I'):
+		strWork += _T("__fastcall ");
 		break;
 	default:
 		strWork += _T("<unknown call seq : ") + cCallSeq;
@@ -1220,16 +1366,16 @@ CString CAnalyzer::AnalyzeFunc(LPCSTR *plpszStr, LPCTSTR lpszName, bool bFuncPtr
 		strWork += _T("*)");
 	}
 	strWork += _T('('); // arguments start.
-	if (*(*plpszStr) == 'X') {
+	if (*(*plpszStr) == _T('X')) {
 		strWork += _T("void");
 	} else {
 		m_vecArg.clear();
 		bool bCommaFlag = false;
-		while (*(*plpszStr) != '@') {
+		while (*(*plpszStr) != _T('@')) {
 			if (bCommaFlag) {
 				strWork += _T(", ");
 			}
-			if (*(*plpszStr) == 'Z') { // variable argument
+			if (*(*plpszStr) == _T('Z')) { // variable argument
 				strWork += _T("...");
 				break;
 			}
@@ -1237,8 +1383,8 @@ CString CAnalyzer::AnalyzeFunc(LPCSTR *plpszStr, LPCTSTR lpszName, bool bFuncPtr
 			bCommaFlag = true;
 		}
 		(*plpszStr)++;
-		CHAR c = *(*plpszStr)++;
-		if (c != 'Z') { // a function name has terminated by 'Z'.
+		TCHAR c = *(*plpszStr)++;
+		if (c != _T('Z')) { // a function name has terminated by 'Z'.
 			return strWork + _T("<unknown term : ") + c + _T('>');
 		}
 	}
@@ -1246,36 +1392,44 @@ CString CAnalyzer::AnalyzeFunc(LPCSTR *plpszStr, LPCTSTR lpszName, bool bFuncPtr
 	return strWork;
 }
 
-CString CAnalyzer::AnalyzeDeco(CHAR cDeco)
+CString CAnalyzer::AnalyzeDeco(LPCTSTR *plpszStr)
 {
-	switch (cDeco) {
-	case 'A':
+	TCHAR c = *(*plpszStr)++;
+	CString strWork;
+	switch (c) {
+	case _T('A'):
 		return _T("");
-	case 'B':
+	case _T('B'):
 		return _T("const");
-	case 'C':
+	case _T('C'):
 		return _T("volatile");
-	case 'D':
+	case _T('D'):
 		return _T("const volatile");
+	case _T('E'):
+		strWork = AnalyzeDeco(plpszStr);
+		if (!strWork.IsEmpty()) {
+			strWork = _T(" ") + strWork;
+		}
+		return _T("__ptr64") + strWork;
 	}
-	return _T("<unknown deco : ") + cDeco + _T('>');
+	return CString(_T("<unknown deco : ")) + c + _T('>');
 }
 
-CString CAnalyzer::AnalyzeVarType(LPCSTR *plpszStr, bool bRec)
+CString CAnalyzer::AnalyzeVarType(LPCTSTR *plpszStr, bool bRec)
 {
-	CHAR c = *(*plpszStr)++;
-	if (c >= '0' && c <= '9') { // argument repeaters
-		if ((c - '0') >= m_vecArg.size()) {
-			return _T("<unknown arg : ") + c + _T('>');
+	TCHAR c = *(*plpszStr)++;
+	if (_istdigit(c)) { // argument repeaters
+		if ((c - _T('0')) >= m_vecArg.size()) {
+			return CString(_T("<unknown arg : ")) + c + _T('>');
 		}
-		return m_vecArg[c - '0'];
+		return m_vecArg[c - _T('0')];
 	}
 	switch (c) {
-	case '@':
+	case _T('@'):
 		return _T("<no ret>");
-	case 'A': // reference
+	case _T('A'): // reference
 		{
-			CString strWork = AnalyzeDeco(*(*plpszStr)++);
+			CString strWork = AnalyzeDeco(plpszStr);
 			if (!strWork.IsEmpty()) {
 				strWork += _T(" ");
 			}
@@ -1283,57 +1437,57 @@ CString CAnalyzer::AnalyzeVarType(LPCSTR *plpszStr, bool bRec)
 			m_vecArg.push_back(strWork);
 			return strWork;
 		}
-//	case 'B': // unknown
-	case 'C':
+//	case _T('B'): // unknown
+	case _T('C'):
 		return _T("signed char");
-	case 'D':
+	case _T('D'):
 		return _T("char");
-	case 'E':
+	case _T('E'):
 		return _T("unsigned char");
-	case 'F':
+	case _T('F'):
 		return _T("short");
-	case 'G':
+	case _T('G'):
 		return _T("unsigned short");
-	case 'H':
+	case _T('H'):
 		return _T("int");
-	case 'I':
+	case _T('I'):
 		return _T("unsigned int");
-	case 'J':
+	case _T('J'):
 		return _T("long");
-	case 'K':
+	case _T('K'):
 		return _T("unsigned long");
-//	case 'L': // unknown
-	case 'M':
+//	case _T('L'): // unknown
+	case _T('M'):
 		return _T("float");
-	case 'N':
+	case _T('N'):
 		return _T("double");
-	case 'O':
+	case _T('O'):
 		return _T("long double");
-	case 'P':
+	case _T('P'):
 		return AnalyzeVarTypePtr(plpszStr, bRec);
-	case 'Q': // why needs ?
+	case _T('Q'): // why needs ?
 		return _T('(') + AnalyzeVarTypePtr(plpszStr, bRec) + _T(')');
-//	case 'R': // unknown
-//	case 'S': // unknown
-	case 'T':
+//	case _T('R'): // unknown
+//	case _T('S'): // unknown
+	case _T('T'):
 		return _T("union ") + AnalyzeVcName(plpszStr, bRec, NULL);
-	case 'U':
+	case _T('U'):
 		return _T("struct ") + AnalyzeVcName(plpszStr, bRec, NULL);
-	case 'V':
+	case _T('V'):
 		return _T("class ") + AnalyzeVcName(plpszStr, bRec, NULL);
-	case 'W':
-		if (*(*plpszStr) == '4') {
+	case _T('W'):
+		if (*(*plpszStr) == _T('4')) {
 			(*plpszStr)++;
 			return _T("enum ") + AnalyzeVcName(plpszStr, bRec, NULL);
 		}
 		break;
-	case 'X':
+	case _T('X'):
 		return _T("void");
-//	case 'Y': // unknown
-//	case 'Z': // unknown
-	case '?': // union, struct, class, enum with decolattion.
+//	case _T('Y'): // unknown
+//	case _T('Z'): // unknown
+	case _T('?'): // union, struct, class, enum with decolattion.
 		{
-			CString strWork = AnalyzeDeco(*(*plpszStr)++);
+			CString strWork = AnalyzeDeco(plpszStr);
 			if (!strWork.IsEmpty()) {
 				strWork += _T(" ");
 			}
@@ -1341,32 +1495,46 @@ CString CAnalyzer::AnalyzeVarType(LPCSTR *plpszStr, bool bRec)
 			m_vecArg.push_back(strWork);
 			return strWork;
 		}
-	case '_': // enhanced name
+	case _T('_'): // enhanced name
 		switch (c = *(*plpszStr)++) {
-		case 'J':
-			return _T("_int64");
-		case 'K':
-			return _T("unsigned _int64");
-		case 'N':
+		case _T('J'):
+			return _T("__int64");
+		case _T('K'):
+			return _T("unsigned __int64");
+		case _T('N'):
 			return _T("bool");
+		case _T('W'):
+			return _T("wchar_t");
 		}
+	case _T('$'): // ???
+		switch (c = *(*plpszStr)++) {
+		case _T('0'): // size
+			c = *(*plpszStr)++;
+			if (c == _T('9')) {
+				return _T("10");
+			} else if (_istdigit(c)) {
+				return CString(c + 1);
+			}
+			return CString(_T("<unknown size : ")) + c + _T('>');
+		}
+		return CString(_T("<unknown type/size : ")) + c + _T('>');
 	}
-	return _T("<unknown type : ") + c + _T('>');
+	return CString(_T("<unknown type : ")) + c + _T('>');
 }
 
-CString CAnalyzer::AnalyzeVarTypePtr(LPCSTR *plpszStr, bool bRec)
+CString CAnalyzer::AnalyzeVarTypePtr(LPCTSTR *plpszStr, bool bRec)
 {
-	CHAR c = *(*plpszStr)++;
-	if (c == '6') { // function pointer
+	TCHAR c = *(*plpszStr)++;
+	if (c == _T('6')) { // function pointer
 		CString strFunc = AnalyzeFunc(plpszStr, NULL, true);
 //		if (strFunc.IsEmpty()) {
 //			return _T("<unknown func ptr>");
 //		}
 		return strFunc;
 	}
-	if (c == '8') { // function pointer with class
+	if (c == _T('8')) { // function pointer with class
 		CString strCls  = AnalyzeVcName(plpszStr, bRec, NULL) + _T("::");
-		CString strDeco = AnalyzeDeco(*(*plpszStr)++);
+		CString strDeco = AnalyzeDeco(plpszStr);
 		CString strFunc = AnalyzeFunc(plpszStr, strCls, true);
 //		if (strFunc.IsEmpty()) {
 //			return _T("<unknown func ptr>");
@@ -1377,7 +1545,8 @@ CString CAnalyzer::AnalyzeVarTypePtr(LPCSTR *plpszStr, bool bRec)
 		}
 		return strFunc;
 	}
-	CString strWork = AnalyzeDeco(c);
+	--(*plpszStr);
+	CString strWork = AnalyzeDeco(plpszStr);
 	if (!strWork.IsEmpty()) {
 		strWork += _T(" ");
 	}

@@ -1,8 +1,8 @@
 ;LIBRARY     IJEXP32
-DESCRIPTION  "i.j Shell Property Sheets Export/Import 32 ver.1.01: Copyright (C) 1999 i.j , All rights reserved."
+;DESCRIPTION  "i.j Shell Property Sheets Export/Import 32 ver.1.01: Copyright (C) 1999 i.j , All rights reserved."
 VERSION      1, 1
 EXPORTS
-             DllCanUnloadNow           @1 PRIVATE
-             DllGetClassObject         @2 PRIVATE
+             DllCanUnloadNow           PRIVATE
+             DllGetClassObject         PRIVATE
 ;            DllRegisterServer         @3 PRIVATE
 ;            DllUnregisterServer       @4 PRIVATE

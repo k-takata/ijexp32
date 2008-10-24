@@ -1,0 +1,29 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ijexp32", "ijexp32.vcproj", "{2848BC25-162C-455C-8A86-5E97932C7125}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Debug Unicode = Debug Unicode
+		Release = Release
+		Release Unicode = Release Unicode
+	EndGlobalSection
+	GlobalSection(ProjectDependencies) = postSolution
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{2848BC25-162C-455C-8A86-5E97932C7125}.Debug.ActiveCfg = Debug|Win32
+		{2848BC25-162C-455C-8A86-5E97932C7125}.Debug.Build.0 = Debug|Win32
+		{2848BC25-162C-455C-8A86-5E97932C7125}.Debug Unicode.ActiveCfg = Debug Unicode|Win32
+		{2848BC25-162C-455C-8A86-5E97932C7125}.Debug Unicode.Build.0 = Debug Unicode|Win32
+		{2848BC25-162C-455C-8A86-5E97932C7125}.Release.ActiveCfg = Release|Win32
+		{2848BC25-162C-455C-8A86-5E97932C7125}.Release.Build.0 = Release|Win32
+		{2848BC25-162C-455C-8A86-5E97932C7125}.Release Unicode.ActiveCfg = Release Unicode|Win32
+		{2848BC25-162C-455C-8A86-5E97932C7125}.Release Unicode.Build.0 = Release Unicode|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

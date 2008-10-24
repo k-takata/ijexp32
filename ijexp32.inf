@@ -27,13 +27,18 @@ UninstDispName = "i.j Shell Property Sheets Export/Import 32 (Remove only)"
 ijexp32.dll = 55
 ijexp32.inf = 55
 comctl32.exp = 55
-ijdll32.exp = 55
-ijgdi32.exp = 55
+;ijdll32.exp = 55
+;ijgdi32.exp = 55
 mfc30.exp = 55
 mfc40.exp = 55
 mfc42.exp = 55
+mfc42u.exp = 55
 mfc70.exp = 55
+mfc70u.exp = 55
 mfc71.exp = 55
+mfc71u.exp = 55
+mfc80.exp = 55
+mfc80u.exp = 55
 oleaut32.exp = 55
 olepro32.exp = 55
 shdocvw.exp = 55
@@ -43,6 +48,12 @@ wsock32.exp = 55
 ws2_32.exp = 55
 kernel32.exp = 55
 
+[SourceDisksFiles.x86]
+ijexp32.dll = 55,\x86
+
+[SourceDisksFiles.amd64]
+ijexp32.dll = 55,\x64
+
 [DestinationDirs]
 Files1 = 11,%SubDir%
 
@@ -50,13 +61,18 @@ Files1 = 11,%SubDir%
 ijexp32.dll
 ijexp32.inf
 comctl32.exp
-ijdll32.exp
-ijgdi32.exp
+;ijdll32.exp
+;ijgdi32.exp
 mfc30.exp
 mfc40.exp
 mfc42.exp
+mfc42u.exp
 mfc70.exp
+mfc70u.exp
 mfc71.exp
+mfc71u.exp
+mfc80.exp
+mfc80u.exp
 oleaut32.exp
 olepro32.exp
 shdocvw.exp

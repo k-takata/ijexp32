@@ -13,6 +13,31 @@
 
 using namespace std;
 
+/* for VC6 compatibility */
+#ifndef _W64
+typedef unsigned long DWORD_PTR;
+typedef long LONG_PTR;
+typedef unsigned long ULONG_PTR;
+
+#define SetWindowLongPtr	SetWindowLong
+#define GetWindowLongPtr	GetWindowLong
+#define GWLP_WNDPROC	GWL_WNDPROC
+#define GWLP_HINSTANCE	GWL_HINSTANCE
+#define GWLP_ID			GWL_ID
+#define GWLP_USERDATA	GWL_USERDATA
+#define DWLP_DLGPROC	DWL_DLGPROC
+#define DWLP_MSGRESULT	DWL_MSGRESULT
+#define DWLP_USER		DWL_USER
+#endif
+
+/* for scope */
+#define for if (0) ; else for
+
+
+#ifndef IMAGE_FILE_MACHINE_AMD64
+#define IMAGE_FILE_MACHINE_AMD64	0x8664	// AMD64
+#endif /* IMAGE_FILE_MACHINE_AMD64 */
+
 #ifndef lengthof
 #define lengthof(x) (sizeof(x) / sizeof(*(x)))
 #endif
@@ -79,7 +104,7 @@ public: // IShellPropSheetExt
 	virtual HRESULT STDMETHODCALLTYPE AddPages(LPFNADDPROPSHEETPAGE lpfnAddPage, LPARAM lParam);
 	virtual HRESULT STDMETHODCALLTYPE ReplacePage(UINT uPageID, LPFNADDPROPSHEETPAGE lpfnReplacePage, LPARAM lParam);
 public:
-	static BOOL CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+	static INT_PTR CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 };
 
 // expprsht.cpp
@@ -101,7 +126,7 @@ public: // IShellPropSheetExt
 	virtual HRESULT STDMETHODCALLTYPE AddPages(LPFNADDPROPSHEETPAGE lpfnAddPage, LPARAM lParam);
 	virtual HRESULT STDMETHODCALLTYPE ReplacePage(UINT uPageID, LPFNADDPROPSHEETPAGE lpfnReplacePage, LPARAM lParam);
 public:
-	static BOOL CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+	static INT_PTR CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 };
 
 // impprsht.cpp
@@ -123,7 +148,7 @@ public: // IShellPropSheetExt
 	virtual HRESULT STDMETHODCALLTYPE AddPages(LPFNADDPROPSHEETPAGE lpfnAddPage, LPARAM lParam);
 	virtual HRESULT STDMETHODCALLTYPE ReplacePage(UINT uPageID, LPFNADDPROPSHEETPAGE lpfnReplacePage, LPARAM lParam);
 public:
-	static BOOL CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+	static INT_PTR CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 };
 
 typedef set<CString> setstr_t; // class members list
@@ -152,8 +177,17 @@ public:
 	vector<BYTE>     m_vecBuff; // section data
 	vector<CString>  m_vecName; // VC : name stack
 	vector<CString>  m_vecArg;  // VC : arguments stack
+	CString          m_className;
 	IMAGE_DOS_HEADER m_dos_hdr;
-	IMAGE_NT_HEADERS m_nt_hdr;
+	union {
+		struct {
+			DWORD Signature;
+			IMAGE_FILE_HEADER FileHeader;
+		} m_nt_hdr;
+		IMAGE_NT_HEADERS32 m_nt_hdr32;
+		IMAGE_NT_HEADERS64 m_nt_hdr64;
+	};
+	bool m_b32bit;
 	vector<IMAGE_SECTION_HEADER> m_vecSecHdr;
 public:
 	CAnalyzer();
@@ -169,12 +203,12 @@ public:
 	bool    AnalyzeExeHdr(HWND hwndHdrList, HWND hwndDirList, HWND hwndSecList);
 	bool    AnalyzeExport(HWND hwndMsg, HWND hwndList, bool bDecode);
 	bool    AnalyzeImport(HWND hwndList, bool bFunc, bool bDecode);
-	CString AnalyzeName  (LPCSTR lpszName, bool bPushCls);
-	CString AnalyzeVcName(LPCSTR *plpszStr, bool bRec, int *pnClsLen);
-	CString AnalyzeFunc  (LPCSTR *plpszStr, LPCTSTR lpszName, bool bFuncPtr);
-	CString AnalyzeDeco  (CHAR cDeco);
-	CString AnalyzeVarType   (LPCSTR *plpszStr, bool bRec);
-	CString AnalyzeVarTypePtr(LPCSTR *plpszStr, bool bRec);
+	CString AnalyzeName  (LPCTSTR lpszName, bool bPushCls);
+	CString AnalyzeVcName(LPCTSTR *plpszStr, bool bRec, int *pnClsLen);
+	CString AnalyzeFunc  (LPCTSTR *plpszStr, LPCTSTR lpszName, bool bFuncPtr);
+	CString AnalyzeDeco  (LPCTSTR *plpszStr);
+	CString AnalyzeVarType   (LPCTSTR *plpszStr, bool bRec);
+	CString AnalyzeVarTypePtr(LPCTSTR *plpszStr, bool bRec);
 };
 
 #endif

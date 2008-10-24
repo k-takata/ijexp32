@@ -92,7 +92,7 @@ HRESULT STDMETHODCALLTYPE CHdrPropSheet::AddPages(LPFNADDPROPSHEETPAGE lpfnAddPa
 	psp.pszTemplate = MAKEINTRESOURCE(IDD_HDRPROPPAGE);
 	psp.pszIcon     = 0;
 	psp.pszTitle    = NULL;
-	psp.pfnDlgProc  = DlgProc;
+	psp.pfnDlgProc  = (DLGPROC) DlgProc;
 	psp.lParam      = reinterpret_cast<LPARAM>(this);
 	psp.pfnCallback = NULL;
 	psp.pcRefParent = reinterpret_cast<UINT *>(&g_nComponents);
@@ -112,13 +112,13 @@ HRESULT STDMETHODCALLTYPE CHdrPropSheet::ReplacePage(UINT uPageID, LPFNADDPROPSH
 	return E_FAIL;
 }
 
-BOOL CALLBACK CHdrPropSheet::DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK CHdrPropSheet::DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch (msg) {
 	case WM_INITDIALOG:
 		{
 			PROPSHEETPAGE *pPSP = reinterpret_cast<PROPSHEETPAGE *>(lParam);
-			::SetWindowLong(hwnd, DWL_USER, pPSP->lParam);
+			::SetWindowLongPtr(hwnd, DWLP_USER, pPSP->lParam);
 			CAnalyzer ana;
 			if (ana.Open(hwnd, reinterpret_cast<CHdrPropSheet *>(pPSP->lParam)->m_szPath)) {
 				ana.Close();
@@ -134,7 +134,7 @@ BOOL CALLBACK CHdrPropSheet::DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM 
 		}
 		return TRUE;
 	case WM_DESTROY:
-		reinterpret_cast<CImpPropSheet *>(::GetWindowLong(hwnd, DWL_USER))->Release();
+		reinterpret_cast<CImpPropSheet *>(::GetWindowLongPtr(hwnd, DWLP_USER))->Release();
 		return TRUE;
 	case WM_COMMAND:
 		if (HIWORD(wParam) == BN_CLICKED) {
@@ -160,10 +160,10 @@ BOOL CALLBACK CHdrPropSheet::DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM 
 					wnd.Attach(hwnd);
 					CString strWork;
 					strWork.LoadString(IDS_FILE_MATCH);
-					CFileDialog dlg(FALSE, NULL, NULL, OFN_HIDEREADONLY | OFN_PATHMUSTEXIST, strWork, &wnd);
+					CFileDialog dlg(FALSE, NULL, NULL, OFN_HIDEREADONLY | OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT | OFN_NOCHANGEDIR, strWork, &wnd);
 					if (dlg.DoModal() == IDOK) {
-						CFile file;
-						if (file.Open(dlg.GetPathName(), CFile::modeCreate | CFile::modeWrite | CFile::shareExclusive)) {
+						CStdioFile file;
+						if (file.Open(dlg.GetPathName(), CFile::modeCreate | CFile::modeWrite | CFile::shareExclusive | CFile::typeText)) {
 							try {
 								CListCtrl list;
 								list.Attach(::GetDlgItem(hwnd, IDC_HDR_LIST));
@@ -173,28 +173,28 @@ BOOL CALLBACK CHdrPropSheet::DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM 
 									if (!strValue.IsEmpty()) {
 										strLine += _T(", ") + strValue;
 									}
-									strLine += _T("\r\n");
-									file.Write(strLine, strLine.GetLength());
+									strLine += _T("\n");
+									file.WriteString(strLine);
 								}
 								list.Detach();
-								CString strLine = _T("\r\nDirectories :\r\n");
-								file.Write(strLine, strLine.GetLength());
+								CString strLine = _T("\nDirectories :\n");
+								file.WriteString(strLine);
 								list.Attach(::GetDlgItem(hwnd, IDC_DIR_LIST));
-								for (nCount = 0; nCount < list.GetItemCount(); nCount++) {
-									strLine = list.GetItemText(nCount, 0) + _T(", ") + list.GetItemText(nCount, 1) + _T(", ") + list.GetItemText(nCount, 2) + _T("\r\n");
-									file.Write(strLine, strLine.GetLength());
+								for (int nCount = 0; nCount < list.GetItemCount(); nCount++) {
+									strLine = list.GetItemText(nCount, 0) + _T(", ") + list.GetItemText(nCount, 1) + _T(", ") + list.GetItemText(nCount, 2) + _T("\n");
+									file.WriteString(strLine);
 								}
 								list.Detach();
-								strLine = _T("\r\nSections :\r\n");
-								file.Write(strLine, strLine.GetLength());
+								strLine = _T("\nSections :\n");
+								file.WriteString(strLine);
 								list.Attach(::GetDlgItem(hwnd, IDC_SEC_LIST));
-								for (nCount = 0; nCount < list.GetItemCount(); nCount++) {
+								for (int nCount = 0; nCount < list.GetItemCount(); nCount++) {
 									strLine = list.GetItemText(nCount, 0);
 									for (int nSub = 1; nSub <= 9; nSub++) {
 										strLine += _T(", ") + list.GetItemText(nCount, nSub);
 									}
-									strLine += _T("\r\n");
-									file.Write(strLine, strLine.GetLength());
+									strLine += _T("\n");
+									file.WriteString(strLine);
 								}
 								list.Detach();
 							} catch (CException *e) {

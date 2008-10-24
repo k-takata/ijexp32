@@ -92,7 +92,7 @@ HRESULT STDMETHODCALLTYPE CImpPropSheet::AddPages(LPFNADDPROPSHEETPAGE lpfnAddPa
 	psp.pszTemplate = MAKEINTRESOURCE(IDD_IMPPROPPAGE);
 	psp.pszIcon     = 0;
 	psp.pszTitle    = NULL;
-	psp.pfnDlgProc  = DlgProc;
+	psp.pfnDlgProc  = (DLGPROC) DlgProc;
 	psp.lParam      = reinterpret_cast<LPARAM>(this);
 	psp.pfnCallback = NULL;
 	psp.pcRefParent = reinterpret_cast<UINT *>(&g_nComponents);
@@ -112,13 +112,13 @@ HRESULT STDMETHODCALLTYPE CImpPropSheet::ReplacePage(UINT uPageID, LPFNADDPROPSH
 	return E_FAIL;
 }
 
-BOOL CALLBACK CImpPropSheet::DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK CImpPropSheet::DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch (msg) {
 	case WM_INITDIALOG:
 		{
 			PROPSHEETPAGE *pPSP = reinterpret_cast<PROPSHEETPAGE *>(lParam);
-			::SetWindowLong(hwnd, DWL_USER, pPSP->lParam);
+			::SetWindowLongPtr(hwnd, DWLP_USER, pPSP->lParam);
 			CAnalyzer ana;
 			if (ana.Open(hwnd, reinterpret_cast<CImpPropSheet *>(pPSP->lParam)->m_szPath)) {
 				if (ana.ReadSection(hwnd, IMAGE_DIRECTORY_ENTRY_IMPORT)) {
@@ -133,7 +133,7 @@ BOOL CALLBACK CImpPropSheet::DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM 
 		}
 		return TRUE;
 	case WM_DESTROY:
-		reinterpret_cast<CImpPropSheet *>(::GetWindowLong(hwnd, DWL_USER))->Release();
+		reinterpret_cast<CImpPropSheet *>(::GetWindowLongPtr(hwnd, DWLP_USER))->Release();
 		return TRUE;
 	case WM_COMMAND:
 		if (HIWORD(wParam) == BN_CLICKED) {
@@ -142,7 +142,7 @@ BOOL CALLBACK CImpPropSheet::DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM 
 			case IDC_VC:
 				{
 					CAnalyzer ana;
-					if (ana.Open(hwnd, reinterpret_cast<CImpPropSheet *>(::GetWindowLong(hwnd, DWL_USER))->m_szPath)) {
+					if (ana.Open(hwnd, reinterpret_cast<CImpPropSheet *>(::GetWindowLongPtr(hwnd, DWLP_USER))->m_szPath)) {
 						if (ana.ReadSection(hwnd, IMAGE_DIRECTORY_ENTRY_IMPORT)) {
 							bool bFunc   = ::SendMessage(::GetDlgItem(hwnd, IDC_FUNC), BM_GETCHECK, 0, 0) == BST_CHECKED;
 							bool bDecode = ::SendMessage(::GetDlgItem(hwnd, IDC_VC),   BM_GETCHECK, 0, 0) == BST_CHECKED;
@@ -157,10 +157,10 @@ BOOL CALLBACK CImpPropSheet::DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM 
 				wnd.Attach(hwnd);
 				CString strWork;
 				strWork.LoadString(IDS_FILE_MATCH);
-				CFileDialog dlg(FALSE, NULL, NULL, OFN_HIDEREADONLY | OFN_PATHMUSTEXIST, strWork, &wnd);
+				CFileDialog dlg(FALSE, NULL, NULL, OFN_HIDEREADONLY | OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT | OFN_NOCHANGEDIR, strWork, &wnd);
 				if (dlg.DoModal() == IDOK) {
-					CFile file;
-					if (file.Open(dlg.GetPathName(), CFile::modeCreate | CFile::modeWrite | CFile::shareExclusive)) {
+					CStdioFile file;
+					if (file.Open(dlg.GetPathName(), CFile::modeCreate | CFile::modeWrite | CFile::shareExclusive | CFile::typeText)) {
 						try {
 							bool bFunc = ::SendMessage(::GetDlgItem(hwnd, IDC_FUNC), BM_GETCHECK, 0, 0) == BST_CHECKED;
 							CString strLine;
@@ -171,8 +171,8 @@ BOOL CALLBACK CImpPropSheet::DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM 
 								if (bFunc) {
 									strLine += _T(", ") + list.GetItemText(nCount, 1) + _T(", ") + list.GetItemText(nCount, 2);
 								}
-								strLine += _T("\r\n");
-								file.Write(strLine, strLine.GetLength());
+								strLine += _T("\n");
+								file.WriteString(strLine);
 							}
 							list.Detach();
 						} catch (CException *e) {
