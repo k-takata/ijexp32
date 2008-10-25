@@ -66,6 +66,7 @@ DEFINE_GUID(CLSID_Import,
 
 // ijexp32.cpp
 void MsgBox(HWND hwnd, LPCTSTR lpszCaption, UINT nId);
+bool IsWindowsXP(void);
 
 // factory.cpp
 class CFactory : public IClassFactory

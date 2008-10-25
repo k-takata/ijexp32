@@ -14,6 +14,9 @@
 #define IDD_HDRPROPPAGE                 100
 #define IDD_EXPPROPPAGE                 101
 #define IDD_IMPPROPPAGE                 102
+#define IDD_HDRPROPPAGE_EX              103
+#define IDD_EXPPROPPAGE_EX              104
+#define IDD_IMPPROPPAGE_EX              105
 #define IDC_MSG                         1000
 #define IDC_LIST                        1001
 #define IDC_HDR_LIST                    1002

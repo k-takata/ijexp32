@@ -94,13 +94,15 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // Dialog
 //
 
-IDD_HDRPROPPAGE DIALOG DISCARDABLE  0, 0, 262, 168
+IDD_HDRPROPPAGE DIALOG DISCARDABLE  0, 0, 262, 180
 STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "ExeHdr"
 FONT 8, "MS Sans Serif"
 BEGIN
     LTEXT           "Copyright (C) 1999 i.j , All rights reserved.",
                     IDC_STATIC,5,157,140,10,WS_TABSTOP
+    LTEXT           "Copyright (C) 2004-2008 K.Takata, All rights reserved.",
+                    IDC_STATIC,5,168,172,10,WS_TABSTOP
     CONTROL         "List1",IDC_HDR_LIST,"SysListView32",LVS_REPORT | 
                     LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | 
                     WS_TABSTOP,5,3,250,150
@@ -116,13 +118,15 @@ BEGIN
     PUSHBUTTON      "Save",IDC_SAVE,231,155,25,12
 END
 
-IDD_EXPPROPPAGE DIALOG DISCARDABLE  0, 0, 262, 168
+IDD_EXPPROPPAGE DIALOG DISCARDABLE  0, 0, 262, 180
 STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Export"
 FONT 8, "MS Sans Serif"
 BEGIN
     LTEXT           "Copyright (C) 1999 i.j , All rights reserved.",
                     IDC_STATIC,5,157,140,10,WS_TABSTOP
+    LTEXT           "Copyright (C) 2004-2008 K.Takata, All rights reserved.",
+                    IDC_STATIC,5,168,172,10,WS_TABSTOP
     EDITTEXT        IDC_MSG,5,3,250,150,ES_MULTILINE | ES_AUTOVSCROLL | 
                     ES_AUTOHSCROLL | WS_VSCROLL | WS_HSCROLL
     CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | 
@@ -133,13 +137,15 @@ BEGIN
     PUSHBUTTON      "Save",IDC_SAVE,231,155,25,12
 END
 
-IDD_IMPPROPPAGE DIALOG DISCARDABLE  0, 0, 262, 168
+IDD_IMPPROPPAGE DIALOG DISCARDABLE  0, 0, 262, 180
 STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Import"
 FONT 8, "MS Sans Serif"
 BEGIN
     LTEXT           "Copyright (C) 1999 i.j , All rights reserved.",
                     IDC_STATIC,5,157,140,10,WS_TABSTOP
+    LTEXT           "Copyright (C) 2004-2008 K.Takata, All rights reserved.",
+                    IDC_STATIC,5,168,172,10,WS_TABSTOP
     CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | 
                     LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | 
                     WS_TABSTOP,5,3,250,150
@@ -150,6 +156,68 @@ BEGIN
     PUSHBUTTON      "Save",IDC_SAVE,231,155,25,12
 END
 
+IDD_HDRPROPPAGE_EX DIALOG DISCARDABLE  0, 0, 262, 230
+STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "ExeHdr"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Copyright (C) 1999 i.j , All rights reserved.",
+                    IDC_STATIC,5,207,140,10,WS_TABSTOP
+    LTEXT           "Copyright (C) 2004-2008 K.Takata, All rights reserved.",
+                    IDC_STATIC,5,218,172,10,WS_TABSTOP
+    CONTROL         "List1",IDC_HDR_LIST,"SysListView32",LVS_REPORT | 
+                    LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | 
+                    WS_TABSTOP,5,3,250,200
+    CONTROL         "List1",IDC_DIR_LIST,"SysListView32",LVS_REPORT | 
+                    LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | 
+                    WS_TABSTOP,5,3,250,200
+    CONTROL         "List1",IDC_SEC_LIST,"SysListView32",LVS_REPORT | 
+                    LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | 
+                    WS_TABSTOP,5,3,250,200
+    PUSHBUTTON      "Hdr",IDC_HDR,150,205,25,12
+    PUSHBUTTON      "Dir",IDC_DIR,175,205,25,12
+    PUSHBUTTON      "Sec",IDC_SEC,200,205,25,12
+    PUSHBUTTON      "Save",IDC_SAVE,231,205,25,12
+END
+
+IDD_EXPPROPPAGE_EX DIALOG DISCARDABLE  0, 0, 262, 230
+STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "Export"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Copyright (C) 1999 i.j , All rights reserved.",
+                    IDC_STATIC,5,207,140,10,WS_TABSTOP
+    LTEXT           "Copyright (C) 2004-2008 K.Takata, All rights reserved.",
+                    IDC_STATIC,5,218,172,10,WS_TABSTOP
+    EDITTEXT        IDC_MSG,5,3,250,200,ES_MULTILINE | ES_AUTOVSCROLL | 
+                    ES_AUTOHSCROLL | WS_VSCROLL | WS_HSCROLL
+    CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | 
+                    LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | 
+                    WS_TABSTOP,5,3,250,200
+    CONTROL         "VC",IDC_VC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,205,
+                    206,25,10
+    PUSHBUTTON      "Save",IDC_SAVE,231,205,25,12
+END
+
+IDD_IMPPROPPAGE_EX DIALOG DISCARDABLE  0, 0, 262, 230
+STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "Import"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Copyright (C) 1999 i.j , All rights reserved.",
+                    IDC_STATIC,5,207,140,10,WS_TABSTOP
+    LTEXT           "Copyright (C) 2004-2008 K.Takata, All rights reserved.",
+                    IDC_STATIC,5,218,172,10,WS_TABSTOP
+    CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | 
+                    LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | 
+                    WS_TABSTOP,5,3,250,200
+    CONTROL         "FN",IDC_FUNC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,175,
+                    206,25,10
+    CONTROL         "VC",IDC_VC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,205,
+                    206,25,10
+    PUSHBUTTON      "Save",IDC_SAVE,231,205,25,12
+END
+
 
 #ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
@@ -158,8 +226,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,1,4,0
- PRODUCTVERSION 1,1,4,0
+ FILEVERSION 1,1,5,0
+ PRODUCTVERSION 1,1,5,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -176,15 +244,15 @@ BEGIN
         BEGIN
             VALUE "Comments", "\0"
             VALUE "CompanyName", "i.j\0"
-            VALUE "FileDescription", "i.j Shell Property Sheets Export/Import 32 ver.1.01k4\0"
-            VALUE "FileVersion", "1, 1, 4, 0\0"
+            VALUE "FileDescription", "i.j Shell Property Sheets Export/Import 32 ver.1.01k5\0"
+            VALUE "FileVersion", "1, 1, 5, 0\0"
             VALUE "InternalName", "ijexp32\0"
             VALUE "LegalCopyright", "Copyright (C) 1999 i.j, 2004-2008 K.Takata. All rights reserved.\0"
             VALUE "LegalTrademarks", "\0"
             VALUE "OriginalFilename", "ijexp32.dll\0"
             VALUE "PrivateBuild", "\0"
             VALUE "ProductName", "i.j Shell Property Sheets Export/Import 32\0"
-            VALUE "ProductVersion", "1, 1, 4, 0\0"
+            VALUE "ProductVersion", "1, 1, 5, 0\0"
             VALUE "SpecialBuild", "\0"
         END
     END

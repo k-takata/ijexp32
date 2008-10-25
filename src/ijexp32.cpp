@@ -139,3 +139,17 @@ void MsgBox(HWND hwnd, LPCTSTR lpszCaption, UINT nId)
 		::MessageBox(hwnd, szMsg, lpszCaption, MB_OK);
 	}
 }
+
+bool IsWindowsXP(void)
+{
+	OSVERSIONINFO ovsi = {sizeof(OSVERSIONINFO)};
+	if (!GetVersionEx(&ovsi)) {
+		return false;
+	}
+	if ((ovsi.dwMajorVersion > 5)
+			|| ((ovsi.dwMajorVersion == 5) && (ovsi.dwMinorVersion >= 1))) {
+		return true;
+	} else {
+		return false;
+	}
+}

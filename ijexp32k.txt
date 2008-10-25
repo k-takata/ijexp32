@@ -1,6 +1,6 @@
 
 
-         i.j Shell Property Sheets Export/Import 32 ver.1.01k4
+         i.j Shell Property Sheets Export/Import 32 ver.1.01k5
                Copyright (C) 1999 i.j, 2004-2008 K.Takata
 
 １．概要
@@ -62,15 +62,19 @@
 
 
 ７．ソースファイル
-    　src.7z に、本ソフトのソースが含まれています。
+    　本ソフトのソースは、同梱の src.7z に含まれています。
     　ijexp32.dsw, ijexp32.dsp は VC6 のプロジェクトファイルです。オリジ
     ナル版とは異なり、VC5 ではコンパイルできなくなっています。
     　ijexp32.sln, ijexp32.vcproj は、VS.NET 2003 のプロジェクトファイル
     です。
-    　Makefile, sources は Windows Driver Kits (WDK) 用のメイクファイル
-    です。Build Environment を起動し、build コマンドを実行すると、DLL が
-    ビルドされます。x64 実行形式のビルド用に入れてありますが、動作は未確
-    認です。
+    　Makefile, sources は Windows Driver Kit (WDK) 用のメイクファイルで
+    す。Build Environment を起動し、build コマンドを実行すると、DLL がビ
+    ルドされます。x64 実行形式のビルド用に入れてありますが、動作は未確認
+    です。
+
+    　なお、現バージョンには以下の既知のバグがあります。
+        ・エクスポート名の解析で、関数へのポインタを返す関数が正しく表示
+          されない。(analyzer.cpp)
 
 
 ８．更新履歴
@@ -107,6 +111,13 @@
         ・mfc??u.exp を追加。（Unicode 版 MFC DLL 用リスト）
         ・必要ファイルを一式まとめて配布するように変更。（配布ファイルの
           サイズが大きくなってしまったため、アーカイブ形式を .7z に変更）
+
+    2008/10/26  ver.1.01k5
+        ・エクスポート名の解析を改良。（特殊メンバー名の追加、引数の間接
+          参照の修正。）
+        ・vcbungle.txt を更新。
+        ・WinXP 以降ではファイルプロパティ画面が大きくなったのに合わせて、
+          表示領域を拡大。
 
 
 ９．注意事項、その他

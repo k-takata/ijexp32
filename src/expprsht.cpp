@@ -89,7 +89,7 @@ HRESULT STDMETHODCALLTYPE CExpPropSheet::AddPages(LPFNADDPROPSHEETPAGE lpfnAddPa
 	psp.dwSize      = sizeof(PROPSHEETPAGE);
 	psp.dwFlags     = PSP_USEREFPARENT;
 	psp.hInstance   = g_hModule;
-	psp.pszTemplate = MAKEINTRESOURCE(IDD_EXPPROPPAGE);
+	psp.pszTemplate = MAKEINTRESOURCE(IsWindowsXP() ? IDD_EXPPROPPAGE_EX : IDD_EXPPROPPAGE);
 	psp.pszIcon     = 0;
 	psp.pszTitle    = NULL;
 	psp.pfnDlgProc  = (DLGPROC) DlgProc;

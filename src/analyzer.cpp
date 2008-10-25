@@ -31,7 +31,8 @@ CAnalyzer::CAnalyzer()
 	m_dwDirAddr = 0;
 	m_dwSecAddr = 0;
 	::ZeroMemory(&m_dos_hdr, sizeof(m_dos_hdr));
-	::ZeroMemory(&m_nt_hdr,  sizeof(m_nt_hdr));
+//	::ZeroMemory(&m_nt_hdr,  sizeof(m_nt_hdr));
+	::ZeroMemory(&m_nt_hdr64, sizeof(m_nt_hdr64));
 	m_b32bit = false;
 }
 
@@ -892,9 +893,9 @@ bool CAnalyzer::AnalyzeExport(HWND hwndMsg, HWND hwndList, bool bDecode)
 	CString strMsg, strOrdinal, strName;
 	m_mapCls.clear();
 	PIMAGE_EXPORT_DIRECTORY pExpDir = reinterpret_cast<PIMAGE_EXPORT_DIRECTORY>(&m_vecBuff[m_dwDirAddr - m_dwSecAddr]);
-	DWORD dwAddrOfNameOrds = /*reinterpret_cast<DWORD>*/(pExpDir->AddressOfNameOrdinals);
+	DWORD dwAddrOfNameOrds = pExpDir->AddressOfNameOrdinals;
 	LPWORD lpwOrdTable = reinterpret_cast<LPWORD>(&m_vecBuff[dwAddrOfNameOrds - m_dwSecAddr]);
-	DWORD dwAddrOfNames = /*reinterpret_cast<DWORD>*/(pExpDir->AddressOfNames);
+	DWORD dwAddrOfNames = pExpDir->AddressOfNames;
 	LPDWORD lpdwNameTable = reinterpret_cast<LPDWORD>(&m_vecBuff[dwAddrOfNames - m_dwSecAddr]);
 	for (DWORD dwCount = 0; dwCount < pExpDir->NumberOfNames; dwCount++) {
 		strOrdinal.Format(szHex4Fmt, *lpwOrdTable++ + pExpDir->Base);
@@ -908,6 +909,7 @@ bool CAnalyzer::AnalyzeExport(HWND hwndMsg, HWND hwndList, bool bDecode)
 			strMsg += _T("\r\n");
 		}
 	}
+	list.SetColumnWidth(1, LVSCW_AUTOSIZE);
 	list.Detach();
 	for (mapcls_t::const_iterator mit = m_mapCls.begin(); mit != m_mapCls.end(); ++mit) {
 		strMsg += _T("class ") + mit->first + _T(" {\r\n");
@@ -1019,6 +1021,12 @@ bool CAnalyzer::AnalyzeImport(HWND hwndList, bool bFunc, bool bDecode)
 			}
 		}
 	}
+	list.SetColumnWidth(0, LVSCW_AUTOSIZE);
+	if (bFunc) {
+		list.SetColumnWidth(2, LVSCW_AUTOSIZE);
+	} else {
+		list.SetColumnWidth(2, 48);
+	}
 	list.Detach();
 	return true;
 }
@@ -1070,6 +1078,7 @@ CString CAnalyzer::AnalyzeName(LPCTSTR lpszName, bool bPushCls)
 	}
 	m_bOpCast = false;
 	m_vecName.clear();
+	m_vecArg.clear();
 	m_className = "";
 	LPCTSTR lpszStr = lpszName + 1;
 	int nClsLen;
@@ -1200,12 +1209,30 @@ LPCTSTR aszSpcName2[] = {
 	_T("4@&="),
 	_T("5@|="),
 	_T("6@^="),
-	_T("7vftable"),
-	_T("8virtual_base_class"),
-	_T("Evector_deleting_destructor"),
-	_T("Gscalar_deleting_destructor"),
+	_T("7`vftable'"),
+	_T("8`vbtable'"),
+	_T("9`vcall'"),
+	_T("A`typeof'"),
+	_T("B`local static guard'"),
+	_T("C`string'"),
+	_T("D`vbase destructor'"),
+	_T("E`vector deleting destructor'"),
+	_T("F`default constructor closure'"),
+	_T("G`scalar deleting destructor'"),
+	_T("H`vector constructor iterator'"),
+	_T("I`vector destructor iterator'"),
+	_T("J`vector vbase constructor iterator'"),
+	_T("K`virtual displacement map'"),
+	_T("L`eh vector constructor iterator'"),
+	_T("M`eh vector destructor iterator'"),
+	_T("N`eh vector vbase constructor iterator'"),
+	_T("O`copy constructor closure'"),
+	_T("S`local vftable'"),
+	_T("T`local vftable constructor closure'"),
 	_T("U@ new[]"),
 	_T("V@ delete[]"),
+	_T("X`placement delete closure'"),
+	_T("Y`placement delete[] closure'"),
 };
 
 CString CAnalyzer::AnalyzeVcName(LPCTSTR *plpszStr, bool bRec, int *pnClsLen)
@@ -1369,7 +1396,7 @@ CString CAnalyzer::AnalyzeFunc(LPCTSTR *plpszStr, LPCTSTR lpszName, bool bFuncPt
 	if (*(*plpszStr) == _T('X')) {
 		strWork += _T("void");
 	} else {
-		m_vecArg.clear();
+//		m_vecArg.clear();
 		bool bCommaFlag = false;
 		while (*(*plpszStr) != _T('@')) {
 			if (bCommaFlag) {

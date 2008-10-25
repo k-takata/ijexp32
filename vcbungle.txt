@@ -81,30 +81,34 @@
 	\?_5			# operator |=
 	\?_6			# operator ^=
 	\?_7			# vftable
-	\?_8			# virtual base class
-	\?_9			# ???
-	\?_A			# ???
-	\?_B			# ???
+	\?_8			# vbtable (virtual base class)
+	\?_9			# vcall
+	\?_A			# typeof
+	\?_B			# local static guard
 	\?_C			# string
-	\?_D			# ???
+	\?_D			# vbase destructor
 	\?_E			# vector deleting destructor
-	\?_F			# ???
+	\?_F			# default constructor closure
 	\?_G			# scalar deleting destructor
-	\?_H			# ???
-	\?_I			# ???
-	\?_J			# ???
-	\?_K			# ???
+	\?_H			# vector constructor iterator
+	\?_I			# vector destructor iterator
+	\?_J			# vector vbase constructor iterator
+	\?_K			# virtual displacement map
 	\?_L			# eh vector constructor iterator
 	\?_M			# eh vector destructor iterator
-	\?_N			# ???
-	\?_O			# ???
+	\?_N			# eh vector vbase constructor iterator
+	\?_O			# copy constructor closure
 	\?_P			# ???
 	\?_Q			# ???
 	\?_R			# —áŠOŠÖŒW
-	\?_S			# ???
-	\?_T			# ???
+	\?_S			# local vftable
+	\?_T			# local vftable constructor closure
 	\?_U			# operator new[]
 	\?_V			# operator delete[]
+	\?_W			# ???
+	\?_X			# placement delete closure
+	\?_Y			# placement delete[] closure
+	\?_Z			# ???
 
 <‘®«> :=
 	A<CüŽq><ŠÖ”’è‹`>		# private: ();
