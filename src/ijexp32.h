@@ -176,9 +176,10 @@ public:
 	mapcls_t         m_mapCls;  // classes list
 	mapexp_t         m_mapExp;  // export name list
 	vector<BYTE>     m_vecBuff; // section data
-	vector<CString>  m_vecName; // VC : name stack
+	vector<CString>  *m_vecName; // VC : name stack
+	vector<vector<CString> > m_vecNameStack; // VC : name stack
 	vector<CString>  m_vecArg;  // VC : arguments stack
-	CString          m_className;
+	bool             m_bArg;
 	IMAGE_DOS_HEADER m_dos_hdr;
 	union {
 		struct {
@@ -206,10 +207,11 @@ public:
 	bool    AnalyzeImport(HWND hwndList, bool bFunc, bool bDecode);
 	CString AnalyzeName  (LPCTSTR lpszName, bool bPushCls);
 	CString AnalyzeVcName(LPCTSTR *plpszStr, bool bRec, int *pnClsLen);
-	CString AnalyzeFunc  (LPCTSTR *plpszStr, LPCTSTR lpszName, bool bFuncPtr);
+	CString AnalyzeSpc   (LPCTSTR *plpszStr, bool &bConstDest);
+	CString AnalyzeFunc  (LPCTSTR *plpszStr, LPCTSTR lpszName, bool bFuncPtr, bool bFuncRet = false);
 	CString AnalyzeDeco  (LPCTSTR *plpszStr);
-	CString AnalyzeVarType   (LPCTSTR *plpszStr, bool bRec);
-	CString AnalyzeVarTypePtr(LPCTSTR *plpszStr, bool bRec);
+	CString AnalyzeVarType   (LPCTSTR *plpszStr, bool bRec, bool bFuncRet = false);
+	CString AnalyzeVarTypePtr(LPCTSTR *plpszStr, bool bRec, bool bFuncRet = false);
 };
 
 #endif

@@ -1077,9 +1077,12 @@ CString CAnalyzer::AnalyzeName(LPCTSTR lpszName, bool bPushCls)
 		return lpszName;
 	}
 	m_bOpCast = false;
-	m_vecName.clear();
+	m_vecNameStack.clear();
+	m_vecNameStack.push_back(vector<CString>());
+	m_vecName = &m_vecNameStack[0];
+	m_vecName->clear();
 	m_vecArg.clear();
-	m_className = "";
+	m_bArg = false;
 	LPCTSTR lpszStr = lpszName + 1;
 	int nClsLen;
 	CString strName = AnalyzeVcName(&lpszStr, true, &nClsLen);
@@ -1241,17 +1244,27 @@ CString CAnalyzer::AnalyzeVcName(LPCTSTR *plpszStr, bool bRec, int *pnClsLen)
 	CString strName;
 	TCHAR c = *(*plpszStr)++;
 	if (c == _T('?')) {
-		c = *(*plpszStr)++;
+		c = *(*plpszStr);
 		if (c == _T('$')) {  // template name
+			(*plpszStr)++;
 			c = *(*plpszStr)++;
-			if (c == _T('_') || _istalpha(c)) {
-				do {
-					strName += c;
-					c = *(*plpszStr)++;
-				} while (c != _T('@'));
-				bool bEmpty = m_vecName.empty();
-				if (bRec) {
-					m_vecName.push_back(strName);
+			if (c == _T('_') || _istalpha(c) || c == _T('?')) {
+				bool bPush = false;
+				if (c == _T('?')) {
+					strName = AnalyzeSpc(plpszStr, bConstDest);
+				} else {
+					do {
+						strName += c;
+						c = *(*plpszStr)++;
+					} while (c != _T('@'));
+					if (bRec) {
+						bPush = true;
+					}
+				}
+				m_vecNameStack.push_back(vector<CString>());
+				m_vecName = &m_vecNameStack.back();
+				if (bPush) {
+					m_vecName->push_back(strName);
 				}
 				strName += _T('<');
 				bool bCommaFlag = false;
@@ -1263,57 +1276,25 @@ CString CAnalyzer::AnalyzeVcName(LPCTSTR *plpszStr, bool bRec, int *pnClsLen)
 					bCommaFlag = true;
 				}
 				(*plpszStr)++;
-				if (strName.Right(1) == '>') {
-					strName += ' ';
+				if (strName.Right(1) == _T('>')) {
+					strName += _T(' ');
 				}
 				strName += _T('>');
-				if (bRec && bEmpty) {
-				//	m_vecName.push_back(strName);
-					m_className = strName;
+				m_vecNameStack.pop_back();
+				m_vecName = &m_vecNameStack.back();
+				if (bPush && (pnClsLen == NULL)) {
+					m_vecName->push_back(strName);
 				}
 			} else {
 				strName = CString(_T("<unknown temp name : ")) + c + _T('>');
 			}
 		} else {
-			LPCTSTR lpszSpcName = NULL;
-			if (c == _T('_')) {
-				c = *(*plpszStr)++;
-				for (int i = 0; i < lengthof(aszSpcName2); i++) { // _0-_9, _A-_Z
-					if (aszSpcName2[i][0] == c) {
-						lpszSpcName = &aszSpcName2[i][1];
-						break;
-					}
-				}
-			} else {
-				for (int i = 0; i < lengthof(aszSpcName1); i++) { // 0-9, A-Z
-					if (aszSpcName1[i][0] == c) {
-						lpszSpcName = &aszSpcName1[i][1];
-						break;
-					}
-				}
-			}
-			if (lpszSpcName) {
-				if (lpszSpcName[0] == _T('$')) { // constructor, destoructor
-					bConstDest = true;
-					strName = &lpszSpcName[1];
-				} else if (lpszSpcName[0] == _T('@')) { // operators
-					strName = _T("operator");
-					if (lpszSpcName[1] == _T('#')) {
-						m_bOpCast = true;
-					} else {
-						strName += &lpszSpcName[1];
-					}
-				} else { // others
-					strName = lpszSpcName;
-				}
-			} else {
-				strName = CString(_T("<unknown spc name : ")) + c + _T('>');
-			}
+			strName = AnalyzeSpc(plpszStr, bConstDest);
 		}
 	} else
 	if (_istdigit(c)) { // name repeaters
-		if ((c - _T('0')) < m_vecName.size()) {
-			strName = m_vecName[c - _T('0')];
+		if ((c - _T('0')) < m_vecName->size()) {
+			strName = (*m_vecName)[c - _T('0')];
 		} else {
 			strName = CString(_T("<unknown rep name : ")) + c + _T('>');
 		}
@@ -1324,10 +1305,7 @@ CString CAnalyzer::AnalyzeVcName(LPCTSTR *plpszStr, bool bRec, int *pnClsLen)
 			c = *(*plpszStr)++;
 		} while (c != _T('@'));
 		if (bRec) {
-			m_vecName.push_back(strName);
-			if (m_className.IsEmpty()) {
-				m_className = strName;
-			}
+			m_vecName->push_back(strName);
 		}
 	} else
 	if (c == _T('@')) { // for class name, namespace name.
@@ -1342,8 +1320,7 @@ CString CAnalyzer::AnalyzeVcName(LPCTSTR *plpszStr, bool bRec, int *pnClsLen)
 		}
 		strName = strWork + _T("::") + strName;
 		if (bConstDest) {
-		//	strName += m_vecName[0];
-			strName += m_className;
+			strName += (*m_vecName)[0];
 		}
 	} else {
 		(*plpszStr)++;
@@ -1351,12 +1328,58 @@ CString CAnalyzer::AnalyzeVcName(LPCTSTR *plpszStr, bool bRec, int *pnClsLen)
 	return strName;
 }
 
-CString CAnalyzer::AnalyzeFunc(LPCTSTR *plpszStr, LPCTSTR lpszName, bool bFuncPtr)
+CString CAnalyzer::AnalyzeSpc(LPCTSTR *plpszStr, bool &bConstDest)
 {
-	CString strWork;
+	LPCTSTR lpszSpcName = NULL;
+	CString strName;
+	TCHAR c = *(*plpszStr)++;
+	if (c == _T('_')) {
+		c = *(*plpszStr)++;
+		for (int i = 0; i < lengthof(aszSpcName2); i++) { // _0-_9, _A-_Z
+			if (aszSpcName2[i][0] == c) {
+				lpszSpcName = &aszSpcName2[i][1];
+				break;
+			}
+		}
+	} else {
+		for (int i = 0; i < lengthof(aszSpcName1); i++) { // 0-9, A-Z
+			if (aszSpcName1[i][0] == c) {
+				lpszSpcName = &aszSpcName1[i][1];
+				break;
+			}
+		}
+	}
+	if (lpszSpcName) {
+		if (lpszSpcName[0] == _T('$')) { // constructor, destoructor
+			bConstDest = true;
+			strName = &lpszSpcName[1];
+		} else if (lpszSpcName[0] == _T('@')) { // operators
+			strName = _T("operator");
+			if (lpszSpcName[1] == _T('#')) {
+				m_bOpCast = true;
+			} else {
+				strName += &lpszSpcName[1];
+			}
+		} else { // others
+			strName = lpszSpcName;
+		}
+	} else {
+		strName = CString(_T("<unknown spc name : ")) + c + _T('>');
+	}
+	return strName;
+}
+
+CString CAnalyzer::AnalyzeFunc(LPCTSTR *plpszStr, LPCTSTR lpszName, bool bFuncPtr, bool bFuncRet)
+{
+	CString strWork, strWork2;
 	TCHAR cCallSeq = *(*plpszStr)++;
 	if (lpszName == NULL || !m_bOpCast) {
-		strWork = AnalyzeVarType(plpszStr, true); // return value type.
+		strWork = AnalyzeVarType(plpszStr, true, true); // return value type.
+		int i;
+		if ((i = strWork.Find(_T('|'))) >= 0) {
+			strWork2 = strWork.Mid(i + 1);
+			strWork = strWork.Left(i);
+		}
 		strWork += _T(' ');
 	}
 	if (bFuncPtr) {
@@ -1385,18 +1408,28 @@ CString CAnalyzer::AnalyzeFunc(LPCTSTR *plpszStr, LPCTSTR lpszName, bool bFuncPt
 	if (lpszName) {
 		strWork += lpszName; // function name.
 		if (m_bOpCast) { // operator char, int, ...
-			strWork += _T(' ') + AnalyzeVarType(plpszStr, true); // return value type.
+			strWork += _T(' ') + AnalyzeVarType(plpszStr, true, true); // return value type.
 			m_bOpCast = false;
+			int i;
+			if ((i = strWork.Find(_T('|'))) >= 0) {
+				strWork2 = strWork.Mid(i + 1);
+				strWork = strWork.Left(i);
+			}
 		}
 	}
 	if (bFuncPtr) {
-		strWork += _T("*)");
+		if (bFuncRet) {
+			strWork += _T("*|)");	// '|': placeholder
+		} else {
+			strWork += _T("*)");
+		}
 	}
 	strWork += _T('('); // arguments start.
 	if (*(*plpszStr) == _T('X')) {
 		strWork += _T("void");
 	} else {
 //		m_vecArg.clear();
+		m_bArg = true;
 		bool bCommaFlag = false;
 		while (*(*plpszStr) != _T('@')) {
 			if (bCommaFlag) {
@@ -1409,13 +1442,14 @@ CString CAnalyzer::AnalyzeFunc(LPCTSTR *plpszStr, LPCTSTR lpszName, bool bFuncPt
 			strWork += AnalyzeVarType(plpszStr, true);
 			bCommaFlag = true;
 		}
-		(*plpszStr)++;
-		TCHAR c = *(*plpszStr)++;
-		if (c != _T('Z')) { // a function name has terminated by 'Z'.
-			return strWork + _T("<unknown term : ") + c + _T('>');
-		}
+	}
+	(*plpszStr)++;
+	TCHAR c = *(*plpszStr)++;
+	if (c != _T('Z')) { // a function name has terminated by 'Z'.
+		return strWork + _T("<unknown term : ") + c + _T('>');
 	}
 	strWork += _T(')'); // arguments end.
+	strWork += strWork2;
 	return strWork;
 }
 
@@ -1442,7 +1476,7 @@ CString CAnalyzer::AnalyzeDeco(LPCTSTR *plpszStr)
 	return CString(_T("<unknown deco : ")) + c + _T('>');
 }
 
-CString CAnalyzer::AnalyzeVarType(LPCTSTR *plpszStr, bool bRec)
+CString CAnalyzer::AnalyzeVarType(LPCTSTR *plpszStr, bool bRec, bool bFuncRet)
 {
 	TCHAR c = *(*plpszStr)++;
 	if (_istdigit(c)) { // argument repeaters
@@ -1491,9 +1525,9 @@ CString CAnalyzer::AnalyzeVarType(LPCTSTR *plpszStr, bool bRec)
 	case _T('O'):
 		return _T("long double");
 	case _T('P'):
-		return AnalyzeVarTypePtr(plpszStr, bRec);
+		return AnalyzeVarTypePtr(plpszStr, bRec, bFuncRet);
 	case _T('Q'): // why needs ?
-		return _T('(') + AnalyzeVarTypePtr(plpszStr, bRec) + _T(')');
+		return _T('(') + AnalyzeVarTypePtr(plpszStr, bRec, bFuncRet) + _T(')');
 //	case _T('R'): // unknown
 //	case _T('S'): // unknown
 	case _T('T'):
@@ -1519,28 +1553,50 @@ CString CAnalyzer::AnalyzeVarType(LPCTSTR *plpszStr, bool bRec)
 				strWork += _T(" ");
 			}
 			strWork += AnalyzeVarType(plpszStr, bRec);
-			m_vecArg.push_back(strWork);
+		//	m_vecArg.push_back(strWork);
 			return strWork;
 		}
 	case _T('_'): // enhanced name
-		switch (c = *(*plpszStr)++) {
-		case _T('J'):
-			return _T("__int64");
-		case _T('K'):
-			return _T("unsigned __int64");
-		case _T('N'):
-			return _T("bool");
-		case _T('W'):
-			return _T("wchar_t");
+		{
+			CString strWork;
+			switch (c = *(*plpszStr)++) {
+			case _T('J'):
+				strWork = _T("__int64");
+				break;
+			case _T('K'):
+				strWork = _T("unsigned __int64");
+				break;
+			case _T('N'):
+				strWork = _T("bool");
+				break;
+			case _T('W'):
+				strWork = _T("wchar_t");
+				break;
+			}
+			if (!strWork.IsEmpty() && m_bArg) {
+				m_vecArg.push_back(strWork);
+			}
+			return strWork;
 		}
 	case _T('$'): // ???
 		switch (c = *(*plpszStr)++) {
 		case _T('0'): // size
+			CString strWork;
 			c = *(*plpszStr)++;
-			if (c == _T('9')) {
-				return _T("10");
-			} else if (_istdigit(c)) {
-				return CString(c + 1);
+			if (_istdigit(c)) {
+				strWork.Format(_T("%d"), c - _T('0') + 1);
+				return strWork;
+			} else if ((_T('A') <= c) && (c <= _T('P'))) {
+				int i = 0;
+				while ((_T('A') <= c) && (c <= _T('P'))) {
+					i = i * 16 + (c - _T('A'));
+					c = *(*plpszStr)++;
+				}
+				if (c != _T('@')) {
+					return CString(_T("<unknown size : ")) + c + _T('>');
+				}
+				strWork.Format(_T("%d"), i);
+				return strWork;
 			}
 			return CString(_T("<unknown size : ")) + c + _T('>');
 		}
@@ -1549,11 +1605,11 @@ CString CAnalyzer::AnalyzeVarType(LPCTSTR *plpszStr, bool bRec)
 	return CString(_T("<unknown type : ")) + c + _T('>');
 }
 
-CString CAnalyzer::AnalyzeVarTypePtr(LPCTSTR *plpszStr, bool bRec)
+CString CAnalyzer::AnalyzeVarTypePtr(LPCTSTR *plpszStr, bool bRec, bool bFuncRet)
 {
 	TCHAR c = *(*plpszStr)++;
 	if (c == _T('6')) { // function pointer
-		CString strFunc = AnalyzeFunc(plpszStr, NULL, true);
+		CString strFunc = AnalyzeFunc(plpszStr, NULL, true, bFuncRet);
 //		if (strFunc.IsEmpty()) {
 //			return _T("<unknown func ptr>");
 //		}
@@ -1562,7 +1618,7 @@ CString CAnalyzer::AnalyzeVarTypePtr(LPCTSTR *plpszStr, bool bRec)
 	if (c == _T('8')) { // function pointer with class
 		CString strCls  = AnalyzeVcName(plpszStr, bRec, NULL) + _T("::");
 		CString strDeco = AnalyzeDeco(plpszStr);
-		CString strFunc = AnalyzeFunc(plpszStr, strCls, true);
+		CString strFunc = AnalyzeFunc(plpszStr, strCls, true, bFuncRet);
 //		if (strFunc.IsEmpty()) {
 //			return _T("<unknown func ptr>");
 //		}

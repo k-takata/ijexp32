@@ -1,6 +1,6 @@
 
 
-         i.j Shell Property Sheets Export/Import 32 ver.1.01k5
+         i.j Shell Property Sheets Export/Import 32 ver.1.01k6
                Copyright (C) 1999 i.j, 2004-2008 K.Takata
 
 １．概要
@@ -73,8 +73,14 @@
     です。
 
     　なお、現バージョンには以下の既知のバグがあります。
-        ・エクスポート名の解析で、関数へのポインタを返す関数が正しく表示
-          されない。(analyzer.cpp)
+        ・解析できないエクスポート名形式がある。(analyzer.cpp)
+
+    例:
+      エクスポート名:
+        ?_R2@?BN@???$_Fabs@N@std@@YANABV?$complex@N@1@PAH@Z@4NB
+
+      undname による解析結果:
+        "double const `double __cdecl std::_Fabs<double>(class std::complex<double> const &,int *)'::`29'::_R2"
 
 
 ８．更新履歴
@@ -118,6 +124,16 @@
         ・vcbungle.txt を更新。
         ・WinXP 以降ではファイルプロパティ画面が大きくなったのに合わせて、
           表示領域を拡大。
+
+    2008/11/03  ver.1.01k6
+        ・エクスポート名の解析を改良。
+            - 関数へのポインタを返す関数の修正
+            - 引数のない関数の修正
+            - 引数の間接参照の修正
+                - __int64 なども間接参照の対象
+                - 関数の戻り値は間接参照の対象外
+            - シンボルの間接参照の修正（テンプレート関係）
+        ・vcbungle.txt を更新。
 
 
 ９．注意事項、その他
