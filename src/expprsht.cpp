@@ -146,46 +146,57 @@ INT_PTR CALLBACK CExpPropSheet::DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
 				::ShowWindow(::GetDlgItem(hwnd, IDC_LIST), !bDecode);
 				return TRUE;
 			case IDC_SAVE:
-				CWnd wnd;
-				wnd.Attach(hwnd);
-				CString strWork;
-				strWork.LoadString(IDS_FILE_MATCH);
-				CFileDialog dlg(FALSE, NULL, NULL, OFN_HIDEREADONLY | OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT | OFN_NOCHANGEDIR, strWork, &wnd);
-				if (dlg.DoModal() == IDOK) {
-					CStdioFile file;
-					if (file.Open(dlg.GetPathName(), CFile::modeCreate | CFile::modeWrite | CFile::shareExclusive | CFile::typeText)) {
-						try {
-							if (bDecode) {
-								HWND hwndMsg = ::GetDlgItem(hwnd, IDC_MSG);
-								CString strMsg;
-								CWnd wndMsg;
-								wndMsg.Attach(hwndMsg);
-								wndMsg.GetWindowText(strMsg);
-								wndMsg.Detach();
-								strMsg.Remove(_T('\r'));
-								file.WriteString(strMsg);
-							} else {
-								CString strLine;
-								CListCtrl list;
-								list.Attach(::GetDlgItem(hwnd, IDC_LIST));
-								for (int nCount = 0; nCount < list.GetItemCount(); nCount++) {
-									strLine  = list.GetItemText(nCount, 0) + _T(", ");
-									strLine += list.GetItemText(nCount, 1) + _T("\n");
-									file.WriteString(strLine);
-								}
-								list.Detach();
+				{
+					CWnd wnd;
+					wnd.Attach(hwnd);
+					CString strWork;
+					strWork.LoadString(IDS_FILE_MATCH);
+					CFileDialog dlg(FALSE, NULL, NULL, OFN_HIDEREADONLY | OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT | OFN_NOCHANGEDIR, strWork, &wnd);
+					if (dlg.DoModal() == IDOK) {
+						CStdioFile file;
+						if (file.Open(dlg.GetPathName(), CFile::modeCreate | CFile::modeWrite | CFile::shareExclusive | CFile::typeText)) {
+							try {
+								file.WriteString(GetText(hwnd, false, bDecode));
+							} catch (CException *e) {
+								e->Delete();
 							}
-						} catch (CException *e) {
-							e->Delete();
+							file.Close();
 						}
-						file.Close();
 					}
+					wnd.Detach();
+					return TRUE;
 				}
-				wnd.Detach();
+			case IDC_COPY:
+				SetClipboardText(hwnd, GetText(hwnd, true, bDecode));
 				return TRUE;
 			}
 		}
 		break;
 	}
 	return FALSE;
+}
+
+CString CExpPropSheet::GetText(HWND hwnd, bool bBinary, bool bDecode)
+{
+	CString strText;
+	CString strEOL = (bBinary) ? _T("\r\n") : _T("\n");
+	if (bDecode) {
+		HWND hwndMsg = ::GetDlgItem(hwnd, IDC_MSG);
+		CWnd wndMsg;
+		wndMsg.Attach(hwndMsg);
+		wndMsg.GetWindowText(strText);
+		wndMsg.Detach();
+		if (!bBinary) {
+			strText.Remove(_T('\r'));
+		}
+	} else {
+		CListCtrl list;
+		list.Attach(::GetDlgItem(hwnd, IDC_LIST));
+		for (int nCount = 0; nCount < list.GetItemCount(); nCount++) {
+			strText += list.GetItemText(nCount, 0) + _T(", ");
+			strText += list.GetItemText(nCount, 1) + strEOL;
+		}
+		list.Detach();
+	}
+	return strText;
 }

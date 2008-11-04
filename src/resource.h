@@ -28,6 +28,7 @@
 #define IDC_FUNC                        1008
 #define IDC_VC                          1009
 #define IDC_SAVE                        1010
+#define IDC_COPY                        1011
 
 // Next default values for new objects
 // 

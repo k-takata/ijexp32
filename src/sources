@@ -53,6 +53,8 @@ IA64_SOURCES=
 # compiler and the resource compiler.
 C_DEFINES=
 
+#MSC_OPTIMIZATION=/O2
+
 #USE_MFC=1
 USE_MFCUNICODE=1
 USE_STL=1
@@ -65,4 +67,6 @@ USE_MSVCRT=1
 # 5 lines should be deleted.
 #
 #UMTYPE=windows
-DLLBASE=0x23d00000
+
+#DLLBASE=0x23d00000
+DLLBASE=0x60023d00000

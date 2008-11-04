@@ -165,38 +165,7 @@ INT_PTR CALLBACK CHdrPropSheet::DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
 						CStdioFile file;
 						if (file.Open(dlg.GetPathName(), CFile::modeCreate | CFile::modeWrite | CFile::shareExclusive | CFile::typeText)) {
 							try {
-								CListCtrl list;
-								list.Attach(::GetDlgItem(hwnd, IDC_HDR_LIST));
-								for (int nCount = 0; nCount < list.GetItemCount(); nCount++) {
-									CString strLine  = list.GetItemText(nCount, 0);
-									CString strValue = list.GetItemText(nCount, 1);
-									if (!strValue.IsEmpty()) {
-										strLine += _T(", ") + strValue;
-									}
-									strLine += _T("\n");
-									file.WriteString(strLine);
-								}
-								list.Detach();
-								CString strLine = _T("\nDirectories :\n");
-								file.WriteString(strLine);
-								list.Attach(::GetDlgItem(hwnd, IDC_DIR_LIST));
-								for (int nCount = 0; nCount < list.GetItemCount(); nCount++) {
-									strLine = list.GetItemText(nCount, 0) + _T(", ") + list.GetItemText(nCount, 1) + _T(", ") + list.GetItemText(nCount, 2) + _T("\n");
-									file.WriteString(strLine);
-								}
-								list.Detach();
-								strLine = _T("\nSections :\n");
-								file.WriteString(strLine);
-								list.Attach(::GetDlgItem(hwnd, IDC_SEC_LIST));
-								for (int nCount = 0; nCount < list.GetItemCount(); nCount++) {
-									strLine = list.GetItemText(nCount, 0);
-									for (int nSub = 1; nSub <= 9; nSub++) {
-										strLine += _T(", ") + list.GetItemText(nCount, nSub);
-									}
-									strLine += _T("\n");
-									file.WriteString(strLine);
-								}
-								list.Detach();
+								file.WriteString(GetText(hwnd, false));
 							} catch (CException *e) {
 								e->Delete();
 							}
@@ -206,9 +175,46 @@ INT_PTR CALLBACK CHdrPropSheet::DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
 					wnd.Detach();
 					return TRUE;
 				}
+			case IDC_COPY:
+				SetClipboardText(hwnd, GetText(hwnd, true));
+				return TRUE;
 			}
 		}
 		break;
 	}
 	return FALSE;
+}
+
+CString CHdrPropSheet::GetText(HWND hwnd, bool bBinary)
+{
+	CString strText;
+	CString strEOL = (bBinary) ? _T("\r\n") : _T("\n");
+	CListCtrl list;
+	list.Attach(::GetDlgItem(hwnd, IDC_HDR_LIST));
+	for (int nCount = 0; nCount < list.GetItemCount(); nCount++) {
+		strText += list.GetItemText(nCount, 0);
+		CString strValue = list.GetItemText(nCount, 1);
+		if (!strValue.IsEmpty()) {
+			strText += _T(", ") + strValue;
+		}
+		strText += strEOL;
+	}
+	list.Detach();
+	strText += strEOL + _T("Directories :") + strEOL;
+	list.Attach(::GetDlgItem(hwnd, IDC_DIR_LIST));
+	for (int nCount = 0; nCount < list.GetItemCount(); nCount++) {
+		strText += list.GetItemText(nCount, 0) + _T(", ") + list.GetItemText(nCount, 1) + _T(", ") + list.GetItemText(nCount, 2) + strEOL;
+	}
+	list.Detach();
+	strText += strEOL + _T("Sections :") + strEOL;
+	list.Attach(::GetDlgItem(hwnd, IDC_SEC_LIST));
+	for (int nCount = 0; nCount < list.GetItemCount(); nCount++) {
+		strText += list.GetItemText(nCount, 0);
+		for (int nSub = 1; nSub <= 9; nSub++) {
+			strText += _T(", ") + list.GetItemText(nCount, nSub);
+		}
+		strText += strEOL;
+	}
+	list.Detach();
+	return strText;
 }

@@ -1,6 +1,6 @@
 
 
-         i.j Shell Property Sheets Export/Import 32 ver.1.01k6
+         i.j Shell Property Sheets Export/Import 32 ver.1.01k7
                Copyright (C) 1999 i.j, 2004-2008 K.Takata
 
 １．概要
@@ -134,6 +134,15 @@
                 - 関数の戻り値は間接参照の対象外
             - シンボルの間接参照の修正（テンプレート関係）
         ・vcbungle.txt を更新。
+
+    2008/11/05  ver.1.01k7
+        ・エクスポート名の解析を改良。
+            - 引数の間接参照の修正
+            - テンプレート引数の負数指定に対応
+        ・LARGE_ADDRESS_AWARE フラグの表示に対応。
+        ・Windows CE 実行形式の表示に一部対応。
+        ・一部のボタン類にアクセスキーを設定。
+        ・Copy ボタンを新設。（情報をクリップボードにコピー）
 
 
 ９．注意事項、その他

@@ -481,14 +481,12 @@ bool CAnalyzer::AnalyzeExeHdr(HWND hwndHdrList, HWND hwndDirList, HWND hwndSecLi
 	case IMAGE_FILE_MACHINE_POWERPC:
 		lpszValue = _T("Power PC");
 		break;
-/*
 	case IMAGE_FILE_MACHINE_SH4:
 		lpszValue = _T("SH4");
 		break;
 	case IMAGE_FILE_MACHINE_ARM:
 		lpszValue = _T("ARM");
 		break;
-*/
 	default:
 		lpszValue = _T("unknown");
 		break;
@@ -546,6 +544,9 @@ bool CAnalyzer::AnalyzeExeHdr(HWND hwndHdrList, HWND hwndDirList, HWND hwndSecLi
 	}
 	if (m_nt_hdr.FileHeader.Characteristics & IMAGE_FILE_BYTES_REVERSED_LO) {
 		strValue += _T("LoBytesReversed, ");
+	}
+	if (m_nt_hdr.FileHeader.Characteristics & IMAGE_FILE_LARGE_ADDRESS_AWARE) {
+		strValue += _T("LargeAddressAware, ");
 	}
 	if (m_nt_hdr.FileHeader.Characteristics & IMAGE_FILE_AGGRESIVE_WS_TRIM) {
 		strValue += _T("AggresiveWsTrim, ");
@@ -681,6 +682,9 @@ bool CAnalyzer::AnalyzeExeHdr(HWND hwndHdrList, HWND hwndDirList, HWND hwndSecLi
 		break;
 	case IMAGE_SUBSYSTEM_POSIX_CUI:
 		lpszValue = _T("POSIX CUI");
+		break;
+	case IMAGE_SUBSYSTEM_WINDOWS_CE_GUI:
+		lpszValue = _T("Windows CE GUI");
 		break;
 	default:
 		lpszValue = _T("unknown");
@@ -1082,7 +1086,6 @@ CString CAnalyzer::AnalyzeName(LPCTSTR lpszName, bool bPushCls)
 	m_vecName = &m_vecNameStack[0];
 	m_vecName->clear();
 	m_vecArg.clear();
-	m_bArg = false;
 	LPCTSTR lpszStr = lpszName + 1;
 	int nClsLen;
 	CString strName = AnalyzeVcName(&lpszStr, true, &nClsLen);
@@ -1428,8 +1431,7 @@ CString CAnalyzer::AnalyzeFunc(LPCTSTR *plpszStr, LPCTSTR lpszName, bool bFuncPt
 	if (*(*plpszStr) == _T('X')) {
 		strWork += _T("void");
 	} else {
-//		m_vecArg.clear();
-		m_bArg = true;
+	//	m_vecArg.clear();
 		bool bCommaFlag = false;
 		while (*(*plpszStr) != _T('@')) {
 			if (bCommaFlag) {
@@ -1439,7 +1441,7 @@ CString CAnalyzer::AnalyzeFunc(LPCTSTR *plpszStr, LPCTSTR lpszName, bool bFuncPt
 				strWork += _T("...");
 				break;
 			}
-			strWork += AnalyzeVarType(plpszStr, true);
+			strWork += AnalyzeVarType(plpszStr, true, false, true);
 			bCommaFlag = true;
 		}
 	}
@@ -1476,7 +1478,7 @@ CString CAnalyzer::AnalyzeDeco(LPCTSTR *plpszStr)
 	return CString(_T("<unknown deco : ")) + c + _T('>');
 }
 
-CString CAnalyzer::AnalyzeVarType(LPCTSTR *plpszStr, bool bRec, bool bFuncRet)
+CString CAnalyzer::AnalyzeVarType(LPCTSTR *plpszStr, bool bRec, bool bFuncRet, bool bArg)
 {
 	TCHAR c = *(*plpszStr)++;
 	if (_istdigit(c)) { // argument repeaters
@@ -1495,7 +1497,9 @@ CString CAnalyzer::AnalyzeVarType(LPCTSTR *plpszStr, bool bRec, bool bFuncRet)
 				strWork += _T(" ");
 			}
 			strWork += AnalyzeVarType(plpszStr, bRec) + _T(" &");
-			m_vecArg.push_back(strWork);
+			if (bArg) {
+				m_vecArg.push_back(strWork);
+			}
 			return strWork;
 		}
 //	case _T('B'): // unknown
@@ -1525,21 +1529,55 @@ CString CAnalyzer::AnalyzeVarType(LPCTSTR *plpszStr, bool bRec, bool bFuncRet)
 	case _T('O'):
 		return _T("long double");
 	case _T('P'):
-		return AnalyzeVarTypePtr(plpszStr, bRec, bFuncRet);
+		{
+			CString strWork = AnalyzeVarTypePtr(plpszStr, bRec, bFuncRet);
+			if (bArg) {
+				m_vecArg.push_back(strWork);
+			}
+			return strWork;
+		}
 	case _T('Q'): // why needs ?
-		return _T('(') + AnalyzeVarTypePtr(plpszStr, bRec, bFuncRet) + _T(')');
+		{
+			CString strWork = _T('(') + AnalyzeVarTypePtr(plpszStr, bRec, bFuncRet) + _T(')');
+			if (bArg) {
+				m_vecArg.push_back(strWork);
+			}
+			return strWork;
+		}
 //	case _T('R'): // unknown
 //	case _T('S'): // unknown
 	case _T('T'):
-		return _T("union ") + AnalyzeVcName(plpszStr, bRec, NULL);
+		{
+			CString strWork = _T("union ") + AnalyzeVcName(plpszStr, bRec, NULL);
+			if (bArg) {
+				m_vecArg.push_back(strWork);
+			}
+			return strWork;
+		}
 	case _T('U'):
-		return _T("struct ") + AnalyzeVcName(plpszStr, bRec, NULL);
+		{
+			CString strWork = _T("struct ") + AnalyzeVcName(plpszStr, bRec, NULL);
+			if (bArg) {
+				m_vecArg.push_back(strWork);
+			}
+			return strWork;
+		}
 	case _T('V'):
-		return _T("class ") + AnalyzeVcName(plpszStr, bRec, NULL);
+		{
+			CString strWork = _T("class ") + AnalyzeVcName(plpszStr, bRec, NULL);
+			if (bArg) {
+				m_vecArg.push_back(strWork);
+			}
+			return strWork;
+		}
 	case _T('W'):
 		if (*(*plpszStr) == _T('4')) {
 			(*plpszStr)++;
-			return _T("enum ") + AnalyzeVcName(plpszStr, bRec, NULL);
+			CString strWork = _T("enum ") + AnalyzeVcName(plpszStr, bRec, NULL);
+			if (bArg) {
+				m_vecArg.push_back(strWork);
+			}
+			return strWork;
 		}
 		break;
 	case _T('X'):
@@ -1553,13 +1591,33 @@ CString CAnalyzer::AnalyzeVarType(LPCTSTR *plpszStr, bool bRec, bool bFuncRet)
 				strWork += _T(" ");
 			}
 			strWork += AnalyzeVarType(plpszStr, bRec);
-		//	m_vecArg.push_back(strWork);
+			if (bArg) {
+				m_vecArg.push_back(strWork);
+			}
 			return strWork;
 		}
 	case _T('_'): // enhanced name
 		{
 			CString strWork;
 			switch (c = *(*plpszStr)++) {
+			case _T('D'):
+				strWork = _T("__int8");
+				break;
+			case _T('E'):
+				strWork = _T("unsigned __int8");
+				break;
+			case _T('F'):
+				strWork = _T("__int16");
+				break;
+			case _T('G'):
+				strWork = _T("unsigned __int16");
+				break;
+			case _T('H'):
+				strWork = _T("__int32");
+				break;
+			case _T('I'):
+				strWork = _T("unsigned __int32");
+				break;
 			case _T('J'):
 				strWork = _T("__int64");
 				break;
@@ -1573,32 +1631,33 @@ CString CAnalyzer::AnalyzeVarType(LPCTSTR *plpszStr, bool bRec, bool bFuncRet)
 				strWork = _T("wchar_t");
 				break;
 			}
-			if (!strWork.IsEmpty() && m_bArg) {
+			if (!strWork.IsEmpty() && bArg) {
 				m_vecArg.push_back(strWork);
 			}
 			return strWork;
 		}
-	case _T('$'): // ???
+	case _T('$'): // template parameter
 		switch (c = *(*plpszStr)++) {
-		case _T('0'): // size
-			CString strWork;
-			c = *(*plpszStr)++;
-			if (_istdigit(c)) {
-				strWork.Format(_T("%d"), c - _T('0') + 1);
-				return strWork;
-			} else if ((_T('A') <= c) && (c <= _T('P'))) {
-				int i = 0;
-				while ((_T('A') <= c) && (c <= _T('P'))) {
-					i = i * 16 + (c - _T('A'));
-					c = *(*plpszStr)++;
+		case _T('0'): // integer
+			{
+				CString strWork;
+				c = *(*plpszStr);
+				if (c == _T('?')) {
+					(*plpszStr)++;
+					strWork.Format(_T("-%I64u"), AnalyzeUInt(plpszStr));
+				} else {
+					strWork.Format(_T("%I64u"), AnalyzeUInt(plpszStr));
 				}
-				if (c != _T('@')) {
-					return CString(_T("<unknown size : ")) + c + _T('>');
-				}
-				strWork.Format(_T("%d"), i);
 				return strWork;
 			}
-			return CString(_T("<unknown size : ")) + c + _T('>');
+		case _T('2'): // real number
+			{
+				CString strWork;
+				__int64 coef = AnalyzeInt(plpszStr);
+				__int64 exp = AnalyzeInt(plpszStr);
+				strWork.Format(_T("%I64d.e%I64d"), coef, exp);
+				return strWork;
+			}
 		}
 		return CString(_T("<unknown type/size : ")) + c + _T('>');
 	}
@@ -1634,6 +1693,33 @@ CString CAnalyzer::AnalyzeVarTypePtr(LPCTSTR *plpszStr, bool bRec, bool bFuncRet
 		strWork += _T(" ");
 	}
 	strWork += AnalyzeVarType(plpszStr, bRec) + _T(" *");
-	m_vecArg.push_back(strWork);
+//	m_vecArg.push_back(strWork);
 	return strWork;
+}
+
+__int64 CAnalyzer::AnalyzeInt(LPCTSTR *plpszStr)
+{
+	TCHAR c = *(*plpszStr);
+	int sign = 1;
+	if (c == _T('?')) {
+		(*plpszStr)++;
+		sign = -1;
+	}
+	return AnalyzeUInt(plpszStr) * sign;
+}
+
+unsigned __int64 CAnalyzer::AnalyzeUInt(LPCTSTR *plpszStr)
+{
+	TCHAR c = *(*plpszStr)++;
+	if (_istdigit(c)) {
+		return c - _T('0') + 1;
+	} else if ((_T('A') <= c) && (c <= _T('P'))) {
+		__int64 i = 0;
+		do {
+			i = (i << 4) + (c - _T('A'));
+			c = *(*plpszStr)++;
+		} while (c != _T('@'));
+		return i;
+	}
+	return 0;
 }

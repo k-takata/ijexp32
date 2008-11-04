@@ -67,6 +67,7 @@ DEFINE_GUID(CLSID_Import,
 // ijexp32.cpp
 void MsgBox(HWND hwnd, LPCTSTR lpszCaption, UINT nId);
 bool IsWindowsXP(void);
+bool SetClipboardText(HWND hwnd, const CString &strText);
 
 // factory.cpp
 class CFactory : public IClassFactory
@@ -106,6 +107,8 @@ public: // IShellPropSheetExt
 	virtual HRESULT STDMETHODCALLTYPE ReplacePage(UINT uPageID, LPFNADDPROPSHEETPAGE lpfnReplacePage, LPARAM lParam);
 public:
 	static INT_PTR CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+private:
+	static CString GetText(HWND hwnd, bool bBinary);
 };
 
 // expprsht.cpp
@@ -128,6 +131,8 @@ public: // IShellPropSheetExt
 	virtual HRESULT STDMETHODCALLTYPE ReplacePage(UINT uPageID, LPFNADDPROPSHEETPAGE lpfnReplacePage, LPARAM lParam);
 public:
 	static INT_PTR CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+private:
+	static CString GetText(HWND hwnd, bool bBinary, bool bDecode);
 };
 
 // impprsht.cpp
@@ -150,6 +155,8 @@ public: // IShellPropSheetExt
 	virtual HRESULT STDMETHODCALLTYPE ReplacePage(UINT uPageID, LPFNADDPROPSHEETPAGE lpfnReplacePage, LPARAM lParam);
 public:
 	static INT_PTR CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+private:
+	static CString GetText(HWND hwnd, bool bBinary);
 };
 
 typedef set<CString> setstr_t; // class members list
@@ -179,7 +186,6 @@ public:
 	vector<CString>  *m_vecName; // VC : name stack
 	vector<vector<CString> > m_vecNameStack; // VC : name stack
 	vector<CString>  m_vecArg;  // VC : arguments stack
-	bool             m_bArg;
 	IMAGE_DOS_HEADER m_dos_hdr;
 	union {
 		struct {
@@ -210,8 +216,10 @@ public:
 	CString AnalyzeSpc   (LPCTSTR *plpszStr, bool &bConstDest);
 	CString AnalyzeFunc  (LPCTSTR *plpszStr, LPCTSTR lpszName, bool bFuncPtr, bool bFuncRet = false);
 	CString AnalyzeDeco  (LPCTSTR *plpszStr);
-	CString AnalyzeVarType   (LPCTSTR *plpszStr, bool bRec, bool bFuncRet = false);
+	CString AnalyzeVarType   (LPCTSTR *plpszStr, bool bRec, bool bFuncRet = false, bool bArg = false);
 	CString AnalyzeVarTypePtr(LPCTSTR *plpszStr, bool bRec, bool bFuncRet = false);
+	__int64 AnalyzeInt(LPCTSTR *plpszStr);
+	unsigned __int64 AnalyzeUInt(LPCTSTR *plpszStr);
 };
 
 #endif

@@ -153,39 +153,50 @@ INT_PTR CALLBACK CImpPropSheet::DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
 				}
 				return TRUE;
 			case IDC_SAVE:
-				CWnd wnd;
-				wnd.Attach(hwnd);
-				CString strWork;
-				strWork.LoadString(IDS_FILE_MATCH);
-				CFileDialog dlg(FALSE, NULL, NULL, OFN_HIDEREADONLY | OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT | OFN_NOCHANGEDIR, strWork, &wnd);
-				if (dlg.DoModal() == IDOK) {
-					CStdioFile file;
-					if (file.Open(dlg.GetPathName(), CFile::modeCreate | CFile::modeWrite | CFile::shareExclusive | CFile::typeText)) {
-						try {
-							bool bFunc = ::SendMessage(::GetDlgItem(hwnd, IDC_FUNC), BM_GETCHECK, 0, 0) == BST_CHECKED;
-							CString strLine;
-							CListCtrl list;
-							list.Attach(::GetDlgItem(hwnd, IDC_LIST));
-							for (int nCount = 0; nCount < list.GetItemCount(); nCount++) {
-								strLine = list.GetItemText(nCount, 0);
-								if (bFunc) {
-									strLine += _T(", ") + list.GetItemText(nCount, 1) + _T(", ") + list.GetItemText(nCount, 2);
-								}
-								strLine += _T("\n");
-								file.WriteString(strLine);
+				{
+					CWnd wnd;
+					wnd.Attach(hwnd);
+					CString strWork;
+					strWork.LoadString(IDS_FILE_MATCH);
+					CFileDialog dlg(FALSE, NULL, NULL, OFN_HIDEREADONLY | OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT | OFN_NOCHANGEDIR, strWork, &wnd);
+					if (dlg.DoModal() == IDOK) {
+						CStdioFile file;
+						if (file.Open(dlg.GetPathName(), CFile::modeCreate | CFile::modeWrite | CFile::shareExclusive | CFile::typeText)) {
+							try {
+								file.WriteString(GetText(hwnd, false));
+							} catch (CException *e) {
+								e->Delete();
 							}
-							list.Detach();
-						} catch (CException *e) {
-							e->Delete();
+							file.Close();
 						}
-						file.Close();
 					}
+					wnd.Detach();
+					return TRUE;
 				}
-				wnd.Detach();
+			case IDC_COPY:
+				SetClipboardText(hwnd, GetText(hwnd, true));
 				return TRUE;
 			}
 		}
 		break;
 	}
 	return FALSE;
+}
+
+CString CImpPropSheet::GetText(HWND hwnd, bool bBinary)
+{
+	CString strText;
+	CString strEOL = (bBinary) ? _T("\r\n") : _T("\n");
+	bool bFunc = ::SendMessage(::GetDlgItem(hwnd, IDC_FUNC), BM_GETCHECK, 0, 0) == BST_CHECKED;
+	CListCtrl list;
+	list.Attach(::GetDlgItem(hwnd, IDC_LIST));
+	for (int nCount = 0; nCount < list.GetItemCount(); nCount++) {
+		strText += list.GetItemText(nCount, 0);
+		if (bFunc) {
+			strText += _T(", ") + list.GetItemText(nCount, 1) + _T(", ") + list.GetItemText(nCount, 2);
+		}
+		strText += strEOL;
+	}
+	list.Detach();
+	return strText;
 }

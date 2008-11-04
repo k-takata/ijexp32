@@ -21,6 +21,12 @@ extern "C" {
 }
 #endif
 
+#ifdef UNICODE
+#define CF_TTEXT	CF_UNICODETEXT
+#else
+#define CF_TTEXT	CF_TEXT
+#endif
+
 LONG    g_nComponents;
 LONG    g_nServerLocks;
 HMODULE g_hModule;
@@ -152,4 +158,22 @@ bool IsWindowsXP(void)
 	} else {
 		return false;
 	}
+}
+
+bool SetClipboardText(HWND hwnd, const CString &strText)
+{
+	bool ret = false;
+	if (OpenClipboard(hwnd)) {
+		EmptyClipboard();
+		HGLOBAL hGlobal = GlobalAlloc(GMEM_MOVEABLE, (strText.GetLength() + 1) * sizeof(TCHAR));
+		if (hGlobal != NULL) {
+			LPTSTR str = reinterpret_cast<LPTSTR>(GlobalLock(hGlobal));
+			lstrcpy(str, strText);
+			GlobalUnlock(hGlobal);
+			SetClipboardData(CF_TTEXT, hGlobal);
+			ret = true;
+		}
+		CloseClipboard();
+	}
+	return ret;
 }

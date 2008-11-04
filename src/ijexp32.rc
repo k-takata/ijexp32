@@ -116,6 +116,7 @@ BEGIN
     PUSHBUTTON      "Dir",IDC_DIR,175,155,25,12
     PUSHBUTTON      "Sec",IDC_SEC,200,155,25,12
     PUSHBUTTON      "Save",IDC_SAVE,231,155,25,12
+    PUSHBUTTON      "Copy",IDC_COPY,231,168,25,12
 END
 
 IDD_EXPPROPPAGE DIALOG DISCARDABLE  0, 0, 262, 180
@@ -132,9 +133,10 @@ BEGIN
     CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | 
                     LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | 
                     WS_TABSTOP,5,3,250,150
-    CONTROL         "VC",IDC_VC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,205,
+    CONTROL         "&VC",IDC_VC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,205,
                     156,25,10
-    PUSHBUTTON      "Save",IDC_SAVE,231,155,25,12
+    PUSHBUTTON      "&Save",IDC_SAVE,231,155,25,12
+    PUSHBUTTON      "&Copy",IDC_COPY,231,168,25,12
 END
 
 IDD_IMPPROPPAGE DIALOG DISCARDABLE  0, 0, 262, 180
@@ -149,11 +151,12 @@ BEGIN
     CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | 
                     LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | 
                     WS_TABSTOP,5,3,250,150
-    CONTROL         "FN",IDC_FUNC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,175,
+    CONTROL         "&FN",IDC_FUNC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,175,
                     156,25,10
-    CONTROL         "VC",IDC_VC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,205,
+    CONTROL         "&VC",IDC_VC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,205,
                     156,25,10
-    PUSHBUTTON      "Save",IDC_SAVE,231,155,25,12
+    PUSHBUTTON      "&Save",IDC_SAVE,231,155,25,12
+    PUSHBUTTON      "&Copy",IDC_COPY,231,168,25,12
 END
 
 IDD_HDRPROPPAGE_EX DIALOG DISCARDABLE  0, 0, 262, 230
@@ -177,7 +180,8 @@ BEGIN
     PUSHBUTTON      "Hdr",IDC_HDR,150,205,25,12
     PUSHBUTTON      "Dir",IDC_DIR,175,205,25,12
     PUSHBUTTON      "Sec",IDC_SEC,200,205,25,12
-    PUSHBUTTON      "Save",IDC_SAVE,231,205,25,12
+    PUSHBUTTON      "&Save",IDC_SAVE,231,205,25,12
+    PUSHBUTTON      "&Copy",IDC_COPY,231,218,25,12
 END
 
 IDD_EXPPROPPAGE_EX DIALOG DISCARDABLE  0, 0, 262, 230
@@ -194,9 +198,10 @@ BEGIN
     CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | 
                     LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | 
                     WS_TABSTOP,5,3,250,200
-    CONTROL         "VC",IDC_VC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,205,
+    CONTROL         "&VC",IDC_VC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,205,
                     206,25,10
-    PUSHBUTTON      "Save",IDC_SAVE,231,205,25,12
+    PUSHBUTTON      "&Save",IDC_SAVE,231,205,25,12
+    PUSHBUTTON      "&Copy",IDC_COPY,231,218,25,12
 END
 
 IDD_IMPPROPPAGE_EX DIALOG DISCARDABLE  0, 0, 262, 230
@@ -211,11 +216,12 @@ BEGIN
     CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | 
                     LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | 
                     WS_TABSTOP,5,3,250,200
-    CONTROL         "FN",IDC_FUNC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,175,
+    CONTROL         "&FN",IDC_FUNC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,175,
                     206,25,10
-    CONTROL         "VC",IDC_VC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,205,
+    CONTROL         "&VC",IDC_VC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,205,
                     206,25,10
-    PUSHBUTTON      "Save",IDC_SAVE,231,205,25,12
+    PUSHBUTTON      "&Save",IDC_SAVE,231,205,25,12
+    PUSHBUTTON      "&Copy",IDC_COPY,231,218,25,12
 END
 
 
@@ -226,8 +232,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,1,5,0
- PRODUCTVERSION 1,1,5,0
+ FILEVERSION 1,1,7,0
+ PRODUCTVERSION 1,1,7,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -244,15 +250,15 @@ BEGIN
         BEGIN
             VALUE "Comments", "\0"
             VALUE "CompanyName", "i.j\0"
-            VALUE "FileDescription", "i.j Shell Property Sheets Export/Import 32 ver.1.01k5\0"
-            VALUE "FileVersion", "1, 1, 5, 0\0"
+            VALUE "FileDescription", "i.j Shell Property Sheets Export/Import 32 ver.1.01k7\0"
+            VALUE "FileVersion", "1, 1, 7, 0\0"
             VALUE "InternalName", "ijexp32\0"
             VALUE "LegalCopyright", "Copyright (C) 1999 i.j, 2004-2008 K.Takata. All rights reserved.\0"
             VALUE "LegalTrademarks", "\0"
             VALUE "OriginalFilename", "ijexp32.dll\0"
             VALUE "PrivateBuild", "\0"
             VALUE "ProductName", "i.j Shell Property Sheets Export/Import 32\0"
-            VALUE "ProductVersion", "1, 1, 5, 0\0"
+            VALUE "ProductVersion", "1, 1, 7, 0\0"
             VALUE "SpecialBuild", "\0"
         END
     END
