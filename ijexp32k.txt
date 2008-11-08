@@ -1,6 +1,6 @@
 
 
-         i.j Shell Property Sheets Export/Import 32 ver.1.01k8
+         i.j Shell Property Sheets Export/Import 32 ver.1.01k9
                Copyright (C) 1999 i.j, 2004-2008 K.Takata
 
 １．概要
@@ -155,6 +155,9 @@
         ・エクスポートしている関数と名前の数を表示するように改良。
         ・全てのボタンにアクセスキーを設定。
         ・vcbungle.txt を更新。
+
+    2008/11/09  ver.1.01k9
+        ・ヘッダ情報の表示を修正。
 
 
 ９．注意事項、その他

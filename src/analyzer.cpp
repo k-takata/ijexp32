@@ -535,7 +535,7 @@ bool CAnalyzer::AnalyzeExeHdr(HWND hwndHdrList, HWND hwndDirList, HWND hwndSecLi
 		strValue += _T("RemovableRunFromSwap, ");
 	}
 	if (m_nt_hdr.FileHeader.Characteristics & IMAGE_FILE_DEBUG_STRIPPED) {
-		strValue += _T("Debug, ");
+		strValue += _T("DebugStripped, ");
 	}
 	if (m_nt_hdr.FileHeader.Characteristics & IMAGE_FILE_32BIT_MACHINE) {
 		strValue += _T("32-bit, ");
@@ -552,10 +552,10 @@ bool CAnalyzer::AnalyzeExeHdr(HWND hwndHdrList, HWND hwndDirList, HWND hwndSecLi
 		strValue += _T("AggresiveWsTrim, ");
 	}
 	if (!(m_nt_hdr.FileHeader.Characteristics & IMAGE_FILE_LOCAL_SYMS_STRIPPED)) {
-		strValue += _T("Symbol, ");
+		strValue += _T("SymbolsStripped, ");
 	}
 	if (!(m_nt_hdr.FileHeader.Characteristics & IMAGE_FILE_LINE_NUMS_STRIPPED)) {
-		strValue += _T("LineNo, ");
+		strValue += _T("LineNumsStripped, ");
 	}
 	if (m_nt_hdr.FileHeader.Characteristics & IMAGE_FILE_EXECUTABLE_IMAGE) {
 		strValue += _T("Executable, ");
@@ -693,7 +693,35 @@ bool CAnalyzer::AnalyzeExeHdr(HWND hwndHdrList, HWND hwndDirList, HWND hwndSecLi
 	list.InsertItem (nCount, _T("Sub-system"));
 	list.SetItemText(nCount, 1, lpszValue);
 	nCount++;
-	strValue.Format(szHex4Fmt, m_nt_hdr32.OptionalHeader.DllCharacteristics);
+//	strValue.Format(szHex4Fmt, m_nt_hdr32.OptionalHeader.DllCharacteristics);
+	strValue.Empty();
+	if (m_nt_hdr32.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_DYNAMIC_BASE) {
+		strValue += _T("DynamicBase, ");
+	}
+	if (m_nt_hdr32.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_FORCE_INTEGRITY) {
+		strValue += _T("ForceIntegrity, ");
+	}
+	if (m_nt_hdr32.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_NX_COMPAT) {
+		strValue += _T("NX Compatible, ");
+	}
+	if (m_nt_hdr32.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_NO_ISOLATION) {
+		strValue += _T("NoIsolation, ");
+	}
+	if (m_nt_hdr32.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_NO_SEH) {
+		strValue += _T("NoSEH, ");
+	}
+	if (m_nt_hdr32.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_NO_BIND) {
+		strValue += _T("NoBind, ");
+	}
+	if (m_nt_hdr32.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_WDM_DRIVER) {
+		strValue += _T("WDM Driver, ");
+	}
+	if (m_nt_hdr32.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_TERMINAL_SERVER_AWARE) {
+		strValue += _T("TerminalServerAware, ");
+	}
+	if (!strValue.IsEmpty()) {
+		strValue = strValue.Left(strValue.GetLength() - 2);
+	}
 	list.InsertItem (nCount, _T("DLL init.func.flags"));
 	list.SetItemText(nCount, 1, strValue);
 	nCount++;
