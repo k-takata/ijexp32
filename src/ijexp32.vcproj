@@ -25,10 +25,6 @@
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="3"
 				PrecompiledHeaderThrough="stdafx.h"
-				PrecompiledHeaderFile=".\Debug7/ijexp32.pch"
-				AssemblerListingLocation=".\Debug7/"
-				ObjectFile=".\Debug7/"
-				ProgramDataBaseFileName=".\Debug7/"
 				BrowseInformation="1"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
@@ -39,15 +35,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="ole32.lib"
-				OutputFile="Debug/ijexp32d.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\ijexp32.def"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile=".\Debug7/ijexp32d.pdb"
 				SubSystem="2"
 				BaseAddress="0x23d00000"
-				ImportLibrary=".\Debug7/ijexp32d.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -55,7 +48,6 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Debug7/ijexp32.tlb"
 				HeaderFileName=""/>
 			<Tool
 				Name="VCPostBuildEventTool"/>
@@ -93,10 +85,6 @@
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="3"
 				PrecompiledHeaderThrough="stdafx.h"
-				PrecompiledHeaderFile=".\Debug7_Unicode/ijexp32.pch"
-				AssemblerListingLocation=".\Debug7_Unicode/"
-				ObjectFile=".\Debug7_Unicode/"
-				ProgramDataBaseFileName=".\Debug7_Unicode/"
 				BrowseInformation="1"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
@@ -107,15 +95,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="ole32.lib"
-				OutputFile="Debug/ijexp32d.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\ijexp32.def"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile=".\Debug7_Unicode/ijexp32d.pdb"
 				SubSystem="2"
 				BaseAddress="0x23d00000"
-				ImportLibrary=".\Debug7_Unicode/ijexp32d.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -123,7 +108,6 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Debug7_Unicode/ijexp32.tlb"
 				HeaderFileName=""/>
 			<Tool
 				Name="VCPostBuildEventTool"/>
@@ -164,10 +148,6 @@
 				EnableFunctionLevelLinking="TRUE"
 				UsePrecompiledHeader="3"
 				PrecompiledHeaderThrough="stdafx.h"
-				PrecompiledHeaderFile=".\Release7_Unicode/ijexp32.pch"
-				AssemblerListingLocation=".\Release7_Unicode/"
-				ObjectFile=".\Release7_Unicode/"
-				ProgramDataBaseFileName=".\Release7_Unicode/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"/>
@@ -176,14 +156,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="ole32.lib"
-				OutputFile=".\Release7_Unicode/ijexp32.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\ijexp32.def"
-				ProgramDatabaseFile=".\Release7_Unicode/ijexp32.pdb"
 				SubSystem="2"
+				OptimizeForWindows98="1"
 				BaseAddress="0x23d00000"
-				ImportLibrary=".\Release7_Unicode/ijexp32.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -191,7 +169,6 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Release7_Unicode/ijexp32.tlb"
 				HeaderFileName=""/>
 			<Tool
 				Name="VCPostBuildEventTool"/>
@@ -231,10 +208,6 @@
 				EnableFunctionLevelLinking="TRUE"
 				UsePrecompiledHeader="3"
 				PrecompiledHeaderThrough="stdafx.h"
-				PrecompiledHeaderFile=".\Release7/ijexp32.pch"
-				AssemblerListingLocation=".\Release7/"
-				ObjectFile=".\Release7/"
-				ProgramDataBaseFileName=".\Release7/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"/>
@@ -243,14 +216,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="ole32.lib"
-				OutputFile=".\Release7/ijexp32.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\ijexp32.def"
-				ProgramDatabaseFile=".\Release7/ijexp32.pdb"
 				SubSystem="2"
+				OptimizeForWindows98="1"
 				BaseAddress="0x23d00000"
-				ImportLibrary=".\Release7/ijexp32.lib"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -258,7 +229,6 @@
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Release7/ijexp32.tlb"
 				HeaderFileName=""/>
 			<Tool
 				Name="VCPostBuildEventTool"/>

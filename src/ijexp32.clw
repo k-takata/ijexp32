@@ -8,12 +8,12 @@ NewFileInclude1=#include "stdafx.h"
 Resource1=IDD_EXPPROPPAGE
 Resource2=IDD_IMPPROPPAGE
 Resource3=IDD_EXPPROPPAGE0 (âpåÍ (±“ÿ∂))
-Resource4=IDD_HDRPROPPAGE (âpåÍ (±“ÿ∂))
+Resource4=IDD_IMPPROPPAGE (âpåÍ (±“ÿ∂))
 Resource5=IDD_EXPPROPPAGE2 (âpåÍ (±“ÿ∂))
-Resource6=IDD_IMPPROPPAGE (âpåÍ (±“ÿ∂))
+Resource6=IDD_EXPPROPPAGE_EX (âpåÍ (±“ÿ∂))
 Resource7=IDD_EXPPROPPAGE (âpåÍ (±“ÿ∂))
-Resource8=IDD_EXPPROPPAGE_EX (âpåÍ (±“ÿ∂))
-Resource9=IDD_HDRPROPPAGE_EX (âpåÍ (±“ÿ∂))
+Resource8=IDD_HDRPROPPAGE_EX (âpåÍ (±“ÿ∂))
+Resource9=IDD_HDRPROPPAGE (âpåÍ (±“ÿ∂))
 Resource10=IDD_IMPPROPPAGE_EX (âpåÍ (±“ÿ∂))
 
 [DLG:IDD_EXPPROPPAGE]

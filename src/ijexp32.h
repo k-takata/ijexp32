@@ -197,6 +197,7 @@ public:
 	};
 	bool m_b32bit;
 	vector<IMAGE_SECTION_HEADER> m_vecSecHdr;
+	enum PtrType {PTR_NONE = -1, PTR_NORMAL, PTR_CONST, PTR_VOLATILE, PTR_CONST_VOLATILE};
 public:
 	CAnalyzer();
 	~CAnalyzer();
@@ -214,12 +215,12 @@ public:
 	CString AnalyzeName  (LPCTSTR lpszName, bool bPushCls);
 	CString AnalyzeVcName(LPCTSTR *plpszStr, bool bRec, int *pnClsLen);
 	CString AnalyzeSpc   (LPCTSTR *plpszStr, bool &bConstDest);
-	CString AnalyzeFunc  (LPCTSTR *plpszStr, LPCTSTR lpszName, bool bFuncPtr, bool bFuncRet = false);
+	CString AnalyzeFunc  (LPCTSTR *plpszStr, LPCTSTR lpszName, LPCTSTR lpszPtrStr, PtrType eFuncPtr, bool bFuncRet = false);
 	CString AnalyzeDeco  (LPCTSTR *plpszStr);
-	CString AnalyzeVarType   (LPCTSTR *plpszStr, bool bRec, bool bFuncRet = false, bool bArg = false);
-	CString AnalyzeVarTypePtr(LPCTSTR *plpszStr, bool bRec, bool bFuncRet = false);
-	__int64 AnalyzeInt(LPCTSTR *plpszStr);
-	unsigned __int64 AnalyzeUInt(LPCTSTR *plpszStr);
+	CString AnalyzeVarType   (LPCTSTR *plpszStr, LPCTSTR lpszName, bool bRec, bool bFuncRet = false, bool bArg = false);
+	CString AnalyzeVarTypePtr(LPCTSTR *plpszStr, LPCTSTR lpszName, bool bRec, PtrType ePtrType, bool bFuncRet = false);
+	LONGLONG AnalyzeInt(LPCTSTR *plpszStr);
+	ULONGLONG AnalyzeUInt(LPCTSTR *plpszStr);
 };
 
 #endif
