@@ -189,7 +189,7 @@ typedef map<CString, vecacc_t> mapcls_t; // classes list
 struct NoCase {
 	inline bool operator()(const CString& s1, const CString& s2) const
 	{
-		return (s1.CompareNoCase(s2) == +1);
+		return (s1.CompareNoCase(s2) > 0);
 	}
 };
 typedef map<DWORD, CString> mapname_t; // ordinal, export name

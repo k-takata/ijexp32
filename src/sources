@@ -46,6 +46,7 @@ SOURCES=analyzer.cpp \
 	impprsht.cpp \
 	ijexp32.rc
 i386_SOURCES=
+AMD64_SOURCES=
 IA64_SOURCES=
 #
 # Next, specify options for the compiler using C_DEFINES.
@@ -57,8 +58,10 @@ C_DEFINES=
 
 #USE_MFC=1
 USE_MFCUNICODE=1
+
 USE_STL=1
 USE_MSVCRT=1
+
 #
 # Next, specify one or more user-mode test programs and their type.
 # Use UMTEST for optional test programs. Use UMAPPL for
@@ -68,5 +71,8 @@ USE_MSVCRT=1
 #
 #UMTYPE=windows
 
-#DLLBASE=0x23d00000
+!if $(AMD64) || $(IA64)
 DLLBASE=0x60023d00000
+!else
+DLLBASE=0x23d00000
+!endif
