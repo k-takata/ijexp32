@@ -19,6 +19,7 @@ PropSheetHdlr  = "shellex\PropertySheetHandlers"
 ShellExtNT     = "SoftWare\Microsoft\Windows NT\CurrentVersion\ShellExtensions\Approved"
 Uninstall      = "SoftWare\Microsoft\Windows\CurrentVersion\Uninstall\ijexp32"
 UninstDispName = "i.j Shell Property Sheets Export/Import 32 (Remove only)"
+UninstDispName64 = "i.j Shell Property Sheets Export/Import 32 (x64) (Remove only)"
 
 [SourceDisksNames]
 55 = "ijexp32 v1.01",,
@@ -56,7 +57,7 @@ ijexp32.dll = 55,\x64
 
 [DestinationDirs]
 ;Files1 = 11,%SubDir%
-Files1 = 16410,%SubDir%
+Files1 = 16412,%SubDir%
 
 [Files1]
 ijexp32.dll
@@ -85,7 +86,7 @@ kernel32.exp
 
 [ShellExtReg1]
 HKCU,"Software\Classes\CLSID\%ShellExtCLSID1%",,,"%ShellExtDesc1%"
-HKCU,"Software\Classes\CLSID\%ShellExtCLSID1%\InProcServer32",,,"%16410%\%SubDir%\ijexp32.dll"
+HKCU,"Software\Classes\CLSID\%ShellExtCLSID1%\InProcServer32",,,"%16412%\%SubDir%\ijexp32.dll"
 HKCU,"Software\Classes\CLSID\%ShellExtCLSID1%\InProcServer32","ThreadingModel",,"Apartment"
 HKCU,"Software\Classes\dllfile\%PropSheetHdlr%\%ShellExtCLSID1%",,,"%ShellExtDesc1%"
 HKCU,"Software\Classes\exefile\%PropSheetHdlr%\%ShellExtCLSID1%",,,"%ShellExtDesc1%"
@@ -94,14 +95,14 @@ HKCU,"%ShellExtNT%","%ShellExtCLSID1%",,"%ShellExtDesc1%"
 
 [ShellExtReg2]
 HKCU,"Software\Classes\CLSID\%ShellExtCLSID2%",,,"%ShellExtDesc2%"
-HKCU,"Software\Classes\CLSID\%ShellExtCLSID2%\InProcServer32",,,"%16410%\%SubDir%\ijexp32.dll"
+HKCU,"Software\Classes\CLSID\%ShellExtCLSID2%\InProcServer32",,,"%16412%\%SubDir%\ijexp32.dll"
 HKCU,"Software\Classes\CLSID\%ShellExtCLSID2%\InProcServer32","ThreadingModel",,"Apartment"
 HKCU,"Software\Classes\dllfile\%PropSheetHdlr%\%ShellExtCLSID2%",,,"%ShellExtDesc2%"
 HKCU,"%ShellExtNT%","%ShellExtCLSID2%",,"%ShellExtDesc2%"
 
 [ShellExtReg3]
 HKCU,"Software\Classes\CLSID\%ShellExtCLSID3%",,,"%ShellExtDesc3%"
-HKCU,"Software\Classes\CLSID\%ShellExtCLSID3%\InProcServer32",,,"%16410%\%SubDir%\ijexp32.dll"
+HKCU,"Software\Classes\CLSID\%ShellExtCLSID3%\InProcServer32",,,"%16412%\%SubDir%\ijexp32.dll"
 HKCU,"Software\Classes\CLSID\%ShellExtCLSID3%\InProcServer32","ThreadingModel",,"Apartment"
 HKCU,"Software\Classes\dllfile\%PropSheetHdlr%\%ShellExtCLSID3%",,,"%ShellExtDesc3%"
 HKCU,"Software\Classes\exefile\%PropSheetHdlr%\%ShellExtCLSID3%",,,"%ShellExtDesc3%"
@@ -111,12 +112,17 @@ HKCU,"%ShellExtNT%","%ShellExtCLSID3%",,"%ShellExtDesc3%"
 [UninstReg1]
 HKCU,"%Uninstall%",,,
 HKCU,"%Uninstall%","DisplayName",,"%UninstDispName%"
-HKCU,"%Uninstall%","UninstallString",,"rundll.exe setupx.dll,InstallHinfSection DefaultUnInstall 4 %16410%\%SubDir%\ijexp32_user.inf"
+HKCU,"%Uninstall%","UninstallString",,"rundll.exe setupx.dll,InstallHinfSection DefaultUnInstall 4 %16412%\%SubDir%\ijexp32_user.inf"
 
 [UninstReg1NT]
 HKCU,"%Uninstall%",,,
 HKCU,"%Uninstall%","DisplayName",,"%UninstDispName%"
-HKCU,"%Uninstall%","UninstallString",,"RunDll32 syssetup.dll,SetupInfObjectInstallAction DefaultUnInstall.NT 4 %16410%\%SubDir%\ijexp32_user.inf"
+HKCU,"%Uninstall%","UninstallString",,"%11%\RunDll32 syssetup.dll,SetupInfObjectInstallAction DefaultUnInstall.NT 4 %16412%\%SubDir%\ijexp32_user.inf"
+
+[UninstReg1NT64]
+HKCU,"%Uninstall%",,,
+HKCU,"%Uninstall%","DisplayName",,"%UninstDispName64%"
+HKCU,"%Uninstall%","UninstallString",,"%11%\RunDll32 syssetup.dll,SetupInfObjectInstallAction DefaultUnInstall.NTAMD64 4 %16412%\%SubDir%\ijexp32_user.inf"
 
 [DefaultInstall]
 CopyFiles = Files1
@@ -126,6 +132,10 @@ AddReg    = ShellExtReg1, ShellExtReg2, ShellExtReg3, UninstReg1
 CopyFiles = Files1
 AddReg    = ShellExtReg1, ShellExtReg2, ShellExtReg3, UninstReg1NT
 
+[DefaultInstall.NTAMD64]
+CopyFiles = Files1
+AddReg    = ShellExtReg1, ShellExtReg2, ShellExtReg3, UninstReg1NT64
+
 [DefaultUninstall]
 DelFiles = Files1
 DelReg   = ShellExtReg1, ShellExtReg2, ShellExtReg3, UninstReg1
@@ -133,4 +143,8 @@ DelReg   = ShellExtReg1, ShellExtReg2, ShellExtReg3, UninstReg1
 [DefaultUninstall.NT]
 DelFiles = Files1
 DelReg   = ShellExtReg1, ShellExtReg2, ShellExtReg3, UninstReg1NT
+
+[DefaultUninstall.NTAMD64]
+DelFiles = Files1
+DelReg   = ShellExtReg1, ShellExtReg2, ShellExtReg3, UninstReg1NT64
 

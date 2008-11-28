@@ -1,6 +1,6 @@
 
 
-        i.j Shell Property Sheets Export/Import 32 ver.1.01k10
+        i.j Shell Property Sheets Export/Import 32 ver.1.01k11
                Copyright (C) 1999 i.j, 2004-2008 K.Takata
 
 １．概要
@@ -167,7 +167,17 @@
           ファイルを修正。
         ・カレントユーザーのみにインストールするための情報ファイル
           (ijexp32_user.inf) を実験的に添付。Admin 権限が無くてもインス
-          トールできるかも。
+          トールできるかも。（アンインストール時、エラーメッセージが出る
+          場合あり。）
+
+    2008/11/29  ver.1.01k11
+        ・x64 版 Vista に対応。使用するアプリに応じて、64bit 版と 32bit
+          版の両方をインストールする必要あり。（なお、実験版の
+          ijexp32_user.inf を使ったインストールでは、64bit 版と 32bit 版
+          の同時インストールは不可。）
+        ・ijexp32_user.inf によるインストール先を %APPDATA% から
+          %LOCAL_APPDATA% に変更。（ver.1.01k10 の ijexp32_user.inf を使
+          ってインストールした場合は、一度アンインストールが必要。）
 
 
 ９．注意事項、その他

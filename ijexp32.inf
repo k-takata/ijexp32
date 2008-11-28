@@ -19,6 +19,7 @@ PropSheetHdlr  = "shellex\PropertySheetHandlers"
 ShellExtNT     = "SoftWare\Microsoft\Windows NT\CurrentVersion\ShellExtensions\Approved"
 Uninstall      = "SoftWare\Microsoft\Windows\CurrentVersion\Uninstall\ijexp32"
 UninstDispName = "i.j Shell Property Sheets Export/Import 32 (Remove only)"
+UninstDispName64 = "i.j Shell Property Sheets Export/Import 32 (x64) (Remove only)"
 
 [SourceDisksNames]
 55 = "ijexp32 v1.01",,
@@ -115,7 +116,12 @@ HKLM,"%Uninstall%","UninstallString",,"rundll.exe setupx.dll,InstallHinfSection 
 [UninstReg1NT]
 HKLM,"%Uninstall%",,,
 HKLM,"%Uninstall%","DisplayName",,"%UninstDispName%"
-HKLM,"%Uninstall%","UninstallString",,"RunDll32 syssetup.dll,SetupInfObjectInstallAction DefaultUnInstall.NT 4 %11%\%SubDir%\ijexp32.inf"
+HKLM,"%Uninstall%","UninstallString",,"%11%\RunDll32 syssetup.dll,SetupInfObjectInstallAction DefaultUnInstall.NT 4 %11%\%SubDir%\ijexp32.inf"
+
+[UninstReg1NT64]
+HKLM,"%Uninstall%",,,
+HKLM,"%Uninstall%","DisplayName",,"%UninstDispName64%"
+HKLM,"%Uninstall%","UninstallString",,"%11%\RunDll32 syssetup.dll,SetupInfObjectInstallAction DefaultUnInstall.NTAMD64 4 %11%\%SubDir%\ijexp32.inf"
 
 [DefaultInstall]
 CopyFiles = Files1
@@ -125,6 +131,10 @@ AddReg    = ShellExtReg1, ShellExtReg2, ShellExtReg3, UninstReg1
 CopyFiles = Files1
 AddReg    = ShellExtReg1, ShellExtReg2, ShellExtReg3, UninstReg1NT
 
+[DefaultInstall.NTAMD64]
+CopyFiles = Files1
+AddReg    = ShellExtReg1, ShellExtReg2, ShellExtReg3, UninstReg1NT64
+
 [DefaultUninstall]
 DelFiles = Files1
 DelReg   = ShellExtReg1, ShellExtReg2, ShellExtReg3, UninstReg1
@@ -132,4 +142,8 @@ DelReg   = ShellExtReg1, ShellExtReg2, ShellExtReg3, UninstReg1
 [DefaultUninstall.NT]
 DelFiles = Files1
 DelReg   = ShellExtReg1, ShellExtReg2, ShellExtReg3, UninstReg1NT
+
+[DefaultUninstall.NTAMD64]
+DelFiles = Files1
+DelReg   = ShellExtReg1, ShellExtReg2, ShellExtReg3, UninstReg1NT64
 
