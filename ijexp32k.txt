@@ -1,6 +1,6 @@
 
 
-        i.j Shell Property Sheets Export/Import 32 ver.1.01k11
+        i.j Shell Property Sheets Export/Import 32 ver.1.01k11a
                Copyright (C) 1999 i.j, 2004-2008 K.Takata
 
 １．概要
@@ -118,6 +118,7 @@
         ・mfc??u.exp を追加。（Unicode 版 MFC DLL 用リスト）
         ・必要ファイルを一式まとめて配布するように変更。（配布ファイルの
           サイズが大きくなってしまったため、アーカイブ形式を .7z に変更）
+        ・ijdll32.exp, ijgdi32.dll をインストール対象から除外。
 
     2008/10/26  ver.1.01k5
         ・エクスポート名の解析を改良。（特殊メンバー名の追加、引数の間接
@@ -178,6 +179,11 @@
         ・ijexp32_user.inf によるインストール先を %APPDATA% から
           %LOCAL_APPDATA% に変更。（ver.1.01k10 の ijexp32_user.inf を使
           ってインストールした場合は、一度アンインストールが必要。）
+
+    2008/12/01  ver.1.01k11a
+        ・1.01k3 以前をインストール後、1.01k4 以降を上書きインストールし、
+          その後アンインストールした場合、一部のファイルがアンインストー
+          ルされずに残ってしまうのを修正。（.inf ファイルの修正のみ。）
 
 
 ９．注意事項、その他
