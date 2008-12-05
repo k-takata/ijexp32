@@ -213,5 +213,9 @@ SOURCE=.\StdAfx.h
 SOURCE=.\res\ijexp32.rc2
 # End Source File
 # End Group
+# Begin Source File
+
+SOURCE=.\ijexp32.dll.manifest
+# End Source File
 # End Target
 # End Project

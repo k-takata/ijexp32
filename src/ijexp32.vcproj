@@ -142,7 +142,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="1"
 				InlineFunctionExpansion="1"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_AFXEXT;UNICODE"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_AFXEXT;UNICODE;ISOLATION_AWARE_ENABLED"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"

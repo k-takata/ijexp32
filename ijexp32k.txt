@@ -1,6 +1,6 @@
 
 
-        i.j Shell Property Sheets Export/Import 32 ver.1.01k11a
+        i.j Shell Property Sheets Export/Import 32 ver.1.01k12
                Copyright (C) 1999 i.j, 2004-2008 K.Takata
 
 １．概要
@@ -70,8 +70,8 @@
     です。
     　Makefile, sources は Windows Driver Kit (WDK) 用のメイクファイルで
     す。Build Environment を起動し、build コマンドを実行すると、DLL がビ
-    ルドされます。x64 実行形式のビルド用に入れてありますが、動作は未確認
-    です。
+    ルドされます。
+
 
     　なお、現バージョンには以下の既知のバグがあります。
         ・解析できないエクスポート名形式がある。(analyzer.cpp)
@@ -184,6 +184,9 @@
         ・1.01k3 以前をインストール後、1.01k4 以降を上書きインストールし、
           その後アンインストールした場合、一部のファイルがアンインストー
           ルされずに残ってしまうのを修正。（.inf ファイルの修正のみ。）
+
+    2008/12/06  ver.1.01k12
+        ・WinXP 以降ではビジュアルスタイルが適用されるように修正。
 
 
 ９．注意事項、その他

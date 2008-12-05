@@ -54,13 +54,29 @@ IA64_SOURCES=
 # compiler and the resource compiler.
 C_DEFINES=
 
+USER_C_FLAGS=/DISOLATION_AWARE_ENABLED=1 /GS- /GR- /Oy
+
 #MSC_OPTIMIZATION=/O2
 
 #USE_MFC=1
 USE_MFCUNICODE=1
+USE_MSVCRT=1
 
 USE_STL=1
-USE_MSVCRT=1
+#STL_VER=70
+STL_VER=60
+
+
+# Win2k build
+!if $(_NT_TARGET_VERSION) == 0x500
+MFC_LIB_PATH=$(SDK_LIB_PATH)
+!ifdef USE_MFCUNICODE
+MFC_LIBS=$(MFC_LIB_PATH)\mfcs42u.lib $(MFC_LIB_PATH)\mfc42u.lib
+!else
+MFC_LIBS=$(MFC_LIB_PATH)\mfcs42.lib $(MFC_LIB_PATH)\mfc42.lib
+!endif
+!endif
+
 
 #
 # Next, specify one or more user-mode test programs and their type.
