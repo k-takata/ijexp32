@@ -14,8 +14,12 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+#define DEFAULT_EXTS	_T(".exe;.dll;.sys")
+
+
 CHdrPropSheet::CHdrPropSheet()
 {
+//OutputDebugString(_T("CHdrPropSheet::CHdrPropSheet()\n"));
 	m_nRef = 1;
 	m_szPath[0] = _T('\0');
 	::InterlockedIncrement(&g_nComponents);
@@ -23,11 +27,13 @@ CHdrPropSheet::CHdrPropSheet()
 
 CHdrPropSheet::~CHdrPropSheet()
 {
+//OutputDebugString(_T("CHdrPropSheet::~CHdrPropSheet()\n"));
 	::InterlockedDecrement(&g_nComponents);
 }
 
 HRESULT STDMETHODCALLTYPE CHdrPropSheet::QueryInterface(REFIID riid, LPVOID *ppv)
 {
+//OutputDebugString(_T("CHdrPropSheet::QueryInterface()\n"));
 	if (riid == IID_IUnknown) {
 		*ppv = static_cast<IShellExtInit *>(this);
 	} else
@@ -46,11 +52,13 @@ HRESULT STDMETHODCALLTYPE CHdrPropSheet::QueryInterface(REFIID riid, LPVOID *ppv
 
 ULONG STDMETHODCALLTYPE CHdrPropSheet::AddRef(void)
 {
+//OutputDebugString(_T("CHdrPropSheet::AddRef()\n"));
 	return ::InterlockedIncrement(&m_nRef);
 }
 
 ULONG STDMETHODCALLTYPE CHdrPropSheet::Release(void)
 {
+//OutputDebugString(_T("CHdrPropSheet::Release()\n"));
 	if (::InterlockedDecrement(&m_nRef) == 0) {
 		delete this;
 		return 0;
@@ -60,6 +68,7 @@ ULONG STDMETHODCALLTYPE CHdrPropSheet::Release(void)
 
 HRESULT STDMETHODCALLTYPE CHdrPropSheet::Initialize(LPCITEMIDLIST pidlFolder, LPDATAOBJECT lpDatObj, HKEY hkeyProgID)
 {
+//OutputDebugString(_T("CHdrPropSheet::Initialize()\n"));
 	if (lpDatObj == NULL) {
 		return E_FAIL;
 	}
@@ -78,38 +87,68 @@ HRESULT STDMETHODCALLTYPE CHdrPropSheet::Initialize(LPCITEMIDLIST pidlFolder, LP
 		::ReleaseStgMedium(&medium);
 		return E_FAIL;
 	}
-	::DragQueryFile(hDrop, 0, m_szPath, sizeof(m_szPath));
+	::DragQueryFile(hDrop, 0, m_szPath, lengthof(m_szPath));
 	::ReleaseStgMedium(&medium);
-	return S_OK;
+	return CheckFileType();
 }
 
 HRESULT STDMETHODCALLTYPE CHdrPropSheet::AddPages(LPFNADDPROPSHEETPAGE lpfnAddPage, LPARAM lParam)
 {
+//OutputDebugString(_T("CHdrPropSheet::AddPages()\n"));
 	PROPSHEETPAGE psp;
 	psp.dwSize      = sizeof(PROPSHEETPAGE);
-	psp.dwFlags     = PSP_USEREFPARENT;
+	psp.dwFlags     = PSP_USEREFPARENT | PSP_USECALLBACK;
 	psp.hInstance   = g_hModule;
 	psp.pszTemplate = MAKEINTRESOURCE(IsWindowsXP() ? IDD_HDRPROPPAGE_EX : IDD_HDRPROPPAGE);
 	psp.pszIcon     = 0;
 	psp.pszTitle    = NULL;
 	psp.pfnDlgProc  = (DLGPROC) DlgProc;
 	psp.lParam      = reinterpret_cast<LPARAM>(this);
-	psp.pfnCallback = NULL;
+	psp.pfnCallback = PropSheetPageProc;
 	psp.pcRefParent = reinterpret_cast<UINT *>(&g_nComponents);
 
 	HPROPSHEETPAGE hPage = ::CreatePropertySheetPage(&psp);
 	if (hPage) {
 		if (!lpfnAddPage(hPage, lParam)) {
 			::DestroyPropertySheetPage(hPage);
+			return E_FAIL;
 		}
 	}
 	AddRef();
+	
+	CAnalyzer ana;
+	if (ana.Open(NULL, m_szPath, true)) {
+		if (ana.FindSection(NULL, IMAGE_DIRECTORY_ENTRY_EXPORT)) {
+			CExpPropSheet *exp = new CExpPropSheet;
+			exp->SetPath(m_szPath);
+			exp->AddPages(lpfnAddPage, lParam);
+			exp->Release();
+		}
+		if (ana.FindSection(NULL, IMAGE_DIRECTORY_ENTRY_IMPORT)) {
+			CImpPropSheet *imp = new CImpPropSheet;
+			imp->SetPath(m_szPath);
+			imp->AddPages(lpfnAddPage, lParam);
+			imp->Release();
+		}
+		ana.Close();
+	}
+	
 	return S_OK;
 }
 
 HRESULT STDMETHODCALLTYPE CHdrPropSheet::ReplacePage(UINT uPageID, LPFNADDPROPSHEETPAGE lpfnReplacePage, LPARAM lParam)
 {
 	return E_FAIL;
+}
+
+UINT CALLBACK CHdrPropSheet::PropSheetPageProc(HWND hwnd, UINT msg, LPPROPSHEETPAGE ppsp)
+{
+	switch (msg) {
+	case PSPCB_RELEASE:
+		reinterpret_cast<CImpPropSheet *>(ppsp->lParam)->Release();
+		return TRUE;
+	}
+	return TRUE;
 }
 
 INT_PTR CALLBACK CHdrPropSheet::DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -133,9 +172,9 @@ INT_PTR CALLBACK CHdrPropSheet::DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
 			}
 		}
 		return TRUE;
-	case WM_DESTROY:
-		reinterpret_cast<CImpPropSheet *>(::GetWindowLongPtr(hwnd, DWLP_USER))->Release();
-		return TRUE;
+//	case WM_DESTROY:
+//		reinterpret_cast<CImpPropSheet *>(::GetWindowLongPtr(hwnd, DWLP_USER))->Release();
+//		return TRUE;
 	case WM_COMMAND:
 		if (HIWORD(wParam) == BN_CLICKED) {
 			switch (LOWORD(wParam)) {
@@ -217,4 +256,29 @@ CString CHdrPropSheet::GetText(HWND hwnd, bool bBinary)
 	}
 	list.Detach();
 	return strText;
+}
+
+HRESULT CHdrPropSheet::CheckFileType()
+{
+	TCHAR ext[_MAX_EXT];
+	_tsplitpath(m_szPath, NULL, NULL, NULL, ext);
+	
+	TCHAR exts[1024] = DEFAULT_EXTS;
+	TCHAR szIni[MAX_PATH];
+	if (::GetModuleFileName(g_hModule, szIni, lengthof(szIni))) {
+		int len = ::lstrlen(szIni) - 4;
+		::lstrcpy(szIni + len, _T(".ini"));
+		GetPrivateProfileString(_T("ijexp32"), _T("exts"), DEFAULT_EXTS,
+				exts, lengthof(exts), szIni);
+	}
+	
+	LPTSTR tok = _tcstok(exts, _T(";"));
+	while (tok != NULL) {
+		if (::lstrcmpi(tok, ext) == 0) {
+			return S_OK;
+		}
+		tok = _tcstok(NULL, _T(";"));
+	}
+	
+	return E_FAIL;
 }

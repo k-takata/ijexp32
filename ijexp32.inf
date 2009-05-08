@@ -62,6 +62,7 @@ Files2 = 11,%SubDir%
 [Files1]
 ijexp32.dll
 ijexp32.inf
+ijexp32.ini
 comctl32.exp
 ;ijdll32.exp
 ;ijgdi32.exp
@@ -88,30 +89,36 @@ kernel32.exp
 ijdll32.exp
 ijgdi32.exp
 
-[ShellExtReg1]
+[ShellExtReg0]
 HKCR,"CLSID\%ShellExtCLSID1%",,,"%ShellExtDesc1%"
 HKCR,"CLSID\%ShellExtCLSID1%\InProcServer32",,,"%11%\%SubDir%\ijexp32.dll"
 HKCR,"CLSID\%ShellExtCLSID1%\InProcServer32","ThreadingModel",,"Apartment"
-HKCR,"dllfile\%PropSheetHdlr%\%ShellExtCLSID1%",,,"%ShellExtDesc1%"
-HKCR,"exefile\%PropSheetHdlr%\%ShellExtCLSID1%",,,"%ShellExtDesc1%"
-HKCR,"sysfile\%PropSheetHdlr%\%ShellExtCLSID1%",,,"%ShellExtDesc1%"
+HKCR,"*\%PropSheetHdlr%\%ShellExtCLSID1%",,,"%ShellExtDesc1%"
 HKLM,"%ShellExtNT%","%ShellExtCLSID1%",,"%ShellExtDesc1%"
 
-[ShellExtReg2]
-HKCR,"CLSID\%ShellExtCLSID2%",,,"%ShellExtDesc2%"
-HKCR,"CLSID\%ShellExtCLSID2%\InProcServer32",,,"%11%\%SubDir%\ijexp32.dll"
-HKCR,"CLSID\%ShellExtCLSID2%\InProcServer32","ThreadingModel",,"Apartment"
-HKCR,"dllfile\%PropSheetHdlr%\%ShellExtCLSID2%",,,"%ShellExtDesc2%"
-HKLM,"%ShellExtNT%","%ShellExtCLSID2%",,"%ShellExtDesc2%"
+[DelShellExtReg0]
+HKCR,"CLSID\%ShellExtCLSID1%"
+HKCR,"*\%PropSheetHdlr%\%ShellExtCLSID1%"
+HKLM,"%ShellExtNT%","%ShellExtCLSID1%"
 
-[ShellExtReg3]
-HKCR,"CLSID\%ShellExtCLSID3%",,,"%ShellExtDesc3%"
-HKCR,"CLSID\%ShellExtCLSID3%\InProcServer32",,,"%11%\%SubDir%\ijexp32.dll"
-HKCR,"CLSID\%ShellExtCLSID3%\InProcServer32","ThreadingModel",,"Apartment"
-HKCR,"dllfile\%PropSheetHdlr%\%ShellExtCLSID3%",,,"%ShellExtDesc3%"
-HKCR,"exefile\%PropSheetHdlr%\%ShellExtCLSID3%",,,"%ShellExtDesc3%"
-HKCR,"sysfile\%PropSheetHdlr%\%ShellExtCLSID3%",,,"%ShellExtDesc3%"
-HKLM,"%ShellExtNT%","%ShellExtCLSID3%",,"%ShellExtDesc3%"
+[DelShellExtReg1]
+HKCR,"CLSID\%ShellExtCLSID1%"
+HKCR,"dllfile\%PropSheetHdlr%\%ShellExtCLSID1%"
+HKCR,"exefile\%PropSheetHdlr%\%ShellExtCLSID1%"
+HKCR,"sysfile\%PropSheetHdlr%\%ShellExtCLSID1%"
+HKLM,"%ShellExtNT%","%ShellExtCLSID1%"
+
+[DelShellExtReg2]
+HKCR,"CLSID\%ShellExtCLSID2%"
+HKCR,"dllfile\%PropSheetHdlr%\%ShellExtCLSID2%"
+HKLM,"%ShellExtNT%","%ShellExtCLSID2%"
+
+[DelShellExtReg3]
+HKCR,"CLSID\%ShellExtCLSID3%"
+HKCR,"dllfile\%PropSheetHdlr%\%ShellExtCLSID3%"
+HKCR,"exefile\%PropSheetHdlr%\%ShellExtCLSID3%"
+HKCR,"sysfile\%PropSheetHdlr%\%ShellExtCLSID3%"
+HKLM,"%ShellExtNT%","%ShellExtCLSID3%"
 
 [UninstReg1]
 HKLM,"%Uninstall%",,,
@@ -130,25 +137,28 @@ HKLM,"%Uninstall%","UninstallString",,"%11%\RunDll32 syssetup.dll,SetupInfObject
 
 [DefaultInstall]
 CopyFiles = Files1
-AddReg    = ShellExtReg1, ShellExtReg2, ShellExtReg3, UninstReg1
+DelReg    = DelShellExtReg1, DelShellExtReg2, DelShellExtReg3
+AddReg    = ShellExtReg0, UninstReg1
 
 [DefaultInstall.NT]
 CopyFiles = Files1
-AddReg    = ShellExtReg1, ShellExtReg2, ShellExtReg3, UninstReg1NT
+DelReg    = DelShellExtReg1, DelShellExtReg2, DelShellExtReg3
+AddReg    = ShellExtReg0, UninstReg1NT
 
 [DefaultInstall.NTAMD64]
 CopyFiles = Files1
-AddReg    = ShellExtReg1, ShellExtReg2, ShellExtReg3, UninstReg1NT64
+DelReg    = DelShellExtReg1, DelShellExtReg2, DelShellExtReg3
+AddReg    = ShellExtReg0, UninstReg1NT64
 
 [DefaultUninstall]
 DelFiles = Files1, Files2
-DelReg   = ShellExtReg1, ShellExtReg2, ShellExtReg3, UninstReg1
+DelReg   = DelShellExtReg0, DelShellExtReg1, DelShellExtReg2, DelShellExtReg3, UninstReg1
 
 [DefaultUninstall.NT]
 DelFiles = Files1, Files2
-DelReg   = ShellExtReg1, ShellExtReg2, ShellExtReg3, UninstReg1NT
+DelReg   = DelShellExtReg0, DelShellExtReg1, DelShellExtReg2, DelShellExtReg3, UninstReg1NT
 
 [DefaultUninstall.NTAMD64]
 DelFiles = Files1, Files2
-DelReg   = ShellExtReg1, ShellExtReg2, ShellExtReg3, UninstReg1NT64
+DelReg   = DelShellExtReg0, DelShellExtReg1, DelShellExtReg2, DelShellExtReg3, UninstReg1NT64
 

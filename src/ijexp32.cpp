@@ -149,7 +149,7 @@ void MsgBox(HWND hwnd, LPCTSTR lpszCaption, UINT nId)
 bool IsWindowsXP(void)
 {
 	OSVERSIONINFO ovsi = {sizeof(OSVERSIONINFO)};
-	if (!GetVersionEx(&ovsi)) {
+	if (!::GetVersionEx(&ovsi)) {
 		return false;
 	}
 	if ((ovsi.dwMajorVersion > 5)
@@ -163,17 +163,17 @@ bool IsWindowsXP(void)
 bool SetClipboardText(HWND hwnd, const CString &strText)
 {
 	bool ret = false;
-	if (OpenClipboard(hwnd)) {
-		EmptyClipboard();
-		HGLOBAL hGlobal = GlobalAlloc(GMEM_MOVEABLE, (strText.GetLength() + 1) * sizeof(TCHAR));
+	if (::OpenClipboard(hwnd)) {
+		::EmptyClipboard();
+		HGLOBAL hGlobal = ::GlobalAlloc(GMEM_MOVEABLE, (strText.GetLength() + 1) * sizeof(TCHAR));
 		if (hGlobal != NULL) {
-			LPTSTR str = reinterpret_cast<LPTSTR>(GlobalLock(hGlobal));
-			lstrcpy(str, strText);
-			GlobalUnlock(hGlobal);
-			SetClipboardData(CF_TTEXT, hGlobal);
+			LPTSTR str = reinterpret_cast<LPTSTR>(::GlobalLock(hGlobal));
+			::lstrcpy(str, strText);
+			::GlobalUnlock(hGlobal);
+			::SetClipboardData(CF_TTEXT, hGlobal);
 			ret = true;
 		}
-		CloseClipboard();
+		::CloseClipboard();
 	}
 	return ret;
 }

@@ -1,7 +1,7 @@
 
 
-        i.j Shell Property Sheets Export/Import 32 ver.1.01k12
-               Copyright (C) 1999 i.j, 2004-2008 K.Takata
+        i.j Shell Property Sheets Export/Import 32 ver.1.01k13
+               Copyright (C) 1999 i.j, 2004-2009 K.Takata
 
 １．概要
     　i.j 氏の i.j Shell Property Sheets Export/Import 32 (ijexp32) (*1)
@@ -17,7 +17,7 @@
 
 ２．動作環境
     　Windows 98/2000/XP/Vista など
-    　要 MFC42.DLL, MSVCRT.DLL, MSVCP60.DLL
+    　要 MFC42.DLL (MFC42u.DLL), MSVCRT.DLL, MSVCP60.DLL
 
 
 ３．インストール
@@ -187,6 +187,20 @@
 
     2008/12/06  ver.1.01k12
         ・WinXP 以降ではビジュアルスタイルが適用されるように修正。
+
+    2009/05/09  ver.1.01k13
+        ・MS-DOS ヘッダのエラーチェックを緩和。（実行可能なファイルをは
+          じいてしまう場合があったため）
+        ・エクスポート名の解析を修正。
+            - <型> * const & などの解析を修正。
+        ・バッファオーバーフローの可能性があった部分を修正。
+        ・アンインストール時にレジストリにゴミが残るのを修正。
+        ・ファイルのプロパティを表示し、ijexp32 が追加したタブを選択しな
+          いままプロパティ画面を閉じたとき、メモリリークするのを修正。
+        ・インポート/エクスポートセクションの有無に応じて、それぞれのタ
+          ブを表示するように変更。
+        ・タブを追加するファイル種別を設定ファイル (ijexp32.ini) で変更
+          できるように変更。
 
 
 ９．注意事項、その他

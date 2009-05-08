@@ -16,6 +16,7 @@ static char THIS_FILE[] = __FILE__;
 
 CExpPropSheet::CExpPropSheet()
 {
+//OutputDebugString(_T("CExpPropSheet::CExpPropSheet()\n"));
 	m_nRef = 1;
 	m_szPath[0] = _T('\0');
 	::InterlockedIncrement(&g_nComponents);
@@ -23,6 +24,7 @@ CExpPropSheet::CExpPropSheet()
 
 CExpPropSheet::~CExpPropSheet()
 {
+//OutputDebugString(_T("CExpPropSheet::~CExpPropSheet()\n"));
 	::InterlockedDecrement(&g_nComponents);
 }
 
@@ -60,6 +62,7 @@ ULONG STDMETHODCALLTYPE CExpPropSheet::Release(void)
 
 HRESULT STDMETHODCALLTYPE CExpPropSheet::Initialize(LPCITEMIDLIST pidlFolder, LPDATAOBJECT lpDatObj, HKEY hkeyProgID)
 {
+/*
 	if (lpDatObj == NULL) {
 		return E_FAIL;
 	}
@@ -78,29 +81,32 @@ HRESULT STDMETHODCALLTYPE CExpPropSheet::Initialize(LPCITEMIDLIST pidlFolder, LP
 		::ReleaseStgMedium(&medium);
 		return E_FAIL;
 	}
-	::DragQueryFile(hDrop, 0, m_szPath, sizeof(m_szPath));
+	::DragQueryFile(hDrop, 0, m_szPath, lengthof(m_szPath));
 	::ReleaseStgMedium(&medium);
 	return S_OK;
+*/
+	return E_FAIL;
 }
 
 HRESULT STDMETHODCALLTYPE CExpPropSheet::AddPages(LPFNADDPROPSHEETPAGE lpfnAddPage, LPARAM lParam)
 {
 	PROPSHEETPAGE psp;
 	psp.dwSize      = sizeof(PROPSHEETPAGE);
-	psp.dwFlags     = PSP_USEREFPARENT;
+	psp.dwFlags     = PSP_USEREFPARENT | PSP_USECALLBACK;
 	psp.hInstance   = g_hModule;
 	psp.pszTemplate = MAKEINTRESOURCE(IsWindowsXP() ? IDD_EXPPROPPAGE_EX : IDD_EXPPROPPAGE);
 	psp.pszIcon     = 0;
 	psp.pszTitle    = NULL;
 	psp.pfnDlgProc  = (DLGPROC) DlgProc;
 	psp.lParam      = reinterpret_cast<LPARAM>(this);
-	psp.pfnCallback = NULL;
+	psp.pfnCallback = PropSheetPageProc;
 	psp.pcRefParent = reinterpret_cast<UINT *>(&g_nComponents);
 
 	HPROPSHEETPAGE hPage = ::CreatePropertySheetPage(&psp);
 	if (hPage) {
 		if (!lpfnAddPage(hPage, lParam)) {
 			::DestroyPropertySheetPage(hPage);
+			return E_FAIL;
 		}
 	}
 	AddRef();
@@ -110,6 +116,21 @@ HRESULT STDMETHODCALLTYPE CExpPropSheet::AddPages(LPFNADDPROPSHEETPAGE lpfnAddPa
 HRESULT STDMETHODCALLTYPE CExpPropSheet::ReplacePage(UINT uPageID, LPFNADDPROPSHEETPAGE lpfnReplacePage, LPARAM lParam)
 {
 	return E_FAIL;
+}
+
+void CExpPropSheet::SetPath(LPCTSTR szPath)
+{
+	::lstrcpy(m_szPath, szPath);
+}
+
+UINT CALLBACK CExpPropSheet::PropSheetPageProc(HWND hwnd, UINT msg, LPPROPSHEETPAGE ppsp)
+{
+	switch (msg) {
+	case PSPCB_RELEASE:
+		reinterpret_cast<CImpPropSheet *>(ppsp->lParam)->Release();
+		return TRUE;
+	}
+	return TRUE;
 }
 
 INT_PTR CALLBACK CExpPropSheet::DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -134,9 +155,9 @@ INT_PTR CALLBACK CExpPropSheet::DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
 			}
 		}
 		return TRUE;
-	case WM_DESTROY:
-		reinterpret_cast<CImpPropSheet *>(::GetWindowLongPtr(hwnd, DWLP_USER))->Release();
-		return TRUE;
+//	case WM_DESTROY:
+//		reinterpret_cast<CImpPropSheet *>(::GetWindowLongPtr(hwnd, DWLP_USER))->Release();
+//		return TRUE;
 	case WM_COMMAND:
 		if (HIWORD(wParam) == BN_CLICKED) {
 			bool bDecode = (::SendMessage(::GetDlgItem(hwnd, IDC_VC), BM_GETCHECK, 0, 0) == BST_CHECKED);

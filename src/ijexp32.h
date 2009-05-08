@@ -130,8 +130,10 @@ public: // IShellPropSheetExt
 	virtual HRESULT STDMETHODCALLTYPE ReplacePage(UINT uPageID, LPFNADDPROPSHEETPAGE lpfnReplacePage, LPARAM lParam);
 public:
 	static INT_PTR CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+	static UINT CALLBACK PropSheetPageProc(HWND hwnd, UINT msg, LPPROPSHEETPAGE ppsp);
 private:
 	static CString GetText(HWND hwnd, bool bBinary);
+	HRESULT CheckFileType(void);
 };
 
 // expprsht.cpp
@@ -153,7 +155,9 @@ public: // IShellPropSheetExt
 	virtual HRESULT STDMETHODCALLTYPE AddPages(LPFNADDPROPSHEETPAGE lpfnAddPage, LPARAM lParam);
 	virtual HRESULT STDMETHODCALLTYPE ReplacePage(UINT uPageID, LPFNADDPROPSHEETPAGE lpfnReplacePage, LPARAM lParam);
 public:
+	void SetPath(LPCTSTR szPath);
 	static INT_PTR CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+	static UINT CALLBACK PropSheetPageProc(HWND hwnd, UINT msg, LPPROPSHEETPAGE ppsp);
 private:
 	static CString GetText(HWND hwnd, bool bBinary, bool bDecode);
 };
@@ -177,7 +181,9 @@ public: // IShellPropSheetExt
 	virtual HRESULT STDMETHODCALLTYPE AddPages(LPFNADDPROPSHEETPAGE lpfnAddPage, LPARAM lParam);
 	virtual HRESULT STDMETHODCALLTYPE ReplacePage(UINT uPageID, LPFNADDPROPSHEETPAGE lpfnReplacePage, LPARAM lParam);
 public:
+	void SetPath(LPCTSTR szPath);
 	static INT_PTR CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+	static UINT CALLBACK PropSheetPageProc(HWND hwnd, UINT msg, LPPROPSHEETPAGE ppsp);
 private:
 	static CString GetText(HWND hwnd, bool bBinary);
 };
@@ -226,9 +232,10 @@ public:
 	~CAnalyzer();
 public:
 	void    LoadExpFile(LPCTSTR lpszServer);
-	bool    Open(HWND hwnd, LPCTSTR lpszPath);
+	bool    Open(HWND hwnd, LPCTSTR lpszPath, bool bQuiet = false);
 	void    Close(void);
-	bool    ReadSection(HWND hwnd, int nDirectory);
+	bool    ReadSection(HWND hwnd, int nDirectory, bool bQuiet = false, bool bCheckOnly = false);
+	bool    FindSection(HWND hwnd, int nDirectory, bool bQuiet = true);
 	void    AnalyzeExeHdrInit(HWND hwndHdrList, HWND hwndDirList, HWND hwndSecList);
 	void    AnalyzeExportInit(HWND hwndList);
 	void    AnalyzeImportInit(HWND hwndList);

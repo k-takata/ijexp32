@@ -81,17 +81,19 @@ void CAnalyzer::LoadExpFile(LPCTSTR lpszServer)
 	}
 }
 
-bool CAnalyzer::Open(HWND hwnd, LPCTSTR lpszPath)
+bool CAnalyzer::Open(HWND hwnd, LPCTSTR lpszPath, bool bQuiet)
 {
 	if (m_file.Open(lpszPath, CFile::modeRead | CFile::shareDenyWrite) == FALSE) {
-		::MsgBox(hwnd, lpszPath, IDS_COULD_NOT_OPEN);
+		if (!bQuiet) {
+			::MsgBox(hwnd, lpszPath, IDS_COULD_NOT_OPEN);
+		}
 		return false;
 	}
 	try {
 		m_file.Read(&m_dos_hdr, sizeof(IMAGE_DOS_HEADER)); // read MZ hdr
 		if (m_dos_hdr.e_magic == IMAGE_DOS_SIGNATURE) {
-			if (m_dos_hdr.e_cparhdr >= (sizeof(IMAGE_DOS_HEADER) + 0x0f) >> 4) { // unit : paragraph
-				DWORD dwPeHdrOffset = m_dos_hdr.e_lfanew;
+			DWORD dwPeHdrOffset = m_dos_hdr.e_lfanew;
+			if (dwPeHdrOffset >= sizeof(IMAGE_DOS_HEADER)) {
 				m_file.Seek(dwPeHdrOffset, CFile::begin);
 				m_file.Read(&m_nt_hdr, sizeof(IMAGE_NT_HEADERS64)); // read PE hdr
 				if (m_nt_hdr.Signature == IMAGE_NT_SIGNATURE) {
@@ -109,24 +111,26 @@ bool CAnalyzer::Open(HWND hwnd, LPCTSTR lpszPath)
 							m_vecSecHdr.resize(dwSecEntry);
 							m_file.Read(&m_vecSecHdr.front(), IMAGE_SIZEOF_SECTION_HEADER * dwSecEntry); // read section hdr. block.
 							return true;
-						} else {
+						} else if (!bQuiet) {
 							::MsgBox(hwnd, m_file.GetFilePath(), IDS_NOT_OPT_HDR);
 						}
-					} else {
+					} else if (!bQuiet) {
 						::MsgBox(hwnd, m_file.GetFilePath(), IDS_NOT_EXE32);
 					}
-				} else {
+				} else if (!bQuiet) {
 					::MsgBox(hwnd, m_file.GetFilePath(), IDS_NOT_PE_FILE);
 				}
-			} else {
+			} else if (!bQuiet) {
 				::MsgBox(hwnd, m_file.GetFilePath(), IDS_NOT_NEW_HDR);
 			}
-		} else {
+		} else if (!bQuiet) {
 			::MsgBox(hwnd, m_file.GetFilePath(), IDS_NOT_EXEC);
 		}
 	} catch (CFileException *e) {
 		e->Delete();
-		::MsgBox(hwnd, m_file.GetFilePath(), IDS_COULD_NOT_READ);
+		if (!bQuiet) {
+			::MsgBox(hwnd, m_file.GetFilePath(), IDS_COULD_NOT_READ);
+		}
 	}
 	m_file.Close();
 	return false;
@@ -137,7 +141,7 @@ void CAnalyzer::Close(void)
 	m_file.Close();
 }
 
-bool CAnalyzer::ReadSection(HWND hwnd, int nDirectory)
+bool CAnalyzer::ReadSection(HWND hwnd, int nDirectory, bool bQuiet, bool bCheckOnly)
 {
 	try {
 		if (m_b32bit) {
@@ -150,19 +154,30 @@ bool CAnalyzer::ReadSection(HWND hwnd, int nDirectory)
 			DWORD dwOffset = m_dwDirAddr - m_dwSecAddr; // a result is unsigned, because need to wrap-around to big number, when underflow.
 			DWORD dwSecSize = it->Misc.VirtualSize;
 			if (dwOffset < dwSecSize) {
-				m_file.Seek(it->PointerToRawData, CFile::begin); // seek to start of target section.
-				m_vecBuff.resize(dwSecSize);
-				m_file.Read(&m_vecBuff.front(), dwSecSize); // read target section.
+				if (!bCheckOnly) {
+					m_file.Seek(it->PointerToRawData, CFile::begin); // seek to start of target section.
+					m_vecBuff.resize(dwSecSize);
+					m_file.Read(&m_vecBuff.front(), dwSecSize); // read target section.
+				}
 				return true;
 			}
 		}
-		::MsgBox(hwnd, m_file.GetFilePath(), IDS_COULD_NOT_FIND_SECTION);
+		if (!bQuiet) {
+			::MsgBox(hwnd, m_file.GetFilePath(), IDS_COULD_NOT_FIND_SECTION);
+		}
 	} catch (CFileException *e) {
 		e->Delete();
-		::MsgBox(hwnd, m_file.GetFilePath(), IDS_COULD_NOT_READ);
+		if (!bQuiet) {
+			::MsgBox(hwnd, m_file.GetFilePath(), IDS_COULD_NOT_READ);
+		}
 	}
 	m_file.Close();
 	return false;
+}
+
+bool CAnalyzer::FindSection(HWND hwnd, int nDirectory, bool bQuiet)
+{
+	return ReadSection(hwnd, nDirectory, bQuiet, true);
 }
 
 void CAnalyzer::AnalyzeExeHdrInit(HWND hwndHdrList, HWND hwndDirList, HWND hwndSecList)
@@ -1542,11 +1557,12 @@ CString CAnalyzer::AnalyzeVarType(LPCTSTR *plpszStr, LPCTSTR lpszPtrStr, bool bR
 		return _T("<no ret>");
 	case _T('A'): // reference
 		{
-			CString strWork = AnalyzeDeco(plpszStr);
-			if (!strWork.IsEmpty()) {
-				strWork += _T(" ");
+			CString strWork2 = AnalyzeDeco(plpszStr);
+			CString strWork = AnalyzeVarType(plpszStr, NULL, bRec);
+			if (strWork.Right(strWork2.GetLength()) != strWork2) {
+				strWork += _T(" ") +strWork2;
 			}
-			strWork += AnalyzeVarType(plpszStr, NULL, bRec) + _T(" &") + strPtr;
+			strWork += _T(" &") + strPtr;
 			if (bArg) {
 				m_vecArg.push_back(strWork);
 			}
