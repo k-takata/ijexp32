@@ -40,7 +40,7 @@ CAnalyzer::~CAnalyzer()
 {
 }
 
-void CAnalyzer::LoadExpFile(LPCTSTR lpszServer)
+void CAnalyzer::LoadExpFile(LPCTSTR lpszServer, bool b64bit)
 {
 	TCHAR szBuff[1024];
 	if (::GetModuleFileName(g_hModule, szBuff, lengthof(szBuff))) {
@@ -51,7 +51,16 @@ void CAnalyzer::LoadExpFile(LPCTSTR lpszServer)
 			if (lpszTemp) {
 				*lpszTemp = _T('\0');
 			}
-			::lstrcat(szBuff, _T(".exp"));
+			lpszTemp = szBuff + ::lstrlen(szBuff);
+			if (b64bit) {
+				::lstrcpy(lpszTemp, _T("!x64.exp"));
+				if (::GetFileAttributes(szBuff) == (DWORD) -1) {
+					::lstrcpy(lpszTemp, _T(".exp"));
+				}
+			} else {
+				::lstrcpy(lpszTemp, _T(".exp"));
+			}
+		//	::lstrcat(szBuff, _T(".exp"));
 			CStdioFile file;
 			if (file.Open(szBuff, CFile::modeRead | CFile::shareDenyWrite | CFile::typeText)) {
 				try {
@@ -1045,7 +1054,7 @@ bool CAnalyzer::AnalyzeImport(HWND hwndList, bool bFunc, bool bDecode)
 						strName = _T("<unknown name>");
 						if (!bLoadedExpFile) {
 							if (m_mapExp.find(lpszServer) == m_mapExp.end()) {
-								LoadExpFile(lpszServer);
+								LoadExpFile(lpszServer, true);
 							}
 							bLoadedExpFile = true;
 						}

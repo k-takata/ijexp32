@@ -268,7 +268,7 @@ HRESULT CHdrPropSheet::CheckFileType()
 	if (::GetModuleFileName(g_hModule, szIni, lengthof(szIni))) {
 		int len = ::lstrlen(szIni) - 4;
 		::lstrcpy(szIni + len, _T(".ini"));
-		GetPrivateProfileString(_T("ijexp32"), _T("exts"), DEFAULT_EXTS,
+		::GetPrivateProfileString(_T("ijexp32"), _T("exts"), DEFAULT_EXTS,
 				exts, lengthof(exts), szIni);
 	}
 	

@@ -34,12 +34,16 @@ mfc30.exp = 55
 mfc40.exp = 55
 mfc42.exp = 55
 mfc42u.exp = 55
+mfc42!x64.exp = 55
+mfc42u!x64.exp = 55
 mfc70.exp = 55
 mfc70u.exp = 55
 mfc71.exp = 55
 mfc71u.exp = 55
 mfc80.exp = 55
 mfc80u.exp = 55
+mfc80!x64.exp = 55
+mfc80u!x64.exp = 55
 oleaut32.exp = 55
 olepro32.exp = 55
 shdocvw.exp = 55
@@ -72,12 +76,16 @@ mfc30.exp
 mfc40.exp
 mfc42.exp
 mfc42u.exp
+mfc42!x64.exp
+mfc42u!x64.exp
 mfc70.exp
 mfc70u.exp
 mfc71.exp
 mfc71u.exp
 mfc80.exp
 mfc80u.exp
+mfc80!x64.exp
+mfc80u!x64.exp
 oleaut32.exp
 olepro32.exp
 shdocvw.exp

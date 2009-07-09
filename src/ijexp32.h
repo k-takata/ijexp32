@@ -231,7 +231,7 @@ public:
 	CAnalyzer();
 	~CAnalyzer();
 public:
-	void    LoadExpFile(LPCTSTR lpszServer);
+	void    LoadExpFile(LPCTSTR lpszServer, bool b64bit = false);
 	bool    Open(HWND hwnd, LPCTSTR lpszPath, bool bQuiet = false);
 	void    Close(void);
 	bool    ReadSection(HWND hwnd, int nDirectory, bool bQuiet = false, bool bCheckOnly = false);

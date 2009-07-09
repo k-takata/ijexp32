@@ -1,6 +1,6 @@
 
 
-        i.j Shell Property Sheets Export/Import 32 ver.1.01k13
+        i.j Shell Property Sheets Export/Import 32 ver.1.01k14
                Copyright (C) 1999 i.j, 2004-2009 K.Takata
 
 １．概要
@@ -33,6 +33,9 @@
     インストールを選択してください。なお、インストールには Admin 権限が
     必要です。
 
+    　64bit 版の Windows の場合は、必要に応じて、64bit エクスプローラと
+    32bit エクスプローラの両方からインストールしてください。
+
 
 ４．アンインストール
     　オリジナル版の ijexp32.txt を参照してください。
@@ -60,6 +63,12 @@
     　Perl を使う場合は、例えば以下のようにすると良いでしょう。
 
       > perl -ne "if(/\s+;?([^\s]+)\s+\@\s*(\d+)/){printf \"%04x, %s\n\", $2, $1;}" < mfc42d.def > mfc42d.exp
+
+
+    　def ファイルの代わりにインポートライブラリから作成することも可能で
+    す。
+
+      > dumpbin /exports mfc42d.lib | perl -ne "if(/^ +(\d+) {4}(\S+)/){printf \"%04x, %s\n\", $1, $2}" | sort > mfc42d!x64.exp
 
 
 ７．ソースファイル
@@ -201,6 +210,15 @@
           ブを表示するように変更。
         ・タブを追加するファイル種別を設定ファイル (ijexp32.ini) で変更
           できるように変更。
+
+    2009/07/10  ver.1.01k14
+        ・64bit 実行ファイルを解析する際、x64 用の .exp がある場合は、そ
+          れを読み込むように変更。（ファイル名: ～!x64.exp）
+          バグ：IA64 実行ファイルでも、x64 用 .exp を読み込んでしまう。
+        ・mfc42.exp, mfc42u.exp を Vista 付属のバージョンに対応させたも
+          のに変更。
+        ・mfc*!x64.exp を追加。
+        ・対応拡張子をいくつか追加。(ijexp32.ini)
 
 
 ９．注意事項、その他

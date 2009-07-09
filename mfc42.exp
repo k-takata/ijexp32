@@ -6681,3 +6681,14 @@
 1b12, ?TrimRight@CString@@QAEXPBD@Z
 1b13, ?WindowProc@CReBar@@MAEJIIJ@Z
 1b14, ?GetMenuStringA@CMenu@@QBEHIAAVCString@@I@Z
+1b15, ??0CInvalidArgException@@QAE@HI@Z
+1b16, ??1CInvalidArgException@@UAE@XZ
+1b17, ?GetRuntimeClass@CInvalidArgException@@UBEPAUCRuntimeClass@@XZ
+1b18, ?classCInvalidArgException@CInvalidArgException@@2UCRuntimeClass@@B
+1b19, ?AfxThrowInvalidArgException@@YGXXZ
+1b1a, ?GetMonth@CTime@@QBEHXZ
+1b1b, ?GetThreadValue@CThreadSlotData@@QAEPAXH@Z
+1b1c, ?GetYear@CTime@@QBEHXZ
+1b1d, ?HashKey@CMapStringToOb@@QBEIPBD@Z
+1b1e, ?HashKey@CMapStringToPtr@@QBEIPBD@Z
+1b1f, ?HashKey@CMapStringToString@@QBEIPBD@Z
