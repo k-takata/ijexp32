@@ -1,0 +1,9 @@
+*		eol=crlf
+.gitattributes	text=auto -eol
+.gitignore	text=auto -eol
+
+*.dsp		whitespace=-blank-at-eol
+*.rc		whitespace=-blank-at-eol
+/src/resource.h	whitespace=-blank-at-eol
+
+*.inf		whitespace=-blank-at-eof

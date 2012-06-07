@@ -1,0 +1,38 @@
+*.o
+*.so
+*.a
+*.obj
+*.dll
+*.exp
+*.lib
+*.pyc
+*.bak
+*.BAK
+*~
+*.swp
+*.orig
+*.rej
+*.map
+*.RES
+*.res
+*.old
+
+# Visual Studio files
+*.aps
+*.ncb
+*.opt
+*.plg
+*.suo
+*.vcproj.*.user
+
+# build directories and files
+/src/Debug*/
+/src/Release*/
+/src/build*.err
+/src/build*.log
+/src/build*.wrn
+/src/objchk_*/
+/src/objfre_*/
+
+# do not ignore ijexp32's export symbol list
+!/*.exp
