@@ -19,6 +19,7 @@
 
 # Visual Studio files
 *.aps
+*.clw
 *.ncb
 *.opt
 *.plg
