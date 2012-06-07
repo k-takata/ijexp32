@@ -115,7 +115,7 @@ HRESULT STDMETHODCALLTYPE CHdrPropSheet::AddPages(LPFNADDPROPSHEETPAGE lpfnAddPa
 		}
 	}
 	AddRef();
-	
+
 	CAnalyzer ana;
 	if (ana.Open(NULL, m_szPath, true)) {
 		if (ana.FindSection(NULL, IMAGE_DIRECTORY_ENTRY_EXPORT)) {
@@ -132,7 +132,7 @@ HRESULT STDMETHODCALLTYPE CHdrPropSheet::AddPages(LPFNADDPROPSHEETPAGE lpfnAddPa
 		}
 		ana.Close();
 	}
-	
+
 	return S_OK;
 }
 
@@ -262,7 +262,7 @@ HRESULT CHdrPropSheet::CheckFileType()
 {
 	TCHAR ext[_MAX_EXT];
 	_tsplitpath(m_szPath, NULL, NULL, NULL, ext);
-	
+
 	TCHAR exts[1024] = DEFAULT_EXTS;
 	TCHAR szIni[MAX_PATH];
 	if (::GetModuleFileName(g_hModule, szIni, lengthof(szIni))) {
@@ -271,7 +271,7 @@ HRESULT CHdrPropSheet::CheckFileType()
 		::GetPrivateProfileString(_T("ijexp32"), _T("exts"), DEFAULT_EXTS,
 				exts, lengthof(exts), szIni);
 	}
-	
+
 	LPTSTR tok = _tcstok(exts, _T(";"));
 	while (tok != NULL) {
 		if (::lstrcmpi(tok, ext) == 0) {
@@ -279,6 +279,6 @@ HRESULT CHdrPropSheet::CheckFileType()
 		}
 		tok = _tcstok(NULL, _T(";"));
 	}
-	
+
 	return E_FAIL;
 }

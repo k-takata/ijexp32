@@ -41,7 +41,7 @@ DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
 	if (dwReason == DLL_PROCESS_ATTACH)
 	{
 		TRACE0("ijexp32.dll is initializing...\n");
-		
+
 		if (!AfxInitExtensionModule(ijexp32DLL, hInstance))
 			return 0;
 
