@@ -159,7 +159,7 @@ public:
 	static INT_PTR CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	static UINT CALLBACK PropSheetPageProc(HWND hwnd, UINT msg, LPPROPSHEETPAGE ppsp);
 private:
-	static CString GetText(HWND hwnd, bool bBinary, bool bDecode);
+	static CString GetText(HWND hwnd, bool bBinary, bool bDecode, bool bSelectedOnly);
 };
 
 // impprsht.cpp
@@ -185,7 +185,7 @@ public:
 	static INT_PTR CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	static UINT CALLBACK PropSheetPageProc(HWND hwnd, UINT msg, LPPROPSHEETPAGE ppsp);
 private:
-	static CString GetText(HWND hwnd, bool bBinary);
+	static CString GetText(HWND hwnd, bool bBinary, bool bSelectedOnly);
 };
 
 typedef set<CString> setstr_t; // class members list

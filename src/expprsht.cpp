@@ -177,7 +177,7 @@ INT_PTR CALLBACK CExpPropSheet::DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
 						CStdioFile file;
 						if (file.Open(dlg.GetPathName(), CFile::modeCreate | CFile::modeWrite | CFile::shareExclusive | CFile::typeText)) {
 							try {
-								file.WriteString(GetText(hwnd, false, bDecode));
+								file.WriteString(GetText(hwnd, false, bDecode, false));
 							} catch (CException *e) {
 								e->Delete();
 							}
@@ -188,16 +188,28 @@ INT_PTR CALLBACK CExpPropSheet::DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
 					return TRUE;
 				}
 			case IDC_COPY:
-				SetClipboardText(hwnd, GetText(hwnd, true, bDecode));
+				SetClipboardText(hwnd, GetText(hwnd, true, bDecode, false));
+				return TRUE;
+			case IDC_COPY_SELECTED_LINE:
+				SetClipboardText(hwnd, GetText(hwnd, true, bDecode, true));
 				return TRUE;
 			}
 		}
 		break;
+	case WM_CONTEXTMENU:
+		if ((HWND) wParam == ::GetDlgItem(hwnd, IDC_LIST)) {
+			CMenu menu;
+			menu.LoadMenu(IDM_CONTEXTMENU);
+			CMenu *popupmenu = menu.GetSubMenu(0);
+			::TrackPopupMenu(HMENU(*popupmenu), TPM_RIGHTBUTTON,
+					GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam),
+					0, hwnd, NULL);
+		}
 	}
 	return FALSE;
 }
 
-CString CExpPropSheet::GetText(HWND hwnd, bool bBinary, bool bDecode)
+CString CExpPropSheet::GetText(HWND hwnd, bool bBinary, bool bDecode, bool bSelectedOnly)
 {
 	CString strText;
 	CString strEOL = (bBinary) ? _T("\r\n") : _T("\n");
@@ -214,6 +226,9 @@ CString CExpPropSheet::GetText(HWND hwnd, bool bBinary, bool bDecode)
 		CListCtrl list;
 		list.Attach(::GetDlgItem(hwnd, IDC_LIST));
 		for (int nCount = 0; nCount < list.GetItemCount(); nCount++) {
+			if (bSelectedOnly && !list.GetItemState(nCount, LVIS_SELECTED)) {
+				continue;
+			}
 			strText += list.GetItemText(nCount, 0) + _T(", ");
 			strText += list.GetItemText(nCount, 1) + strEOL;
 		}

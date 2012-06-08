@@ -17,6 +17,7 @@
 #define IDD_HDRPROPPAGE_EX              103
 #define IDD_EXPPROPPAGE_EX              104
 #define IDD_IMPPROPPAGE_EX              105
+#define IDM_CONTEXTMENU                 106
 #define IDC_MSG                         1000
 #define IDC_LIST                        1001
 #define IDC_HDR_LIST                    1002
@@ -29,14 +30,15 @@
 #define IDC_VC                          1009
 #define IDC_SAVE                        1010
 #define IDC_COPY                        1011
+#define IDC_COPY_SELECTED_LINE          32771
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        103
-#define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1011
+#define _APS_NEXT_RESOURCE_VALUE        107
+#define _APS_NEXT_COMMAND_VALUE         32772
+#define _APS_NEXT_CONTROL_VALUE         1012
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
