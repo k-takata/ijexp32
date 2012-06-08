@@ -14,11 +14,11 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-static TCHAR szHex4Fmt[] = _T("%04x");
-static TCHAR szHex8Fmt[] = _T("%08x");
-static TCHAR szHex16Fmt[] = _T("%016I64x");
-static TCHAR szAddrFmt[] = _T("%04x:%04x");
-static TCHAR szVerFmt [] = _T("%d.%d");
+static const TCHAR szHex4Fmt[] = _T("%04x");
+static const TCHAR szHex8Fmt[] = _T("%08x");
+static const TCHAR szHex16Fmt[] = _T("%016I64x");
+static const TCHAR szAddrFmt[] = _T("%04x:%04x");
+static const TCHAR szVerFmt [] = _T("%d.%d");
 
 setstr_t defaultSetStr; // for m_mapCls[strCls].resize()
 
