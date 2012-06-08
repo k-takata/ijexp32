@@ -1,7 +1,7 @@
 
 
-        i.j Shell Property Sheets Export/Import 32 ver.1.01k14
-               Copyright (C) 1999 i.j, 2004-2009 K.Takata
+        i.j Shell Property Sheets Export/Import 32 ver.1.01k15
+               Copyright (C) 1999 i.j, 2004-2012 K.Takata
 
 １．概要
     　i.j 氏の i.j Shell Property Sheets Export/Import 32 (ijexp32) (*1)
@@ -16,7 +16,7 @@
 
 
 ２．動作環境
-    　Windows 98/2000/XP/Vista など
+    　Windows 98/2000/XP/Vista/7 など
     　要 MFC42.DLL (MFC42u.DLL), MSVCRT.DLL, MSVCP60.DLL
 
 
@@ -127,7 +127,7 @@
         ・mfc??u.exp を追加。（Unicode 版 MFC DLL 用リスト）
         ・必要ファイルを一式まとめて配布するように変更。（配布ファイルの
           サイズが大きくなってしまったため、アーカイブ形式を .7z に変更）
-        ・ijdll32.exp, ijgdi32.dll をインストール対象から除外。
+        ・ijdll32.exp, ijgdi32.exp をインストール対象から除外。
 
     2008/10/26  ver.1.01k5
         ・エクスポート名の解析を改良。（特殊メンバー名の追加、引数の間接
@@ -220,6 +220,11 @@
         ・mfc*!x64.exp を追加。
         ・対応拡張子をいくつか追加。(ijexp32.ini)
 
+    2012/06/08  ver.1.01k15
+        ・Export, Import リストで、コンテキストメニューから、選択してい
+          る行のみをクリップボードにコピーできるようにした。
+        ・ソースファイルから ijexp32.clw を削除。
+
 
 ９．注意事項、その他
     ・この改造版に固有のことをオリジナル版の作者に質問することは決してし
@@ -229,3 +234,4 @@
         改造版作者 : K.Takata（高田 謙）
         URL        : http://webs.to/ken/
                    : http://homepage3.nifty.com/k-takata/
+                   : https://github.com/k-takata/ijexp32/

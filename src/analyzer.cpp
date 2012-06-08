@@ -4,7 +4,7 @@
 //
 
 #include "stdafx.h"
-#include "tchar.h" // _tcsrchr(), _tcstoul()
+#include <tchar.h> // _tcsrchr(), _tcstoul()
 #include "ijexp32.h"
 #include "resource.h"
 
@@ -54,7 +54,7 @@ void CAnalyzer::LoadExpFile(LPCTSTR lpszServer, bool b64bit)
 			lpszTemp = szBuff + ::lstrlen(szBuff);
 			if (b64bit) {
 				::lstrcpy(lpszTemp, _T("!x64.exp"));
-				if (::GetFileAttributes(szBuff) == (DWORD) -1) {
+				if (::GetFileAttributes(szBuff) == INVALID_FILE_ATTRIBUTES) {
 					::lstrcpy(lpszTemp, _T(".exp"));
 				}
 			} else {

@@ -4,7 +4,7 @@
 //
 
 #include "stdafx.h"
-#include "winnt.h"  // PE format structures
+#include <winnt.h>  // PE format structures
 #include "ijexp32.h"
 #include "resource.h"
 

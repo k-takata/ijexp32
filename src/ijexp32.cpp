@@ -5,7 +5,7 @@
 
 #include "stdafx.h"
 #include <afxdllx.h>
-#include "objbase.h"  // DEFINE_GUID()
+#include <objbase.h>  // DEFINE_GUID()
 #include <initguid.h> // CLSID_ExeHdr, CLSID_Export, CLSID_Import
 #include "ijexp32.h"
 

@@ -4,7 +4,8 @@
 //
 
 #include "stdafx.h"
-#include "winnt.h"  // IMAGE_DIRECTORY_ENTRY_EXPORT
+#include <winnt.h>  // IMAGE_DIRECTORY_ENTRY_EXPORT
+#include <windowsx.h>
 #include "ijexp32.h"
 #include "resource.h"
 

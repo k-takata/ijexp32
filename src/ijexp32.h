@@ -5,8 +5,8 @@
 #ifndef __IJEXP32_H__
 #define __IJEXP32_H__
 
-#include "winnt.h"  // PE format structures
-#include "shlobj.h" // IShellExtInit, IShellPropSheetExt
+#include <winnt.h>  // PE format structures
+#include <shlobj.h> // IShellExtInit, IShellPropSheetExt
 #include <vector>
 #include <map>
 #include <set>
@@ -58,6 +58,10 @@ typedef unsigned long ULONG_PTR;
 #endif
 #ifndef IMAGE_DLLCHARACTERISTICS_TERMINAL_SERVER_AWARE
 #define IMAGE_DLLCHARACTERISTICS_TERMINAL_SERVER_AWARE	0x8000
+#endif
+
+#ifndef INVALID_FILE_ATTRIBUTES
+#define INVALID_FILE_ATTRIBUTES		((DWORD)-1)
 #endif
 
 
