@@ -157,6 +157,10 @@ SOURCE=.\analyzer.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\cxxfilt.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\expprsht.cpp
 # End Source File
 # Begin Source File

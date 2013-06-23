@@ -955,6 +955,7 @@ bool CAnalyzer::AnalyzeExport(HWND hwndMsg, HWND hwndList, bool bDecode)
 	LPDWORD lpdwNameTable = reinterpret_cast<LPDWORD>(&m_vecBuff[dwAddrOfNames - m_dwSecAddr]);
 	strMsg.Format(_T("# Number of functions: %u\r\n# Number of names: %u\r\n\r\n"),
 			pExpDir->NumberOfFunctions, pExpDir->NumberOfNames);
+	m_cxxfilt.StartCxxFilt();
 	for (DWORD dwCount = 0; dwCount < pExpDir->NumberOfNames; dwCount++) {
 		strOrdinal.Format(szHex4Fmt, *lpwOrdTable++ + pExpDir->Base);
 		list.InsertItem(nCount, strOrdinal);
@@ -967,6 +968,7 @@ bool CAnalyzer::AnalyzeExport(HWND hwndMsg, HWND hwndList, bool bDecode)
 			strMsg += _T("\r\n");
 		}
 	}
+	m_cxxfilt.StopCxxFilt();
 	list.SetColumnWidth(1, LVSCW_AUTOSIZE);
 	list.Detach();
 	for (mapcls_t::const_iterator mit = m_mapCls.begin(); mit != m_mapCls.end(); ++mit) {
@@ -997,6 +999,7 @@ bool CAnalyzer::AnalyzeImport(HWND hwndList, bool bFunc, bool bDecode)
 	int nCount = 0;
 	CString strOrdinal, strName;
 	PIMAGE_IMPORT_DESCRIPTOR pImpDesc = reinterpret_cast<PIMAGE_IMPORT_DESCRIPTOR>(&m_vecBuff[m_dwDirAddr - m_dwSecAddr]);
+	m_cxxfilt.StartCxxFilt();
 //	for (int nDesc = 0; pImpDesc[nDesc].Characteristics; nDesc++) {
 	for (int nDesc = 0; pImpDesc[nDesc].FirstThunk; nDesc++) {
 	//	LPTSTR lpszServer = reinterpret_cast<LPTSTR>(&m_vecBuff[pImpDesc[nDesc].Name - m_dwSecAddr]);
@@ -1079,6 +1082,7 @@ bool CAnalyzer::AnalyzeImport(HWND hwndList, bool bFunc, bool bDecode)
 			}
 		}
 	}
+	m_cxxfilt.StopCxxFilt();
 	list.SetColumnWidth(0, LVSCW_AUTOSIZE);
 	if (bFunc) {
 		list.SetColumnWidth(2, LVSCW_AUTOSIZE);
@@ -1131,6 +1135,9 @@ struct {
 
 CString CAnalyzer::AnalyzeName(LPCTSTR lpszName, bool bPushCls)
 {
+	if (lpszName[0] == _T('_') && lpszName[1] == _T('Z')) {
+		return m_cxxfilt.Demangle(lpszName);
+	}
 	if (*lpszName != _T('?')) {
 		return lpszName;
 	}
