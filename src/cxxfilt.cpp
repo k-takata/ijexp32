@@ -122,9 +122,9 @@ bool CCxxFilt::StopCxxFilt()
 CString CCxxFilt::Demangle(LPCTSTR lpszName)
 {
 	DWORD cb;
-	BOOL ret;
+	BOOL ret = FALSE;
 
-	if (m_hChildProcess == NULL || m_strCxxFiltPath.IsEmpty()) {
+	if (!StartCxxFilt()) {
 		return lpszName;
 	}
 

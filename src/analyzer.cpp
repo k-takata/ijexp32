@@ -955,7 +955,7 @@ bool CAnalyzer::AnalyzeExport(HWND hwndMsg, HWND hwndList, bool bDecode)
 	LPDWORD lpdwNameTable = reinterpret_cast<LPDWORD>(&m_vecBuff[dwAddrOfNames - m_dwSecAddr]);
 	strMsg.Format(_T("# Number of functions: %u\r\n# Number of names: %u\r\n\r\n"),
 			pExpDir->NumberOfFunctions, pExpDir->NumberOfNames);
-	m_cxxfilt.StartCxxFilt();
+//	m_cxxfilt.StartCxxFilt();
 	for (DWORD dwCount = 0; dwCount < pExpDir->NumberOfNames; dwCount++) {
 		strOrdinal.Format(szHex4Fmt, *lpwOrdTable++ + pExpDir->Base);
 		list.InsertItem(nCount, strOrdinal);
@@ -999,7 +999,7 @@ bool CAnalyzer::AnalyzeImport(HWND hwndList, bool bFunc, bool bDecode)
 	int nCount = 0;
 	CString strOrdinal, strName;
 	PIMAGE_IMPORT_DESCRIPTOR pImpDesc = reinterpret_cast<PIMAGE_IMPORT_DESCRIPTOR>(&m_vecBuff[m_dwDirAddr - m_dwSecAddr]);
-	m_cxxfilt.StartCxxFilt();
+//	m_cxxfilt.StartCxxFilt();
 //	for (int nDesc = 0; pImpDesc[nDesc].Characteristics; nDesc++) {
 	for (int nDesc = 0; pImpDesc[nDesc].FirstThunk; nDesc++) {
 	//	LPTSTR lpszServer = reinterpret_cast<LPTSTR>(&m_vecBuff[pImpDesc[nDesc].Name - m_dwSecAddr]);
