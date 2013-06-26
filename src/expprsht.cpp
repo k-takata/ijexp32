@@ -63,29 +63,8 @@ ULONG STDMETHODCALLTYPE CExpPropSheet::Release(void)
 
 HRESULT STDMETHODCALLTYPE CExpPropSheet::Initialize(LPCITEMIDLIST pidlFolder, LPDATAOBJECT lpDatObj, HKEY hkeyProgID)
 {
-/*
-	if (lpDatObj == NULL) {
-		return E_FAIL;
-	}
-	FORMATETC fmtetc;
-	STGMEDIUM medium;
-	fmtetc.cfFormat = CF_HDROP;
-	fmtetc.ptd      = NULL;
-	fmtetc.dwAspect = DVASPECT_CONTENT;
-	fmtetc.lindex   = -1;
-	fmtetc.tymed    = TYMED_HGLOBAL;
-	if (FAILED(lpDatObj->GetData(&fmtetc, &medium))) {
-		return E_FAIL;
-	}
-	HDROP hDrop = static_cast<HDROP>(medium.hGlobal);
-	if (::DragQueryFile(hDrop, -1, NULL, 0) != 1) { // not multi files.
-		::ReleaseStgMedium(&medium);
-		return E_FAIL;
-	}
-	::DragQueryFile(hDrop, 0, m_szPath, lengthof(m_szPath));
-	::ReleaseStgMedium(&medium);
-	return S_OK;
-*/
+	// This PropSheet is added only when an export section is available.
+	// Just return E_FAIL here.
 	return E_FAIL;
 }
 

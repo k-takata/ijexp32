@@ -113,7 +113,6 @@ bool CAnalyzer::Open(HWND hwnd, LPCTSTR lpszPath, bool bQuiet)
 							if (m_nt_hdr.FileHeader.Characteristics & IMAGE_FILE_32BIT_MACHINE) {
 								m_b32bit = true;
 							}
-//							DWORD dwPeHdrOffset = m_dos_hdr.e_lfanew;
 							DWORD dwSecEntry = m_nt_hdr.FileHeader.NumberOfSections;
 							DWORD dwSecOffset = dwPeHdrOffset + sizeof(DWORD) + sizeof(IMAGE_FILE_HEADER) + m_nt_hdr.FileHeader.SizeOfOptionalHeader;
 							m_file.Seek(dwSecOffset, CFile::begin);
@@ -1000,14 +999,11 @@ bool CAnalyzer::AnalyzeImport(HWND hwndList, bool bFunc, bool bDecode)
 	CString strOrdinal, strName;
 	PIMAGE_IMPORT_DESCRIPTOR pImpDesc = reinterpret_cast<PIMAGE_IMPORT_DESCRIPTOR>(&m_vecBuff[m_dwDirAddr - m_dwSecAddr]);
 //	m_cxxfilt.StartCxxFilt();
-//	for (int nDesc = 0; pImpDesc[nDesc].Characteristics; nDesc++) {
 	for (int nDesc = 0; pImpDesc[nDesc].FirstThunk; nDesc++) {
-	//	LPTSTR lpszServer = reinterpret_cast<LPTSTR>(&m_vecBuff[pImpDesc[nDesc].Name - m_dwSecAddr]);
 		CString lpszServer = reinterpret_cast<LPSTR>(&m_vecBuff[pImpDesc[nDesc].Name - m_dwSecAddr]);
 		if (!bFunc) {
 			list.InsertItem(nCount++, lpszServer);
 		} else {
-//			DWORD dwFirstThunk = /*reinterpret_cast<DWORD>*/(pImpDesc[nDesc].OriginalFirstThunk);
 			DWORD dwFirstThunk = (pImpDesc[nDesc].OriginalFirstThunk) ? pImpDesc[nDesc].OriginalFirstThunk : pImpDesc[nDesc].FirstThunk;
 			if (m_b32bit) {
 				PIMAGE_THUNK_DATA32 pThkDat = reinterpret_cast<PIMAGE_THUNK_DATA32>(&m_vecBuff[dwFirstThunk - m_dwSecAddr]);
@@ -1183,7 +1179,6 @@ CString CAnalyzer::AnalyzeName(LPCTSTR lpszName, bool bPushCls)
 		break;
 	}
 	if (aAttrTable[nAttr].bFunc) {
-//		TCHAR cDeco = _T('\0');
 		if (aAttrTable[nAttr].bDeco) {
 			strDeco = AnalyzeDeco(&lpszStr);
 		}
