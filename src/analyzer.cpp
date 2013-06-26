@@ -1414,7 +1414,7 @@ CString CAnalyzer::AnalyzeSpc(LPCTSTR *plpszStr, bool &bConstDest)
 		}
 	}
 	if (lpszSpcName) {
-		if (lpszSpcName[0] == _T('$')) { // constructor, destoructor
+		if (lpszSpcName[0] == _T('$')) { // constructor, destructor
 			bConstDest = true;
 			strName = &lpszSpcName[1];
 		} else if (lpszSpcName[0] == _T('@')) { // operators
@@ -1680,7 +1680,7 @@ CString CAnalyzer::AnalyzeVarType(LPCTSTR *plpszStr, LPCTSTR lpszPtrStr, bool bR
 		return _T("void") + strPtr;
 //	case _T('Y'): // unknown
 //	case _T('Z'): // unknown
-	case _T('?'): // union, struct, class, enum with decolattion.
+	case _T('?'): // union, struct, class, enum with decoration.
 		{
 			CString strWork = AnalyzeDeco(plpszStr);
 			if (!strWork.IsEmpty()) {
