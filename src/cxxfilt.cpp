@@ -131,10 +131,20 @@ CString CCxxFilt::Demangle(LPCTSTR lpszName)
 	// send string
 #ifdef _UNICODE
 	int len = WideCharToMultiByte(CP_ACP, 0, lpszName, -1, NULL, 0, NULL, NULL);
-	char *buf = new char[len];	// TODO: error check
-	WideCharToMultiByte(CP_ACP, 0, lpszName, -1, buf, len, NULL, NULL);
-	ret = WriteFile(m_hInputWrite, buf, len - 1, &cb, NULL);
-	delete buf;
+	if (len == 0) {
+		return lpszName;
+	}
+	try {
+		char *buf = new char[len];
+		if (WideCharToMultiByte(CP_ACP, 0, lpszName, -1, buf, len, NULL, NULL)) {
+			ret = WriteFile(m_hInputWrite, buf, len - 1, &cb, NULL);
+		}
+		delete buf;
+	} catch (CMemoryException* e) {
+		//OutputDebugString(_T("Out of memory\n"));
+		e->Delete();
+		return lpszName;
+	}
 #else
 	ret = WriteFile(m_hInputWrite, lpszName, strlen(lpszName), &cb, NULL);
 #endif
