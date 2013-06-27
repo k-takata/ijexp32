@@ -202,9 +202,9 @@ INT_PTR CALLBACK CExpPropSheet::DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
 			CMenu menu;
 			menu.LoadMenu(IDM_CONTEXTMENU);
 			CMenu *popupmenu = menu.GetSubMenu(0);
-			::TrackPopupMenu(HMENU(*popupmenu), TPM_RIGHTBUTTON,
+			popupmenu->TrackPopupMenu(TPM_RIGHTBUTTON,
 					GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam),
-					0, hwnd, NULL);
+					CWnd::FromHandle(hwnd), NULL);
 		}
 		break;
 	}
