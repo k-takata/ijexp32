@@ -206,6 +206,7 @@ INT_PTR CALLBACK CExpPropSheet::DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
 					GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam),
 					0, hwnd, NULL);
 		}
+		break;
 	}
 	return FALSE;
 }
