@@ -1,7 +1,7 @@
 
 
-        i.j Shell Property Sheets Export/Import 32 ver.1.01k15
-               Copyright (C) 1999 i.j, 2004-2012 K.Takata
+        i.j Shell Property Sheets Export/Import 32 ver.1.01k16
+               Copyright (C) 1999 i.j, 2004-2013 K.Takata
 
 １．概要
     　i.j 氏の i.j Shell Property Sheets Export/Import 32 (ijexp32) (*1)
@@ -34,18 +34,77 @@
     必要です。
 
     　64bit 版の Windows の場合は、必要に応じて、64bit エクスプローラと
-    32bit エクスプローラの両方からインストールしてください。
+    32bit エクスプローラの両方からインストールしてください。通常であれば、
+    それぞれ、以下の場所にインストールされます。
+
+      64bit版: C:\Windows\System32\ShellExt
+      32bit版: C:\Windows\SysWOW64\ShellExt
 
 
 ４．アンインストール
     　オリジナル版の ijexp32.txt を参照してください。
 
 
-５．使用法
+５．レジストリ
+    　Win7 の場合、以下のレジストリが追加されます。
+    上記の "アンインストール" で、全ての変更は削除されるはずです。
+
+        +- HKEY_CLASSES_ROOT
+        |  +- CLSID
+        |  |  +- 00000001-23D0-0001-8000-004026419740  ←追加
+        |  |     +- 以下全部
+        |  +- *
+        |     +- shellex
+        |        +- PropertySheetHandlers
+        |           +- 00000001-23D0-0001-8000-004026419740  ←追加
+        +- HKEY_LOCAL_MACHINE
+        |  +- SOFTWARE
+        |     +- Microsoft
+        |        +- Windows
+        |           +- CurrentVersion
+        |              +- Uninstall
+        |                 +- ijexp32  ←追加
+        +- HKEY_LOCAL_MACHINE
+           +- SOFTWARE
+              +- Wow6432Node
+                 +- Microsoft
+                    +- Windows
+                       +- CurrentVersion
+                          +- Uninstall
+                             +- ijexp32  ←追加 (*4)
+
+      (*4) 64bit 版 Windows に 32bit 版 ijexp32 をインストールした場合。
+
+
+６．使用法
     　オリジナル版の ijexp32.txt を参照してください。
 
 
-６．エクスポート名リスト
+７．設定
+    　一部の動作をレジストリで設定することができます。添付の
+    ijexp32_sample_settings.reg を書き換えて、ダブルクリックしてレジスト
+    リに読み込ませることで設定変更ができます。（現バージョンでは、設定変
+    更用の UI は用意していません。）
+
+    　インストール先の ijexp32.ini にはデフォルトの設定が書き込まれてい
+    ます。ijexp32.ini よりもレジストリの設定が優先されます。
+
+7.1. 対応拡張子の設定
+    　ExeHdr,Export,Import タブを表示させる拡張子をレジストリで設定する
+    ことができます。ijexp32_sample_settings.reg の "exts" の値を参照して
+    ください。
+
+7.2. c++filt の設定
+    　MinGW あるいは Cygwin の c++filt.exe があれば、GCC のシンボルをデ
+    コード（デマングル）して表示することができるようになります。
+    　c++filt.exe の場所は、レジストリで設定可能です。
+    ijexp32_sample_settings.reg の "c++filt" の値を参照してください。
+    　設定を行っていない場合は、以下の値がデフォルトとして使用されます。
+
+        C:\MinGW\bin\c++filt.exe
+
+
+８．エクスポート名リスト
     　オリジナル版と同様に、デバッグ版 mfc??d.dll のリストは添付していま
     せん。必要な方は各自で作成して下さい。必要なファイルは以下の場所にあ
     ります。
@@ -71,8 +130,12 @@
       > dumpbin /exports mfc42d.lib | perl -ne "if(/^ +(\d+) {4}(\S+)/){printf \"%04x, %s\n\", $1, $2}" | sort > mfc42d!x64.exp
 
 
-７．ソースファイル
-    　本ソフトのソースは、同梱の src.7z に含まれています。
+９．ソースファイル
+    　本ソフトのソースは、GitHub から入手可能です。（同梱の src.7z にも
+    含まれています。）
+
+        https://github.com/k-takata/ijexp32
+
     　ijexp32.dsw, ijexp32.dsp は VC6 のプロジェクトファイルです。オリジ
     ナル版とは異なり、VC5 ではコンパイルできなくなっています。
     　ijexp32.sln, ijexp32.vcproj は、VS.NET 2003 のプロジェクトファイル
@@ -93,7 +156,7 @@
         "double const `double __cdecl std::_Fabs<double>(class std::complex<double> const &,int *)'::`29'::_R2"
 
 
-８．更新履歴
+１０．更新履歴
     2004/12/19  ver.1.01k1
         ・K.Takata による最初の公開バージョン。
         ・コンパイラを VC6 SP6 に変更。
@@ -225,8 +288,15 @@
           る行のみをクリップボードにコピーできるようにした。
         ・ソースファイルから ijexp32.clw を削除。
 
+    2013/06/29  ver.1.01k16
+        ・c++filt.exe を利用して、GCC のシンボルをデマングルして表示でき
+          るようにした。
+        ・レジストリで設定を変更できるようにした。
+        ・対応拡張子をいくつか追加。(ijexp32.ini)
+        ・ExeHdr タブで、生の値も表示するようにした。
 
-９．注意事項、その他
+
+１１．注意事項、その他
     ・この改造版に固有のことをオリジナル版の作者に質問することは決してし
       ないでください。
     ・ライセンスはオリジナル版に従うものとします。
@@ -234,4 +304,4 @@
         改造版作者 : K.Takata（高田 謙）
         URL        : http://webs.to/ken/
                    : http://homepage3.nifty.com/k-takata/
-                   : https://github.com/k-takata/ijexp32/
+                   : https://github.com/k-takata/ijexp32
