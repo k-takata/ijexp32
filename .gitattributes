@@ -7,3 +7,4 @@
 /src/resource.h	whitespace=-blank-at-eol
 
 *.inf		whitespace=-blank-at-eof
+*.reg		whitespace=-blank-at-eof
