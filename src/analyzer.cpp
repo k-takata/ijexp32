@@ -416,7 +416,7 @@ LPCTSTR alpszDirName[IMAGE_NUMBEROF_DIRECTORY_ENTRIES] = {
 bool CAnalyzer::AnalyzeExeHdr(HWND hwndHdrList, HWND hwndDirList, HWND hwndSecList)
 {
 	LPCTSTR lpszValue;
-	CString strValue;
+	CString strValue, strTemp;
 	CListCtrl list;
 
 	list.Attach(hwndHdrList);
@@ -522,8 +522,9 @@ bool CAnalyzer::AnalyzeExeHdr(HWND hwndHdrList, HWND hwndDirList, HWND hwndSecLi
 		lpszValue = _T("unknown");
 		break;
 	}
+	strValue.Format(CString(lpszValue) + _T(" (") + szHex4Fmt + _T(")"), m_nt_hdr.FileHeader.Machine);
 	list.InsertItem (nCount, _T("Target CPU type"));
-	list.SetItemText(nCount, 1, lpszValue);
+	list.SetItemText(nCount, 1, strValue);
 	nCount++;
 	strValue.Format(szHex4Fmt, m_nt_hdr.FileHeader.NumberOfSections);
 	list.InsertItem (nCount, _T("Section No."));
@@ -598,9 +599,8 @@ bool CAnalyzer::AnalyzeExeHdr(HWND hwndHdrList, HWND hwndDirList, HWND hwndSecLi
 	} else {
 		strValue += _T("RelocationsInfo, ");
 	}
-	if (!strValue.IsEmpty()) {
-		strValue = strValue.Left(strValue.GetLength() - 2);
-	}
+	strTemp = strValue.Left(strValue.GetLength() - 2) + _T(" (") + szHex4Fmt + _T(")");
+	strValue.Format(strTemp, m_nt_hdr.FileHeader.Characteristics);
 	list.InsertItem (nCount, _T("Flags"));
 	list.SetItemText(nCount, 1, strValue);
 	nCount++;
@@ -721,10 +721,10 @@ bool CAnalyzer::AnalyzeExeHdr(HWND hwndHdrList, HWND hwndDirList, HWND hwndSecLi
 		lpszValue = _T("unknown");
 		break;
 	}
+	strValue.Format(CString(lpszValue) + _T(" (") + szHex4Fmt + _T(")"), m_nt_hdr32.OptionalHeader.Subsystem);
 	list.InsertItem (nCount, _T("Sub-system"));
-	list.SetItemText(nCount, 1, lpszValue);
+	list.SetItemText(nCount, 1, strValue);
 	nCount++;
-//	strValue.Format(szHex4Fmt, m_nt_hdr32.OptionalHeader.DllCharacteristics);
 	strValue.Empty();
 	if (m_nt_hdr32.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_DYNAMIC_BASE) {
 		strValue += _T("DynamicBase, ");
@@ -750,9 +750,12 @@ bool CAnalyzer::AnalyzeExeHdr(HWND hwndHdrList, HWND hwndDirList, HWND hwndSecLi
 	if (m_nt_hdr32.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_TERMINAL_SERVER_AWARE) {
 		strValue += _T("TerminalServerAware, ");
 	}
-	if (!strValue.IsEmpty()) {
-		strValue = strValue.Left(strValue.GetLength() - 2);
+	if (strValue.IsEmpty()) {
+		strTemp = szHex4Fmt;
+	} else {
+		strTemp = strValue.Left(strValue.GetLength() - 2) + _T(" (") + szHex4Fmt + _T(")");
 	}
+	strValue.Format(strTemp, m_nt_hdr32.OptionalHeader.DllCharacteristics);
 	list.InsertItem (nCount, _T("DLL init.func.flags"));
 	list.SetItemText(nCount, 1, strValue);
 	nCount++;
