@@ -140,10 +140,9 @@ STDAPI DllUnregisterServer(void)
 
 void MsgBox(HWND hwnd, LPCTSTR lpszCaption, UINT nId)
 {
-	TCHAR szMsg[256];
-	if (::LoadString(g_hModule, nId, szMsg, lengthof(szMsg))) {
-		::MessageBox(hwnd, szMsg, lpszCaption, MB_OK);
-	}
+	CString strMsg;
+	strMsg.LoadString(nId);
+	::MessageBox(hwnd, strMsg, lpszCaption, MB_OK);
 }
 
 bool IsWindowsXP(void)
