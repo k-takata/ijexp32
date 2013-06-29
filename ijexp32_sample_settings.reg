@@ -1,0 +1,6 @@
+REGEDIT4
+
+[HKEY_CURRENT_USER\Software\ijexp32\ijexp32]
+"exts"=".exe;.dll;.sys;.ocx;.scr;.cpl;.mui;.ax;.acm;.spi;.vfp;.auf;.aui;.auo;.auc;.pyd"
+"c++filt"="C:\\MinGW\\bin\\c++filt.exe"
+

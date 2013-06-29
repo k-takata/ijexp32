@@ -92,6 +92,7 @@ void CAnalyzer::LoadExpFile(LPCTSTR lpszServer, bool b64bit)
 
 bool CAnalyzer::Open(HWND hwnd, LPCTSTR lpszPath, bool bQuiet)
 {
+	LoadCxxFiltPath();
 	if (m_file.Open(lpszPath, CFile::modeRead | CFile::shareDenyWrite) == FALSE) {
 		if (!bQuiet) {
 			::MsgBox(hwnd, lpszPath, IDS_COULD_NOT_OPEN);
@@ -113,7 +114,6 @@ bool CAnalyzer::Open(HWND hwnd, LPCTSTR lpszPath, bool bQuiet)
 							if (m_nt_hdr.FileHeader.Characteristics & IMAGE_FILE_32BIT_MACHINE) {
 								m_b32bit = true;
 							}
-//							DWORD dwPeHdrOffset = m_dos_hdr.e_lfanew;
 							DWORD dwSecEntry = m_nt_hdr.FileHeader.NumberOfSections;
 							DWORD dwSecOffset = dwPeHdrOffset + sizeof(DWORD) + sizeof(IMAGE_FILE_HEADER) + m_nt_hdr.FileHeader.SizeOfOptionalHeader;
 							m_file.Seek(dwSecOffset, CFile::begin);
@@ -148,6 +148,13 @@ bool CAnalyzer::Open(HWND hwnd, LPCTSTR lpszPath, bool bQuiet)
 void CAnalyzer::Close(void)
 {
 	m_file.Close();
+}
+
+void CAnalyzer::LoadCxxFiltPath()
+{
+	TCHAR path[MAX_PATH];
+	LoadSetting(_T("c++filt"), path, lengthof(path), DEFAULT_CXXFILT_PATH);
+	m_cxxfilt.SetCxxFiltPath(path);
 }
 
 bool CAnalyzer::ReadSection(HWND hwnd, int nDirectory, bool bQuiet, bool bCheckOnly)
@@ -955,6 +962,7 @@ bool CAnalyzer::AnalyzeExport(HWND hwndMsg, HWND hwndList, bool bDecode)
 	LPDWORD lpdwNameTable = reinterpret_cast<LPDWORD>(&m_vecBuff[dwAddrOfNames - m_dwSecAddr]);
 	strMsg.Format(_T("# Number of functions: %u\r\n# Number of names: %u\r\n\r\n"),
 			pExpDir->NumberOfFunctions, pExpDir->NumberOfNames);
+//	m_cxxfilt.StartCxxFilt();
 	for (DWORD dwCount = 0; dwCount < pExpDir->NumberOfNames; dwCount++) {
 		strOrdinal.Format(szHex4Fmt, *lpwOrdTable++ + pExpDir->Base);
 		list.InsertItem(nCount, strOrdinal);
@@ -967,6 +975,7 @@ bool CAnalyzer::AnalyzeExport(HWND hwndMsg, HWND hwndList, bool bDecode)
 			strMsg += _T("\r\n");
 		}
 	}
+	m_cxxfilt.StopCxxFilt();
 	list.SetColumnWidth(1, LVSCW_AUTOSIZE);
 	list.Detach();
 	for (mapcls_t::const_iterator mit = m_mapCls.begin(); mit != m_mapCls.end(); ++mit) {
@@ -997,14 +1006,12 @@ bool CAnalyzer::AnalyzeImport(HWND hwndList, bool bFunc, bool bDecode)
 	int nCount = 0;
 	CString strOrdinal, strName;
 	PIMAGE_IMPORT_DESCRIPTOR pImpDesc = reinterpret_cast<PIMAGE_IMPORT_DESCRIPTOR>(&m_vecBuff[m_dwDirAddr - m_dwSecAddr]);
-//	for (int nDesc = 0; pImpDesc[nDesc].Characteristics; nDesc++) {
+//	m_cxxfilt.StartCxxFilt();
 	for (int nDesc = 0; pImpDesc[nDesc].FirstThunk; nDesc++) {
-	//	LPTSTR lpszServer = reinterpret_cast<LPTSTR>(&m_vecBuff[pImpDesc[nDesc].Name - m_dwSecAddr]);
 		CString lpszServer = reinterpret_cast<LPSTR>(&m_vecBuff[pImpDesc[nDesc].Name - m_dwSecAddr]);
 		if (!bFunc) {
 			list.InsertItem(nCount++, lpszServer);
 		} else {
-//			DWORD dwFirstThunk = /*reinterpret_cast<DWORD>*/(pImpDesc[nDesc].OriginalFirstThunk);
 			DWORD dwFirstThunk = (pImpDesc[nDesc].OriginalFirstThunk) ? pImpDesc[nDesc].OriginalFirstThunk : pImpDesc[nDesc].FirstThunk;
 			if (m_b32bit) {
 				PIMAGE_THUNK_DATA32 pThkDat = reinterpret_cast<PIMAGE_THUNK_DATA32>(&m_vecBuff[dwFirstThunk - m_dwSecAddr]);
@@ -1079,6 +1086,7 @@ bool CAnalyzer::AnalyzeImport(HWND hwndList, bool bFunc, bool bDecode)
 			}
 		}
 	}
+	m_cxxfilt.StopCxxFilt();
 	list.SetColumnWidth(0, LVSCW_AUTOSIZE);
 	if (bFunc) {
 		list.SetColumnWidth(2, LVSCW_AUTOSIZE);
@@ -1131,6 +1139,9 @@ struct {
 
 CString CAnalyzer::AnalyzeName(LPCTSTR lpszName, bool bPushCls)
 {
+	if (lpszName[0] == _T('_') && lpszName[1] == _T('Z')) {
+		return m_cxxfilt.Demangle(lpszName);
+	}
 	if (*lpszName != _T('?')) {
 		return lpszName;
 	}
@@ -1176,7 +1187,6 @@ CString CAnalyzer::AnalyzeName(LPCTSTR lpszName, bool bPushCls)
 		break;
 	}
 	if (aAttrTable[nAttr].bFunc) {
-//		TCHAR cDeco = _T('\0');
 		if (aAttrTable[nAttr].bDeco) {
 			strDeco = AnalyzeDeco(&lpszStr);
 		}
@@ -1407,7 +1417,7 @@ CString CAnalyzer::AnalyzeSpc(LPCTSTR *plpszStr, bool &bConstDest)
 		}
 	}
 	if (lpszSpcName) {
-		if (lpszSpcName[0] == _T('$')) { // constructor, destoructor
+		if (lpszSpcName[0] == _T('$')) { // constructor, destructor
 			bConstDest = true;
 			strName = &lpszSpcName[1];
 		} else if (lpszSpcName[0] == _T('@')) { // operators
@@ -1673,7 +1683,7 @@ CString CAnalyzer::AnalyzeVarType(LPCTSTR *plpszStr, LPCTSTR lpszPtrStr, bool bR
 		return _T("void") + strPtr;
 //	case _T('Y'): // unknown
 //	case _T('Z'): // unknown
-	case _T('?'): // union, struct, class, enum with decolattion.
+	case _T('?'): // union, struct, class, enum with decoration.
 		{
 			CString strWork = AnalyzeDeco(plpszStr);
 			if (!strWork.IsEmpty()) {

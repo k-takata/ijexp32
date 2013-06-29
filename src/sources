@@ -23,6 +23,7 @@ TARGETTYPE=DYNLINK
 TARGETLIBS=$(SDK_LIB_PATH)\kernel32.lib \
 	$(SDK_LIB_PATH)\user32.lib \
 	$(SDK_LIB_PATH)\shell32.lib \
+	$(SDK_LIB_PATH)\shlwapi.lib \
 	$(SDK_LIB_PATH)\comctl32.lib \
 	$(SDK_LIB_PATH)\ole32.lib \
 	$(SDK_LIB_PATH)\uuid.lib
@@ -39,6 +40,7 @@ INCLUDES=$(DDK_INC_PATH)
 # conflicts if two developers are adding source files to the same component.
 #
 SOURCES=analyzer.cpp \
+	cxxfilt.cpp \
 	expprsht.cpp \
 	factory.cpp \
 	hdrprsht.cpp \

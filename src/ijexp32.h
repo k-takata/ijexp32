@@ -69,6 +69,10 @@ typedef unsigned long ULONG_PTR;
 #define lengthof(x) (sizeof(x) / sizeof(*(x)))
 #endif
 
+#define IJE_REG_KEY				_T("Software\\ijexp32\\ijexp32")
+#define DEFAULT_CXXFILT_PATH	_T("C:\\MinGW\\bin\\c++filt.exe")
+#define DEFAULT_EXTS			_T(".exe;.dll;.sys")
+
 enum {
 	ID_EXEHDR,
 	ID_EXPORT,
@@ -95,6 +99,7 @@ DEFINE_GUID(CLSID_Import,
 void MsgBox(HWND hwnd, LPCTSTR lpszCaption, UINT nId);
 bool IsWindowsXP(void);
 bool SetClipboardText(HWND hwnd, const CString &strText);
+void LoadSetting(LPCTSTR lpKey, LPTSTR lpBuf, DWORD nSize, LPCTSTR lpDefault = NULL);
 
 // factory.cpp
 class CFactory : public IClassFactory
@@ -205,6 +210,28 @@ struct NoCase {
 typedef map<DWORD, CString> mapname_t; // ordinal, export name
 typedef map<CString, mapname_t, NoCase> mapexp_t; // server, <ordinal, export name>
 
+// cxxfilt.cpp
+class CCxxFilt
+{
+public:
+	CString	m_strCxxFiltPath;
+	HANDLE	m_hInputWrite;
+	HANDLE	m_hOutputRead;
+//	HANDLE	m_hErrorRead;
+	HANDLE	m_hChildProcess;
+
+public:
+	CCxxFilt();
+	virtual ~CCxxFilt();
+public:
+	bool StartCxxFilt();
+	bool StopCxxFilt();
+	void SetCxxFiltPath(LPCTSTR lpszPath) { m_strCxxFiltPath = lpszPath; }
+	CString Demangle(LPCTSTR lpszName);
+private:
+	bool LaunchRedirectedChild(HANDLE hChildStdIn, HANDLE hChildStdOut, HANDLE hChildStdErr);
+};
+
 // analizer.cpp
 class CAnalyzer
 {
@@ -231,6 +258,7 @@ public:
 	bool m_b32bit;
 	vector<IMAGE_SECTION_HEADER> m_vecSecHdr;
 	enum PtrType {PTR_NONE = -1, PTR_NORMAL, PTR_CONST, PTR_VOLATILE, PTR_CONST_VOLATILE};
+	CCxxFilt	m_cxxfilt;
 public:
 	CAnalyzer();
 	~CAnalyzer();
@@ -255,6 +283,8 @@ public:
 	CString AnalyzeVarTypePtr(LPCTSTR *plpszStr, LPCTSTR lpszName, bool bRec, PtrType ePtrType, bool bFuncRet = false);
 	LONGLONG AnalyzeInt(LPCTSTR *plpszStr);
 	ULONGLONG AnalyzeUInt(LPCTSTR *plpszStr);
+private:
+	void	LoadCxxFiltPath();
 };
 
 #endif
