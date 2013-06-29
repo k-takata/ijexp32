@@ -55,7 +55,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /dll /machine:I386
-# ADD LINK32 ole32.lib /nologo /base:"0x23d00000" /subsystem:windows /dll /machine:I386 /opt:nowin98
+# ADD LINK32 ole32.lib shlwapi.lib /nologo /base:"0x23d00000" /subsystem:windows /dll /machine:I386 /opt:nowin98
 # SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "ijexp32 - Win32 Debug"
@@ -82,7 +82,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /dll /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 ole32.lib /nologo /base:"0x23d00000" /subsystem:windows /dll /debug /machine:I386 /out:"Debug/ijexp32d.dll" /pdbtype:sept
+# ADD LINK32 ole32.lib shlwapi.lib /nologo /base:"0x23d00000" /subsystem:windows /dll /debug /machine:I386 /out:"Debug/ijexp32d.dll" /pdbtype:sept
 
 !ELSEIF  "$(CFG)" == "ijexp32 - Win32 Release Unicode"
 
@@ -110,7 +110,7 @@ BSC32=bscmake.exe
 LINK32=link.exe
 # ADD BASE LINK32 ole32.lib /nologo /base:"0x23d00000" /subsystem:windows /dll /machine:I386
 # SUBTRACT BASE LINK32 /map /nodefaultlib
-# ADD LINK32 ole32.lib /nologo /base:"0x23d00000" /subsystem:windows /dll /machine:I386 /opt:nowin98
+# ADD LINK32 ole32.lib shlwapi.lib /nologo /base:"0x23d00000" /subsystem:windows /dll /machine:I386 /opt:nowin98
 # SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "ijexp32 - Win32 Debug Unicode"
@@ -138,7 +138,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 ole32.lib /nologo /base:"0x23d00000" /subsystem:windows /dll /debug /machine:I386 /out:"Debug/ijexp32d.dll" /pdbtype:sept
-# ADD LINK32 ole32.lib /nologo /base:"0x23d00000" /subsystem:windows /dll /debug /machine:I386 /out:"Debug/ijexp32d.dll" /pdbtype:sept
+# ADD LINK32 ole32.lib shlwapi.lib /nologo /base:"0x23d00000" /subsystem:windows /dll /debug /machine:I386 /out:"Debug/ijexp32d.dll" /pdbtype:sept
 
 !ENDIF 
 
