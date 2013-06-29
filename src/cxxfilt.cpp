@@ -29,9 +29,8 @@ CCxxFilt::CCxxFilt()
 {
 	m_hInputWrite = INVALID_HANDLE_VALUE;
 	m_hOutputRead = INVALID_HANDLE_VALUE;
-	//m_hErrorRead = INVALID_HANDLE_VALUE;
+//	m_hErrorRead = INVALID_HANDLE_VALUE;
 	m_hChildProcess = NULL;
-	m_strCxxFiltPath = _T("c:\\MinGW\\bin\\c++filt.exe");	// TODO: set by a user
 }
 
 CCxxFilt::~CCxxFilt()
@@ -113,7 +112,7 @@ bool CCxxFilt::StopCxxFilt()
 {
 	SafeCloseHandle<INVALID_HANDLE_VALUE>(m_hInputWrite);
 	SafeCloseHandle<INVALID_HANDLE_VALUE>(m_hOutputRead);
-	//SafeCloseHandle<INVALID_HANDLE_VALUE>(m_hErrorRead);
+//	SafeCloseHandle<INVALID_HANDLE_VALUE>(m_hErrorRead);
 	SafeCloseHandle<NULL>(m_hChildProcess);
 	return true;
 }

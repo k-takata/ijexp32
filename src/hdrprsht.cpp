@@ -14,9 +14,6 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-#define DEFAULT_EXTS	_T(".exe;.dll;.sys")
-
-
 CHdrPropSheet::CHdrPropSheet()
 {
 //OutputDebugString(_T("CHdrPropSheet::CHdrPropSheet()\n"));
@@ -263,14 +260,8 @@ HRESULT CHdrPropSheet::CheckFileType()
 	TCHAR ext[_MAX_EXT];
 	_tsplitpath(m_szPath, NULL, NULL, NULL, ext);
 
-	TCHAR exts[1024] = DEFAULT_EXTS;
-	TCHAR szIni[MAX_PATH];
-	if (::GetModuleFileName(g_hModule, szIni, lengthof(szIni))) {
-		int len = ::lstrlen(szIni) - 4;
-		::lstrcpy(szIni + len, _T(".ini"));
-		::GetPrivateProfileString(_T("ijexp32"), _T("exts"), DEFAULT_EXTS,
-				exts, lengthof(exts), szIni);
-	}
+	TCHAR exts[1024];
+	LoadSetting(_T("exts"), exts, lengthof(exts), DEFAULT_EXTS);
 
 	LPTSTR tok = _tcstok(exts, _T(";"));
 	while (tok != NULL) {

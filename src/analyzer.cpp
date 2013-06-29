@@ -92,6 +92,7 @@ void CAnalyzer::LoadExpFile(LPCTSTR lpszServer, bool b64bit)
 
 bool CAnalyzer::Open(HWND hwnd, LPCTSTR lpszPath, bool bQuiet)
 {
+	LoadCxxFiltPath();
 	if (m_file.Open(lpszPath, CFile::modeRead | CFile::shareDenyWrite) == FALSE) {
 		if (!bQuiet) {
 			::MsgBox(hwnd, lpszPath, IDS_COULD_NOT_OPEN);
@@ -147,6 +148,13 @@ bool CAnalyzer::Open(HWND hwnd, LPCTSTR lpszPath, bool bQuiet)
 void CAnalyzer::Close(void)
 {
 	m_file.Close();
+}
+
+void CAnalyzer::LoadCxxFiltPath()
+{
+	TCHAR path[MAX_PATH];
+	LoadSetting(_T("c++filt"), path, lengthof(path), DEFAULT_CXXFILT_PATH);
+	m_cxxfilt.SetCxxFiltPath(path);
 }
 
 bool CAnalyzer::ReadSection(HWND hwnd, int nDirectory, bool bQuiet, bool bCheckOnly)

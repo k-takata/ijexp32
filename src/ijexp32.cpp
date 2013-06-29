@@ -7,6 +7,7 @@
 #include <afxdllx.h>
 #include <objbase.h>  // DEFINE_GUID()
 #include <initguid.h> // CLSID_ExeHdr, CLSID_Export, CLSID_Import
+#include <shlwapi.h>
 #include "ijexp32.h"
 
 #ifdef _DEBUG
@@ -176,4 +177,29 @@ bool SetClipboardText(HWND hwnd, const CString &strText)
 		::CloseClipboard();
 	}
 	return ret;
+}
+
+void LoadSetting(LPCTSTR lpKey, LPTSTR lpBuf, DWORD nSize, LPCTSTR lpDefault)
+{
+	if (lpBuf == NULL) {
+		return;
+	}
+	if (lpDefault == NULL) {
+		lpDefault = _T("");
+	}
+	_tcscpy(lpBuf, lpDefault);
+
+	DWORD cb = nSize * sizeof(TCHAR), type = 0;
+	// Try to read from the registry first.
+	if ((::SHGetValue(HKEY_CURRENT_USER, IJE_REG_KEY, lpKey,
+				&type, lpBuf, &cb) != ERROR_SUCCESS) || (type != REG_SZ)) {
+		// Try to read from the .ini file.
+		TCHAR szIni[MAX_PATH];
+		if (::GetModuleFileName(g_hModule, szIni, lengthof(szIni))) {
+			int len = ::lstrlen(szIni) - 4;
+			::lstrcpy(szIni + len, _T(".ini"));
+			::GetPrivateProfileString(_T("ijexp32"), lpKey, lpDefault,
+					lpBuf, nSize, szIni);
+		}
+	}
 }
