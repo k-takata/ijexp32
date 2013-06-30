@@ -1021,7 +1021,7 @@ bool CAnalyzer::AnalyzeImport(HWND hwndList, bool bFunc, bool bDecode)
 				bool bLoadedExpFile = false;
 				DWORD dwOrdinal;
 				for (int nThunk = 0; dwOrdinal = pThkDat[nThunk].u1.Ordinal; nThunk++) {
-					list.InsertItem(nCount, lpszServer);
+					list.InsertItem(LVIF_TEXT | LVIF_PARAM, nCount, lpszServer, 0, 0, 0, nCount);
 					if (IMAGE_SNAP_BY_ORDINAL32(dwOrdinal)) {
 						// 0x80000000 ... 0xffffffff
 						dwOrdinal = IMAGE_ORDINAL32(dwOrdinal);
