@@ -146,13 +146,25 @@ INT_PTR CALLBACK CImpPropSheet::DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
 			case IDC_VC:
 				{
 					CAnalyzer ana;
-					if (ana.Open(hwnd, reinterpret_cast<CImpPropSheet *>(::GetWindowLongPtr(hwnd, DWLP_USER))->m_szPath)) {
+					CImpPropSheet *impprop = reinterpret_cast<CImpPropSheet *>(::GetWindowLongPtr(hwnd, DWLP_USER));
+					if (ana.Open(hwnd, impprop->m_szPath)) {
 						if (ana.ReadSection(hwnd, IMAGE_DIRECTORY_ENTRY_IMPORT)) {
 							bool bFunc   = ::SendMessage(::GetDlgItem(hwnd, IDC_FUNC), BM_GETCHECK, 0, 0) == BST_CHECKED;
 							bool bDecode = ::SendMessage(::GetDlgItem(hwnd, IDC_VC),   BM_GETCHECK, 0, 0) == BST_CHECKED;
 							ana.AnalyzeImport(::GetDlgItem(hwnd, IDC_LIST), bFunc, bDecode);
 						}
 						ana.Close();
+					}
+
+					int bSort = 0;
+					for (int i = 0; i < IMP_STATUS_NUM; i++) {
+						bSort |= impprop->m_SortStatus[i];
+					}
+					if (bSort) {
+						CListCtrl list;
+						list.Attach(::GetDlgItem(hwnd, IDC_LIST));
+						list.SortItems(Compare, reinterpret_cast<DWORD_PTR>(hwnd));
+						list.Detach();
 					}
 				}
 				return TRUE;
