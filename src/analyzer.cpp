@@ -968,7 +968,7 @@ bool CAnalyzer::AnalyzeExport(HWND hwndMsg, HWND hwndList, bool bDecode)
 //	m_cxxfilt.StartCxxFilt();
 	for (DWORD dwCount = 0; dwCount < pExpDir->NumberOfNames; dwCount++) {
 		strOrdinal.Format(szHex4Fmt, *lpwOrdTable++ + pExpDir->Base);
-		list.InsertItem(nCount, strOrdinal);
+		list.InsertItem(LVIF_TEXT | LVIF_PARAM, nCount, strOrdinal, 0, 0, 0, nCount);
 		strName = reinterpret_cast<LPSTR>(&m_vecBuff[*lpdwNameTable++ - m_dwSecAddr]);
 		list.SetItemText(nCount, 1, strName);
 		nCount++;
