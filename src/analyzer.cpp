@@ -1013,7 +1013,8 @@ bool CAnalyzer::AnalyzeImport(HWND hwndList, bool bFunc, bool bDecode)
 	for (int nDesc = 0; pImpDesc[nDesc].FirstThunk; nDesc++) {
 		CString lpszServer = reinterpret_cast<LPSTR>(&m_vecBuff[pImpDesc[nDesc].Name - m_dwSecAddr]);
 		if (!bFunc) {
-			list.InsertItem(nCount++, lpszServer);
+			list.InsertItem(LVIF_TEXT | LVIF_PARAM, nCount, lpszServer, 0, 0, 0, nCount);
+			nCount++;
 		} else {
 			DWORD dwFirstThunk = (pImpDesc[nDesc].OriginalFirstThunk) ? pImpDesc[nDesc].OriginalFirstThunk : pImpDesc[nDesc].FirstThunk;
 			if (m_b32bit) {
@@ -1056,7 +1057,7 @@ bool CAnalyzer::AnalyzeImport(HWND hwndList, bool bFunc, bool bDecode)
 				bool bLoadedExpFile = false;
 				ULONGLONG qwOrdinal;
 				for (int nThunk = 0; qwOrdinal = pThkDat[nThunk].u1.Ordinal; nThunk++) {
-					list.InsertItem(nCount, lpszServer);
+					list.InsertItem(LVIF_TEXT | LVIF_PARAM, nCount, lpszServer, 0, 0, 0, nCount);
 					if (IMAGE_SNAP_BY_ORDINAL64(qwOrdinal)) {
 						// 0x80000000'00000000 ... 0xffffffff'ffffffff
 						DWORD dwOrdinal = static_cast<DWORD>(IMAGE_ORDINAL64(qwOrdinal));
