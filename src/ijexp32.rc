@@ -145,8 +145,7 @@ BEGIN
     EDITTEXT        IDC_MSG,5,3,250,150,ES_MULTILINE | ES_AUTOVSCROLL | 
                     ES_AUTOHSCROLL | WS_VSCROLL | WS_HSCROLL
     CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | 
-                    LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | 
-                    WS_TABSTOP,5,3,250,150
+                    LVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,5,3,250,150
     CONTROL         "&VC",IDC_VC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,205,
                     156,25,10
     PUSHBUTTON      "&Save",IDC_SAVE,231,155,25,12
@@ -163,8 +162,7 @@ BEGIN
     LTEXT           "Copyright (C) 2004-2013 K.Takata, All rights reserved.",
                     IDC_STATIC,5,168,172,10,WS_TABSTOP
     CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | 
-                    LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | 
-                    WS_TABSTOP,5,3,250,150
+                    LVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,5,3,250,150
     CONTROL         "&FN",IDC_FUNC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,175,
                     156,25,10
     CONTROL         "&VC",IDC_VC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,205,
@@ -210,8 +208,7 @@ BEGIN
     EDITTEXT        IDC_MSG,5,3,250,200,ES_MULTILINE | ES_AUTOVSCROLL | 
                     ES_AUTOHSCROLL | WS_VSCROLL | WS_HSCROLL
     CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | 
-                    LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | 
-                    WS_TABSTOP,5,3,250,200
+                    LVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,5,3,250,200
     CONTROL         "&VC",IDC_VC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,205,
                     206,25,10
     PUSHBUTTON      "&Save",IDC_SAVE,231,205,25,12
@@ -228,8 +225,7 @@ BEGIN
     LTEXT           "Copyright (C) 2004-2013 K.Takata, All rights reserved.",
                     IDC_STATIC,5,218,172,10,WS_TABSTOP
     CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | 
-                    LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | 
-                    WS_TABSTOP,5,3,250,200
+                    LVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,5,3,250,200
     CONTROL         "&FN",IDC_FUNC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,175,
                     206,25,10
     CONTROL         "&VC",IDC_VC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,205,

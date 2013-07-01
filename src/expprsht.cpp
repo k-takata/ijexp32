@@ -186,6 +186,16 @@ INT_PTR CALLBACK CExpPropSheet::DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
 					CWnd::FromHandle(hwnd), NULL);
 		}
 		break;
+	case WM_NOTIFY:
+		{
+			LPNMHDR hdr = reinterpret_cast<LPNMHDR>(lParam);
+			if ((hdr->idFrom == IDC_LIST) && (hdr->code == LVN_COLUMNCLICK)) {
+				LPNMLISTVIEW nmlv = reinterpret_cast<LPNMLISTVIEW>(hdr);
+				CExpPropSheet *expprop = reinterpret_cast<CExpPropSheet *>(::GetWindowLongPtr(hwnd, DWLP_USER));
+				expprop->OnColumnClick(hwnd, nmlv);
+			}
+		}
+		break;
 	}
 	return FALSE;
 }
@@ -216,4 +226,81 @@ CString CExpPropSheet::GetText(HWND hwnd, bool bBinary, bool bDecode, bool bSele
 		list.Detach();
 	}
 	return strText;
+}
+
+void CExpPropSheet::OnColumnClick(HWND hwnd, LPNMLISTVIEW nmlv)
+{
+	CListCtrl list;
+	list.Attach(nmlv->hdr.hwndFrom);
+
+	// No Sort -> Sort Up -> Sort Down -> No Sort -> ...
+	int &status = m_SortStatus[nmlv->iSubItem];
+	if (status & HDF_SORTUP) {
+		status = HDF_SORTDOWN;
+	} else if (status & HDF_SORTDOWN) {
+		status = 0;
+	} else {
+		status = HDF_SORTUP;
+	}
+
+	if (status) {
+		// Sorting by name and ordinal are exclusive.
+		m_SortStatus[EXP_STATUS_NUM - nmlv->iSubItem - 1] = 0;
+	}
+
+	// Set the status to the header control.
+	CHeaderCtrl *hdrctrl = list.GetHeaderCtrl();
+	for (int i = 0; i < EXP_STATUS_NUM; i++) {
+		HDITEM hditem;
+		hditem.mask = HDI_FORMAT;
+		hdrctrl->GetItem(i, &hditem);
+		hditem.fmt &= ~(HDF_SORTDOWN | HDF_SORTUP);
+		hditem.fmt |= m_SortStatus[i];
+		hdrctrl->SetItem(i, &hditem);
+	}
+
+	// Do sorting.
+	list.SortItems(Compare, reinterpret_cast<DWORD_PTR>(hwnd));
+	list.Detach();
+}
+
+int CALLBACK CExpPropSheet::Compare(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
+{
+	HWND hwnd = reinterpret_cast<HWND>(lParamSort);
+	CExpPropSheet *expprop = reinterpret_cast<CExpPropSheet *>(::GetWindowLongPtr(hwnd, DWLP_USER));
+
+	// Check the sorting type: by name or ordinal
+	int subitem = -1;
+	for (int i = 0; i < EXP_STATUS_NUM; i++) {
+		if (expprop->m_SortStatus[i]) {
+			subitem = i;
+			break;
+		}
+	}
+	if (subitem == -1) {
+		// Do not sort.
+		return static_cast<int>(lParam1 - lParam2);
+	}
+
+	int ret = 0;
+	CListCtrl list;
+	list.Attach(::GetDlgItem(hwnd, IDC_LIST));
+
+	LVFINDINFO lvfi = {0};
+	lvfi.flags = LVFI_PARAM;
+	lvfi.lParam = lParam1;
+	int item1 = list.FindItem(&lvfi);
+	lvfi.lParam = lParam2;
+	int item2 = list.FindItem(&lvfi);
+
+	// Sort by name or ordinal.
+	CString str1 = list.GetItemText(static_cast<int>(item1), subitem);
+	CString str2 = list.GetItemText(static_cast<int>(item2), subitem);
+	ret = str1.Compare(str2);
+	if (expprop->m_SortStatus[subitem] & HDF_SORTDOWN) {
+		ret = -ret;
+	}
+
+	list.Detach();
+	return ret;
 }

@@ -89,6 +89,9 @@ HRESULT STDMETHODCALLTYPE CImpPropSheet::AddPages(LPFNADDPROPSHEETPAGE lpfnAddPa
 			return E_FAIL;
 		}
 	}
+	for (int i = 0; i < IMP_STATUS_NUM; i++) {
+		m_SortStatus[i] = 0;
+	}
 	AddRef();
 	return S_OK;
 }
@@ -143,13 +146,25 @@ INT_PTR CALLBACK CImpPropSheet::DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
 			case IDC_VC:
 				{
 					CAnalyzer ana;
-					if (ana.Open(hwnd, reinterpret_cast<CImpPropSheet *>(::GetWindowLongPtr(hwnd, DWLP_USER))->m_szPath)) {
+					CImpPropSheet *impprop = reinterpret_cast<CImpPropSheet *>(::GetWindowLongPtr(hwnd, DWLP_USER));
+					if (ana.Open(hwnd, impprop->m_szPath)) {
 						if (ana.ReadSection(hwnd, IMAGE_DIRECTORY_ENTRY_IMPORT)) {
 							bool bFunc   = ::SendMessage(::GetDlgItem(hwnd, IDC_FUNC), BM_GETCHECK, 0, 0) == BST_CHECKED;
 							bool bDecode = ::SendMessage(::GetDlgItem(hwnd, IDC_VC),   BM_GETCHECK, 0, 0) == BST_CHECKED;
 							ana.AnalyzeImport(::GetDlgItem(hwnd, IDC_LIST), bFunc, bDecode);
 						}
 						ana.Close();
+					}
+
+					int bSort = 0;
+					for (int i = 0; i < IMP_STATUS_NUM; i++) {
+						bSort |= impprop->m_SortStatus[i];
+					}
+					if (bSort) {
+						CListCtrl list;
+						list.Attach(::GetDlgItem(hwnd, IDC_LIST));
+						list.SortItems(Compare, reinterpret_cast<DWORD_PTR>(hwnd));
+						list.Detach();
 					}
 				}
 				return TRUE;
@@ -193,6 +208,16 @@ INT_PTR CALLBACK CImpPropSheet::DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
 					CWnd::FromHandle(hwnd), NULL);
 		}
 		break;
+	case WM_NOTIFY:
+		{
+			LPNMHDR hdr = reinterpret_cast<LPNMHDR>(lParam);
+			if ((hdr->idFrom == IDC_LIST) && (hdr->code == LVN_COLUMNCLICK)) {
+				LPNMLISTVIEW nmlv = reinterpret_cast<LPNMLISTVIEW>(hdr);
+				CImpPropSheet *impprop = reinterpret_cast<CImpPropSheet *>(::GetWindowLongPtr(hwnd, DWLP_USER));
+				impprop->OnColumnClick(hwnd, nmlv);
+			}
+		}
+		break;
 	}
 	return FALSE;
 }
@@ -216,4 +241,100 @@ CString CImpPropSheet::GetText(HWND hwnd, bool bBinary, bool bSelectedOnly)
 	}
 	list.Detach();
 	return strText;
+}
+
+void CImpPropSheet::OnColumnClick(HWND hwnd, LPNMLISTVIEW nmlv)
+{
+	CListCtrl list;
+	list.Attach(nmlv->hdr.hwndFrom);
+
+	// No Sort -> Sort Up -> Sort Down -> No Sort -> ...
+	int &status = m_SortStatus[nmlv->iSubItem];
+	if (status & HDF_SORTUP) {
+		status = HDF_SORTDOWN;
+	} else if (status & HDF_SORTDOWN) {
+		status = 0;
+	} else {
+		status = HDF_SORTUP;
+	}
+
+	if (status) {
+		// Sorting by name and ordinal are exclusive.
+		if (nmlv->iSubItem > 0) {
+			m_SortStatus[IMP_STATUS_NUM - nmlv->iSubItem] = 0;
+
+			// Always sort by server name.
+			if ((m_SortStatus[0] & (HDF_SORTDOWN | HDF_SORTUP)) == 0) {
+				m_SortStatus[0] = HDF_SORTUP;
+			}
+		}
+	}
+
+	// Set the status to the header control.
+	CHeaderCtrl *hdrctrl = list.GetHeaderCtrl();
+	for (int i = 0; i < IMP_STATUS_NUM; i++) {
+		HDITEM hditem;
+		hditem.mask = HDI_FORMAT;
+		hdrctrl->GetItem(i, &hditem);
+		hditem.fmt &= ~(HDF_SORTDOWN | HDF_SORTUP);
+		hditem.fmt |= m_SortStatus[i];
+		hdrctrl->SetItem(i, &hditem);
+	}
+
+	// Do sorting.
+	list.SortItems(Compare, reinterpret_cast<DWORD_PTR>(hwnd));
+	list.Detach();
+}
+
+int CALLBACK CImpPropSheet::Compare(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
+{
+	HWND hwnd = reinterpret_cast<HWND>(lParamSort);
+	CImpPropSheet *impprop = reinterpret_cast<CImpPropSheet *>(::GetWindowLongPtr(hwnd, DWLP_USER));
+
+	// Check the sorting type: by name or ordinal
+	int subitem = 0;
+	for (int i = 1; i < IMP_STATUS_NUM; i++) {
+		if (impprop->m_SortStatus[i]) {
+			subitem = i;
+			break;
+		}
+	}
+	if ((subitem == 0) && (impprop->m_SortStatus[0] == 0)) {
+		// Do not sort.
+		return static_cast<int>(lParam1 - lParam2);
+	}
+
+	int ret = 0;
+	CListCtrl list;
+	list.Attach(::GetDlgItem(hwnd, IDC_LIST));
+
+	LVFINDINFO lvfi = {0};
+	lvfi.flags = LVFI_PARAM;
+	lvfi.lParam = lParam1;
+	int item1 = list.FindItem(&lvfi);
+	lvfi.lParam = lParam2;
+	int item2 = list.FindItem(&lvfi);
+
+	// Always sort by server name first.
+	CString strServer1 = list.GetItemText(static_cast<int>(item1), 0);
+	CString strServer2 = list.GetItemText(static_cast<int>(item2), 0);
+	ret = strServer1.Compare(strServer2);
+	if (impprop->m_SortStatus[0] & HDF_SORTDOWN) {
+		ret = -ret;
+	}
+	// Sort by name or ordinal if needed.
+	if (ret == 0) {
+		if (subitem) {
+			CString str1 = list.GetItemText(static_cast<int>(item1), subitem);
+			CString str2 = list.GetItemText(static_cast<int>(item2), subitem);
+			ret = str1.Compare(str2);
+			if (impprop->m_SortStatus[subitem] & HDF_SORTDOWN) {
+				ret = -ret;
+			}
+		} else {
+			ret = static_cast<int>(lParam1 - lParam2);
+		}
+	}
+	list.Detach();
+	return ret;
 }
