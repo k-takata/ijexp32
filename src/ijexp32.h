@@ -153,11 +153,13 @@ private:
 };
 
 // expprsht.cpp
+#define EXP_STATUS_NUM	2
 class CExpPropSheet : public IShellExtInit, IShellPropSheetExt
 {
 public:
 	LONG  m_nRef;
 	TCHAR m_szPath[1024];
+	int m_SortStatus[EXP_STATUS_NUM];
 public:
 	CExpPropSheet();
 	~CExpPropSheet();
@@ -176,6 +178,8 @@ public:
 	static UINT CALLBACK PropSheetPageProc(HWND hwnd, UINT msg, LPPROPSHEETPAGE ppsp);
 private:
 	static CString GetText(HWND hwnd, bool bBinary, bool bDecode, bool bSelectedOnly);
+	void OnColumnClick(HWND hwnd, LPNMLISTVIEW nmlv);
+	static int CALLBACK Compare(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort);
 };
 
 // impprsht.cpp
