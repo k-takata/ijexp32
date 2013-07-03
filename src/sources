@@ -54,7 +54,7 @@ IA64_SOURCES=
 # Next, specify options for the compiler using C_DEFINES.
 # All parameters specified here will be passed to both the C
 # compiler and the resource compiler.
-C_DEFINES=
+C_DEFINES=/Ires
 
 USER_C_FLAGS=/GS- /GR- /Oy
 
