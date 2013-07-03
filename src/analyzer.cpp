@@ -108,12 +108,11 @@ bool CAnalyzer::Open(HWND hwnd, LPCTSTR lpszPath, bool bQuiet)
 				m_file.Read(&m_nt_hdr, sizeof(IMAGE_NT_HEADERS64)); // read PE hdr
 				if (m_nt_hdr.Signature == IMAGE_NT_SIGNATURE) {
 					if (m_nt_hdr.FileHeader.Characteristics & IMAGE_FILE_EXECUTABLE_IMAGE) {
-						if (((m_nt_hdr.FileHeader.Characteristics & IMAGE_FILE_32BIT_MACHINE)
-									&& (m_nt_hdr32.OptionalHeader.Magic == IMAGE_NT_OPTIONAL_HDR32_MAGIC))
+						if (m_nt_hdr.FileHeader.Characteristics & IMAGE_FILE_32BIT_MACHINE) {
+							m_b32bit = true;
+						}
+						if ((m_b32bit && (m_nt_hdr32.OptionalHeader.Magic == IMAGE_NT_OPTIONAL_HDR32_MAGIC))
 								|| (m_nt_hdr64.OptionalHeader.Magic == IMAGE_NT_OPTIONAL_HDR64_MAGIC)) {
-							if (m_nt_hdr.FileHeader.Characteristics & IMAGE_FILE_32BIT_MACHINE) {
-								m_b32bit = true;
-							}
 							DWORD dwSecEntry = m_nt_hdr.FileHeader.NumberOfSections;
 							DWORD dwSecOffset = dwPeHdrOffset + sizeof(DWORD) + sizeof(IMAGE_FILE_HEADER) + m_nt_hdr.FileHeader.SizeOfOptionalHeader;
 							m_file.Seek(dwSecOffset, CFile::begin);
