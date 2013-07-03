@@ -186,7 +186,7 @@ void LoadSetting(LPCTSTR lpKey, LPTSTR lpBuf, DWORD nSize, LPCTSTR lpDefault)
 	if (lpDefault == NULL) {
 		lpDefault = _T("");
 	}
-	_tcscpy(lpBuf, lpDefault);
+	::lstrcpy(lpBuf, lpDefault);
 
 	DWORD cb = nSize * sizeof(TCHAR), type = 0;
 	// Try to read from the registry first.
