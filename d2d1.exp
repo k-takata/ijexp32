@@ -1,0 +1,11 @@
+0001, D2D1CreateFactory
+0002, D2D1MakeRotateMatrix
+0003, D2D1MakeSkewMatrix
+0004, D2D1IsMatrixInvertible
+0005, D2D1InvertMatrix
+0006, D2D1ConvertColorSpace
+0007, D2D1CreateDevice
+0008, D2D1CreateDeviceContext
+0009, D2D1SinCos
+000a, D2D1Tan
+000b, D2D1Vec3Length

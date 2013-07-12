@@ -28,6 +28,7 @@ UninstDispName64 = "i.j Shell Property Sheets Export/Import 32 (x64) (Remove onl
 ijexp32.dll = 55
 ijexp32_user.inf = 55
 comctl32.exp = 55
+d2d1.exp = 55
 ;ijdll32.exp = 55
 ;ijgdi32.exp = 55
 mfc30.exp = 55
@@ -70,6 +71,7 @@ ijexp32.dll
 ijexp32_user.inf
 ijexp32.ini
 comctl32.exp
+d2d1.exp
 ;ijdll32.exp
 ;ijgdi32.exp
 mfc30.exp
