@@ -151,7 +151,7 @@ void CAnalyzer::Close(void)
 
 void CAnalyzer::LoadCxxFiltPath()
 {
-	TCHAR path[MAX_PATH];
+	TCHAR path[MAX_PATH * 10];
 	LoadSetting(_T("c++filt"), path, lengthof(path), DEFAULT_CXXFILT_PATH);
 	m_cxxfilt.SetCxxFiltPath(path);
 }
