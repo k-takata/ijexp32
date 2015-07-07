@@ -263,12 +263,13 @@ HRESULT CHdrPropSheet::CheckFileType()
 	TCHAR exts[1024];
 	LoadSetting(_T("exts"), exts, lengthof(exts), DEFAULT_EXTS);
 
-	LPTSTR tok = _tcstok(exts, _T(";"));
+	LPCTSTR separator = _T(";");
+	LPTSTR tok = _tcstok(exts, separator);
 	while (tok != NULL) {
 		if (::lstrcmpi(tok, ext) == 0) {
 			return S_OK;
 		}
-		tok = _tcstok(NULL, _T(";"));
+		tok = _tcstok(NULL, separator);
 	}
 
 	return E_FAIL;

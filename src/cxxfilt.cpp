@@ -177,7 +177,7 @@ bool CCxxFilt::LaunchRedirectedChild(HANDLE hChildStdIn, HANDLE hChildStdOut, HA
 	BOOL ret;
 	PROCESS_INFORMATION pi;
 	STARTUPINFO si = {0};
-	TCHAR cmdline[MAX_PATH + 20];
+	CString cmdline;
 
 	si.cb = sizeof(STARTUPINFO);
 	si.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
@@ -186,32 +186,25 @@ bool CCxxFilt::LaunchRedirectedChild(HANDLE hChildStdIn, HANDLE hChildStdOut, HA
 	si.hStdError  = hChildStdErr;
 	si.wShowWindow = SW_HIDE;
 
-	try {
-		// MFC 7.0 or earlier doesn't have CString::Tokenize().
-		LPTSTR buf = new TCHAR[m_strCxxFiltPath.GetLength() + 1];
-		lstrcpy(buf, (LPCTSTR) m_strCxxFiltPath);
-		LPTSTR tok = _tcstok(buf, _T(";"));
-		while (tok != NULL) {
-			DWORD attr = GetFileAttributes(tok);
-			if ((attr != (DWORD) -1)
-					&& ((attr & FILE_ATTRIBUTE_DIRECTORY) == 0)) {
-				// Executable file is found.
-				wsprintf(cmdline, _T("\"%s\" -n"), tok);
-				break;
-			}
-			tok = _tcstok(NULL, _T(";"));
+	// MFC 7.0 or earlier doesn't have CString::Tokenize().
+	CString buf = m_strCxxFiltPath;
+	LPCTSTR separator = _T(";");
+	LPTSTR tok = _tcstok(buf.GetBuffer(0), separator);
+	while (tok != NULL) {
+		DWORD attr = GetFileAttributes(tok);
+		if ((attr != INVALID_FILE_ATTRIBUTES)
+				&& ((attr & FILE_ATTRIBUTE_DIRECTORY) == 0)) {
+			// Executable file is found.
+			cmdline.Format(_T("\"%s\" -n"), tok);	// -n: Do not ignore a leading underscore
+			break;
 		}
-		delete [] buf;
-		if (tok == NULL) {
-			return false;
-		}
-	} catch (CMemoryException* e) {
-		//OutputDebugString(_T("Out of memory\n"));
-		e->Delete();
+		tok = _tcstok(NULL, separator);
+	}
+	if (tok == NULL) {
 		return false;
 	}
 
-	ret = CreateProcess(NULL, cmdline, NULL, NULL, TRUE,
+	ret = CreateProcess(NULL, cmdline.GetBuffer(0), NULL, NULL, TRUE,
 			CREATE_NEW_CONSOLE, NULL, NULL, &si, &pi);
 	if (!ret) {
 		//OutputDebugString(_T("CreateProcess failed"));
