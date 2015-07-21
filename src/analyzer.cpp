@@ -490,12 +490,6 @@ bool CAnalyzer::AnalyzeExeHdr(HWND hwndHdrList, HWND hwndDirList, HWND hwndSecLi
 	case IMAGE_FILE_MACHINE_I386:
 		lpszValue = _T("x86");
 		break;
-	case IMAGE_FILE_MACHINE_IA64:
-		lpszValue = _T("IA64");
-		break;
-	case IMAGE_FILE_MACHINE_AMD64:
-		lpszValue = _T("x64");
-		break;
 	case IMAGE_FILE_MACHINE_R3000:
 		lpszValue = _T("R3000");
 		break;
@@ -508,14 +502,35 @@ bool CAnalyzer::AnalyzeExeHdr(HWND hwndHdrList, HWND hwndDirList, HWND hwndSecLi
 	case IMAGE_FILE_MACHINE_ALPHA:
 		lpszValue = _T("ALPHA");
 		break;
-	case IMAGE_FILE_MACHINE_POWERPC:
-		lpszValue = _T("Power PC");
-		break;
 	case IMAGE_FILE_MACHINE_SH4:
 		lpszValue = _T("SH4");
 		break;
 	case IMAGE_FILE_MACHINE_ARM:
 		lpszValue = _T("ARM");
+		break;
+	case IMAGE_FILE_MACHINE_THUMB:
+		lpszValue = _T("ARM Thumb/Thumb-2");
+		break;
+	case IMAGE_FILE_MACHINE_ARMNT:
+		lpszValue = _T("ARM Thumb-2");
+		break;
+	case IMAGE_FILE_MACHINE_POWERPC:
+		lpszValue = _T("PowerPC");
+		break;
+	case IMAGE_FILE_MACHINE_IA64:
+		lpszValue = _T("IA64");
+		break;
+	case IMAGE_FILE_MACHINE_EBC:
+		lpszValue = _T("EFI Byte Code");
+		break;
+	case IMAGE_FILE_MACHINE_AMD64:
+		lpszValue = _T("x64");
+		break;
+	case IMAGE_FILE_MACHINE_M32R:
+		lpszValue = _T("M32R");
+		break;
+	case 0xaa64:	// not defined in WinSDK 8.1
+		lpszValue = _T("ARM AArch64");
 		break;
 	default:
 		lpszValue = _T("unknown");
