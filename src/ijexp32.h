@@ -116,7 +116,6 @@ DEFINE_GUID(CLSID_Import,
 
 // ijexp32.cpp
 void MsgBox(HWND hwnd, LPCTSTR lpszCaption, UINT nId);
-bool IsWindowsXP(void);
 bool SetClipboardText(HWND hwnd, const CString &strText);
 void LoadSetting(LPCTSTR lpKey, LPTSTR lpBuf, DWORD nSize, LPCTSTR lpDefault = NULL);
 
