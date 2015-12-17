@@ -1,7 +1,7 @@
 
 
-        i.j Shell Property Sheets Export/Import 32 ver.1.01k17
-               Copyright (C) 1999 i.j, 2004-2013 K.Takata
+        i.j Shell Property Sheets Export/Import 32 ver.1.01k18
+               Copyright (C) 1999 i.j, 2004-2015 K.Takata
 
 １．概要
     　i.j 氏の i.j Shell Property Sheets Export/Import 32 (ijexp32) (*1)
@@ -99,9 +99,14 @@
     コード（デマングル）して表示することができるようになります。
     　c++filt.exe の場所は、レジストリで設定可能です。
     ijexp32_sample_settings.reg の "c++filt" の値を参照してください。
-    　設定を行っていない場合は、以下の値がデフォルトとして使用されます。
+    　デフォルトでは以下の順で検索を行い、最初に見つかったものを使用しま
+    す。
 
+        C:\msys64\mingw64\bin\c++filt.exe
+        C:\msys32\mingw32\bin\c++filt.exe
         C:\MinGW\bin\c++filt.exe
+        C:\cygwin64\bin\c++filt.exe
+        C:\cygwin\bin\c++filt.exe
 
 
 ８．エクスポート名リスト
@@ -298,6 +303,11 @@
     2013/07/03  ver.1.01k17
         ・Export, Import リストで、ソートして表示できるようにした。
         ・ソースコード上の細かい修正。
+
+    2015/12/xx  ver.1.01k18
+        ・d2d1.exp を追加。
+        ・c++filt.exe のパスを複数指定できるように修正。
+        ・ARM64 等、いくつかのアーキテクチャに対応。
 
 
 １１．注意事項、その他
