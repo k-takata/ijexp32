@@ -25,7 +25,6 @@ UninstDispName64 = "i.j Shell Property Sheets Export/Import 32 (x64) (Remove onl
 55 = "ijexp32 v1.01",,
 
 [SourceDisksFiles]
-ijexp32.dll = 55
 ijexp32_user.inf = 55
 comctl32.exp = 55
 d2d1.exp = 55
@@ -146,11 +145,6 @@ HKCU,"%Uninstall%","UninstallString",,"%11%\RunDll32 syssetup.dll,SetupInfObject
 HKCU,"%Uninstall%",,,
 HKCU,"%Uninstall%","DisplayName",,"%UninstDispName64%"
 HKCU,"%Uninstall%","UninstallString",,"%11%\RunDll32 syssetup.dll,SetupInfObjectInstallAction DefaultUnInstall.NTAMD64 4 %16412%\%SubDir%\ijexp32_user.inf"
-
-[DefaultInstall]
-CopyFiles = Files1
-DelReg    = DelShellExtReg1, DelShellExtReg2, DelShellExtReg3
-AddReg    = ShellExtReg0, UninstReg1
 
 [DefaultInstall.NT]
 CopyFiles = Files1
