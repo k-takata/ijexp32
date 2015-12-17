@@ -529,8 +529,8 @@ bool CAnalyzer::AnalyzeExeHdr(HWND hwndHdrList, HWND hwndDirList, HWND hwndSecLi
 	case IMAGE_FILE_MACHINE_M32R:
 		lpszValue = _T("M32R");
 		break;
-	case 0xaa64:	// not defined in WinSDK 8.1
-		lpszValue = _T("ARM AArch64");
+	case IMAGE_FILE_MACHINE_ARM64:
+		lpszValue = _T("ARM64");
 		break;
 	default:
 		lpszValue = _T("unknown");
