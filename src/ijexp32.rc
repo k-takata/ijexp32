@@ -108,69 +108,6 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // Dialog
 //
 
-IDD_HDRPROPPAGE DIALOG DISCARDABLE  0, 0, 262, 180
-STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
-CAPTION "ExeHdr"
-FONT 8, "MS Sans Serif"
-BEGIN
-    LTEXT           "Copyright (C) 1999 i.j , All rights reserved.",
-                    IDC_STATIC,5,157,140,10,WS_TABSTOP
-    LTEXT           "Copyright (C) 2004-2013 K.Takata, All rights reserved.",
-                    IDC_STATIC,5,168,172,10,WS_TABSTOP
-    CONTROL         "List1",IDC_HDR_LIST,"SysListView32",LVS_REPORT | 
-                    LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | 
-                    WS_TABSTOP,5,3,250,150
-    CONTROL         "List1",IDC_DIR_LIST,"SysListView32",LVS_REPORT | 
-                    LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | 
-                    WS_TABSTOP,5,3,250,150
-    CONTROL         "List1",IDC_SEC_LIST,"SysListView32",LVS_REPORT | 
-                    LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | 
-                    WS_TABSTOP,5,3,250,150
-    PUSHBUTTON      "&Hdr",IDC_HDR,150,155,25,12
-    PUSHBUTTON      "&Dir",IDC_DIR,175,155,25,12
-    PUSHBUTTON      "S&ec",IDC_SEC,200,155,25,12
-    PUSHBUTTON      "&Save",IDC_SAVE,231,155,25,12
-    PUSHBUTTON      "&Copy",IDC_COPY,231,168,25,12
-END
-
-IDD_EXPPROPPAGE DIALOG DISCARDABLE  0, 0, 262, 180
-STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
-CAPTION "Export"
-FONT 8, "MS Sans Serif"
-BEGIN
-    LTEXT           "Copyright (C) 1999 i.j , All rights reserved.",
-                    IDC_STATIC,5,157,140,10,WS_TABSTOP
-    LTEXT           "Copyright (C) 2004-2013 K.Takata, All rights reserved.",
-                    IDC_STATIC,5,168,172,10,WS_TABSTOP
-    EDITTEXT        IDC_MSG,5,3,250,150,ES_MULTILINE | ES_AUTOVSCROLL | 
-                    ES_AUTOHSCROLL | WS_VSCROLL | WS_HSCROLL
-    CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | 
-                    LVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,5,3,250,150
-    CONTROL         "&VC",IDC_VC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,205,
-                    156,25,10
-    PUSHBUTTON      "&Save",IDC_SAVE,231,155,25,12
-    PUSHBUTTON      "&Copy",IDC_COPY,231,168,25,12
-END
-
-IDD_IMPPROPPAGE DIALOG DISCARDABLE  0, 0, 262, 180
-STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
-CAPTION "Import"
-FONT 8, "MS Sans Serif"
-BEGIN
-    LTEXT           "Copyright (C) 1999 i.j , All rights reserved.",
-                    IDC_STATIC,5,157,140,10,WS_TABSTOP
-    LTEXT           "Copyright (C) 2004-2013 K.Takata, All rights reserved.",
-                    IDC_STATIC,5,168,172,10,WS_TABSTOP
-    CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | 
-                    LVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,5,3,250,150
-    CONTROL         "&FN",IDC_FUNC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,175,
-                    156,25,10
-    CONTROL         "&VC",IDC_VC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,205,
-                    156,25,10
-    PUSHBUTTON      "&Save",IDC_SAVE,231,155,25,12
-    PUSHBUTTON      "&Copy",IDC_COPY,231,168,25,12
-END
-
 IDD_HDRPROPPAGE_EX DIALOG DISCARDABLE  0, 0, 262, 230
 STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "ExeHdr"

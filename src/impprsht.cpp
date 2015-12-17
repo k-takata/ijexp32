@@ -74,7 +74,7 @@ HRESULT STDMETHODCALLTYPE CImpPropSheet::AddPages(LPFNADDPROPSHEETPAGE lpfnAddPa
 	psp.dwSize      = sizeof(PROPSHEETPAGE);
 	psp.dwFlags     = PSP_USEREFPARENT | PSP_USECALLBACK;
 	psp.hInstance   = g_hModule;
-	psp.pszTemplate = MAKEINTRESOURCE(IsWindowsXP() ? IDD_IMPPROPPAGE_EX : IDD_IMPPROPPAGE);
+	psp.pszTemplate = MAKEINTRESOURCE(IDD_IMPPROPPAGE_EX);
 	psp.pszIcon     = 0;
 	psp.pszTitle    = NULL;
 	psp.pfnDlgProc  = (DLGPROC) DlgProc;

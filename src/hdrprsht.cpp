@@ -96,7 +96,7 @@ HRESULT STDMETHODCALLTYPE CHdrPropSheet::AddPages(LPFNADDPROPSHEETPAGE lpfnAddPa
 	psp.dwSize      = sizeof(PROPSHEETPAGE);
 	psp.dwFlags     = PSP_USEREFPARENT | PSP_USECALLBACK;
 	psp.hInstance   = g_hModule;
-	psp.pszTemplate = MAKEINTRESOURCE(IsWindowsXP() ? IDD_HDRPROPPAGE_EX : IDD_HDRPROPPAGE);
+	psp.pszTemplate = MAKEINTRESOURCE(IDD_HDRPROPPAGE_EX);
 	psp.pszIcon     = 0;
 	psp.pszTitle    = NULL;
 	psp.pfnDlgProc  = (DLGPROC) DlgProc;
