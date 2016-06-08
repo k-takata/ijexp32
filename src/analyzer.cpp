@@ -195,11 +195,20 @@ bool CAnalyzer::FindSection(HWND hwnd, int nDirectory, bool bQuiet)
 	return ReadSection(hwnd, nDirectory, bQuiet, true);
 }
 
+void CAnalyzer::GetLogPixels()
+{
+	HDC screen = ::GetDC(0);
+	m_logPixelsX = ::GetDeviceCaps(screen, LOGPIXELSX);
+	//m_logPixelsY = ::GetDeviceCaps(screen, LOGPIXELSY);
+	::ReleaseDC(0, screen);
+}
+
 void CAnalyzer::AnalyzeExeHdrInit(HWND hwndHdrList, HWND hwndDirList, HWND hwndSecList)
 {
 	CListCtrl list;
 	LV_COLUMN lvcolumn;
 
+	GetLogPixels();
 	list.Attach(hwndHdrList);
 
 #ifdef LVM_SETEXTENDEDLISTVIEWSTYLE
@@ -210,14 +219,14 @@ void CAnalyzer::AnalyzeExeHdrInit(HWND hwndHdrList, HWND hwndDirList, HWND hwndS
 	lvcolumn.fmt = LVCFMT_LEFT;
 	lvcolumn.pszText = _T("Name");
 	lvcolumn.iSubItem = 0;
-	lvcolumn.cx = 128;
+	lvcolumn.cx = GetDpiScaledX(128);
 	list.InsertColumn(0, &lvcolumn);
 
 //	lvcolumn.mask = LVCF_FMT | LVCF_SUBITEM | LVCF_TEXT | LVCF_WIDTH;
 //	lvcolumn.fmt = LVCFMT_LEFT;
 	lvcolumn.pszText = _T("Value");
 //	lvcolumn.iSubItem = 0;
-	lvcolumn.cx = 200;
+	lvcolumn.cx = GetDpiScaledX(200);
 	list.InsertColumn(1, &lvcolumn);
 
 	list.Detach();
@@ -232,21 +241,21 @@ void CAnalyzer::AnalyzeExeHdrInit(HWND hwndHdrList, HWND hwndDirList, HWND hwndS
 //	lvcolumn.fmt = LVCFMT_LEFT;
 	lvcolumn.pszText = _T("Name");
 //	lvcolumn.iSubItem = 0;
-	lvcolumn.cx = 64;
+	lvcolumn.cx = GetDpiScaledX(64);
 	list.InsertColumn(0, &lvcolumn);
 
 //	lvcolumn.mask = LVCF_FMT | LVCF_SUBITEM | LVCF_TEXT | LVCF_WIDTH;
 //	lvcolumn.fmt = LVCFMT_LEFT;
 	lvcolumn.pszText = _T("Addr");
 //	lvcolumn.iSubItem = 0;
-	lvcolumn.cx = 64;
+	lvcolumn.cx = GetDpiScaledX(64);
 	list.InsertColumn(1, &lvcolumn);
 
 //	lvcolumn.mask = LVCF_FMT | LVCF_SUBITEM | LVCF_TEXT | LVCF_WIDTH;
 //	lvcolumn.fmt = LVCFMT_LEFT;
 	lvcolumn.pszText = _T("Size");
 //	lvcolumn.iSubItem = 0;
-	lvcolumn.cx = 64;
+	lvcolumn.cx = GetDpiScaledX(64);
 	list.InsertColumn(2, &lvcolumn);
 
 	list.Detach();
@@ -261,70 +270,70 @@ void CAnalyzer::AnalyzeExeHdrInit(HWND hwndHdrList, HWND hwndDirList, HWND hwndS
 //	lvcolumn.fmt = LVCFMT_LEFT;
 	lvcolumn.pszText = _T("Section");
 //	lvcolumn.iSubItem = 0;
-	lvcolumn.cx = 64;
+	lvcolumn.cx = GetDpiScaledX(64);
 	list.InsertColumn(0, &lvcolumn);
 
 //	lvcolumn.mask = LVCF_FMT | LVCF_SUBITEM | LVCF_TEXT | LVCF_WIDTH;
 //	lvcolumn.fmt = LVCFMT_LEFT;
 	lvcolumn.pszText = _T("Addr");
 //	lvcolumn.iSubItem = 0;
-	lvcolumn.cx = 64;
+	lvcolumn.cx = GetDpiScaledX(64);
 	list.InsertColumn(1, &lvcolumn);
 
 //	lvcolumn.mask = LVCF_FMT | LVCF_SUBITEM | LVCF_TEXT | LVCF_WIDTH;
 //	lvcolumn.fmt = LVCFMT_LEFT;
 	lvcolumn.pszText = _T("Size");
 //	lvcolumn.iSubItem = 0;
-	lvcolumn.cx = 64;
+	lvcolumn.cx = GetDpiScaledX(64);
 	list.InsertColumn(2, &lvcolumn);
 
 //	lvcolumn.mask = LVCF_FMT | LVCF_SUBITEM | LVCF_TEXT | LVCF_WIDTH;
 //	lvcolumn.fmt = LVCFMT_LEFT;
 	lvcolumn.pszText = _T("AlignSize");
 //	lvcolumn.iSubItem = 0;
-	lvcolumn.cx = 64;
+	lvcolumn.cx = GetDpiScaledX(64);
 	list.InsertColumn(3, &lvcolumn);
 
 //	lvcolumn.mask = LVCF_FMT | LVCF_SUBITEM | LVCF_TEXT | LVCF_WIDTH;
 //	lvcolumn.fmt = LVCFMT_LEFT;
 	lvcolumn.pszText = _T("FileOff");
 //	lvcolumn.iSubItem = 0;
-	lvcolumn.cx = 64;
+	lvcolumn.cx = GetDpiScaledX(64);
 	list.InsertColumn(4, &lvcolumn);
 
 //	lvcolumn.mask = LVCF_FMT | LVCF_SUBITEM | LVCF_TEXT | LVCF_WIDTH;
 //	lvcolumn.fmt = LVCFMT_LEFT;
 	lvcolumn.pszText = _T("RelocOff");
 //	lvcolumn.iSubItem = 0;
-	lvcolumn.cx = 64;
+	lvcolumn.cx = GetDpiScaledX(64);
 	list.InsertColumn(5, &lvcolumn);
 
 //	lvcolumn.mask = LVCF_FMT | LVCF_SUBITEM | LVCF_TEXT | LVCF_WIDTH;
 //	lvcolumn.fmt = LVCFMT_LEFT;
 	lvcolumn.pszText = _T("Lin#Off");
 //	lvcolumn.iSubItem = 0;
-	lvcolumn.cx = 64;
+	lvcolumn.cx = GetDpiScaledX(64);
 	list.InsertColumn(6, &lvcolumn);
 
 //	lvcolumn.mask = LVCF_FMT | LVCF_SUBITEM | LVCF_TEXT | LVCF_WIDTH;
 //	lvcolumn.fmt = LVCFMT_LEFT;
 	lvcolumn.pszText = _T("Rel#");
 //	lvcolumn.iSubItem = 0;
-	lvcolumn.cx = 40;
+	lvcolumn.cx = GetDpiScaledX(40);
 	list.InsertColumn(7, &lvcolumn);
 
 //	lvcolumn.mask = LVCF_FMT | LVCF_SUBITEM | LVCF_TEXT | LVCF_WIDTH;
 //	lvcolumn.fmt = LVCFMT_LEFT;
 	lvcolumn.pszText = _T("Lin#");
 //	lvcolumn.iSubItem = 0;
-	lvcolumn.cx = 40;
+	lvcolumn.cx = GetDpiScaledX(40);
 	list.InsertColumn(8, &lvcolumn);
 
 //	lvcolumn.mask = LVCF_FMT | LVCF_SUBITEM | LVCF_TEXT | LVCF_WIDTH;
 //	lvcolumn.fmt = LVCFMT_LEFT;
 	lvcolumn.pszText = _T("Flags");
 //	lvcolumn.iSubItem = 0;
-	lvcolumn.cx = 160;	//80
+	lvcolumn.cx = GetDpiScaledX(160);	//80
 	list.InsertColumn(9, &lvcolumn);
 
 	list.Detach();
@@ -333,6 +342,8 @@ void CAnalyzer::AnalyzeExeHdrInit(HWND hwndHdrList, HWND hwndDirList, HWND hwndS
 void CAnalyzer::AnalyzeExportInit(HWND hwndList)
 {
 	CListCtrl list;
+
+	GetLogPixels();
 	list.Attach(hwndList);
 
 #ifdef LVM_SETEXTENDEDLISTVIEWSTYLE
@@ -345,14 +356,14 @@ void CAnalyzer::AnalyzeExportInit(HWND hwndList)
 	lvcolumn.fmt = LVCFMT_LEFT;
 	lvcolumn.pszText = _T("Ord");
 	lvcolumn.iSubItem = 0;
-	lvcolumn.cx = 40;
+	lvcolumn.cx = GetDpiScaledX(40);
 	list.InsertColumn(0, &lvcolumn);
 
 //	lvcolumn.mask = LVCF_FMT | LVCF_SUBITEM | LVCF_TEXT | LVCF_WIDTH;
 //	lvcolumn.fmt = LVCFMT_LEFT;
 	lvcolumn.pszText = _T("Name");
 //	lvcolumn.iSubItem = 0;
-	lvcolumn.cx = 292;
+	lvcolumn.cx = GetDpiScaledX(292);
 	list.InsertColumn(1, &lvcolumn);
 
 	list.Detach();
@@ -361,6 +372,8 @@ void CAnalyzer::AnalyzeExportInit(HWND hwndList)
 void CAnalyzer::AnalyzeImportInit(HWND hwndList)
 {
 	CListCtrl list;
+
+	GetLogPixels();
 	list.Attach(hwndList);
 
 #ifdef LVM_SETEXTENDEDLISTVIEWSTYLE
@@ -373,21 +386,21 @@ void CAnalyzer::AnalyzeImportInit(HWND hwndList)
 	lvcolumn.fmt = LVCFMT_LEFT;
 	lvcolumn.pszText = _T("Server");
 	lvcolumn.iSubItem = 0;
-	lvcolumn.cx = 80;
+	lvcolumn.cx = GetDpiScaledX(80);
 	list.InsertColumn(0, &lvcolumn);
 
 //	lvcolumn.mask = LVCF_FMT | LVCF_SUBITEM | LVCF_TEXT | LVCF_WIDTH;
 //	lvcolumn.fmt = LVCFMT_LEFT;
 	lvcolumn.pszText = _T("Ord");
 //	lvcolumn.iSubItem = 0;
-	lvcolumn.cx = 48;
+	lvcolumn.cx = GetDpiScaledX(48);
 	list.InsertColumn(1, &lvcolumn);
 
 //	lvcolumn.mask = LVCF_FMT | LVCF_SUBITEM | LVCF_TEXT | LVCF_WIDTH;
 //	lvcolumn.fmt = LVCFMT_LEFT;
 	lvcolumn.pszText = _T("Name");
 //	lvcolumn.iSubItem = 0;
-	lvcolumn.cx = 216;
+	lvcolumn.cx = GetDpiScaledX(216);
 	list.InsertColumn(2, &lvcolumn);
 
 	list.Detach();

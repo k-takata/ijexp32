@@ -285,6 +285,7 @@ public:
 	vector<IMAGE_SECTION_HEADER> m_vecSecHdr;
 	enum PtrType {PTR_NONE = -1, PTR_NORMAL, PTR_CONST, PTR_VOLATILE, PTR_CONST_VOLATILE};
 	CCxxFilt	m_cxxfilt;
+	int			m_logPixelsX;
 public:
 	CAnalyzer();
 	~CAnalyzer();
@@ -311,6 +312,8 @@ public:
 	ULONGLONG AnalyzeUInt(LPCTSTR *plpszStr);
 private:
 	void	LoadCxxFiltPath();
+	void	GetLogPixels();
+	int		GetDpiScaledX(int x) { return x * m_logPixelsX / 96; }
 };
 
 #endif

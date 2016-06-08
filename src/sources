@@ -21,6 +21,7 @@ TARGETTYPE=DYNLINK
 # where the machine-specific subdirectory name should go.
 #
 TARGETLIBS=$(SDK_LIB_PATH)\kernel32.lib \
+	$(SDK_LIB_PATH)\gdi32.lib \
 	$(SDK_LIB_PATH)\user32.lib \
 	$(SDK_LIB_PATH)\shell32.lib \
 	$(SDK_LIB_PATH)\shlwapi.lib \
