@@ -31,6 +31,7 @@ CCxxFilt::CCxxFilt()
 	m_hOutputRead = INVALID_HANDLE_VALUE;
 //	m_hErrorRead = INVALID_HANDLE_VALUE;
 	m_hChildProcess = NULL;
+	m_launchfailed = false;
 }
 
 CCxxFilt::~CCxxFilt()
@@ -47,6 +48,9 @@ bool CCxxFilt::StartCxxFilt()
 
 	if (m_hChildProcess != NULL) {
 		return true;
+	}
+	if (m_launchfailed) {
+		return false;
 	}
 	if (m_strCxxFiltPath.IsEmpty()) {
 		goto error;
@@ -105,6 +109,7 @@ error:
 	SafeCloseHandle<INVALID_HANDLE_VALUE>(hErrorWrite);
 
 	StopCxxFilt();
+	m_launchfailed = true;
 	return false;
 }
 
@@ -114,6 +119,7 @@ bool CCxxFilt::StopCxxFilt()
 	SafeCloseHandle<INVALID_HANDLE_VALUE>(m_hOutputRead);
 //	SafeCloseHandle<INVALID_HANDLE_VALUE>(m_hErrorRead);
 	SafeCloseHandle<NULL>(m_hChildProcess);
+	m_launchfailed = false;
 	return true;
 }
 

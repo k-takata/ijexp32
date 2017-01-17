@@ -245,6 +245,8 @@ public:
 	HANDLE	m_hOutputRead;
 //	HANDLE	m_hErrorRead;
 	HANDLE	m_hChildProcess;
+private:
+	bool	m_launchfailed;
 
 public:
 	CCxxFilt();
@@ -254,6 +256,7 @@ public:
 	bool StopCxxFilt();
 	void SetCxxFiltPath(LPCTSTR lpszPath) { m_strCxxFiltPath = lpszPath; }
 	CString Demangle(LPCTSTR lpszName);
+//	void ClearError() { m_launchfailed = false; }
 private:
 	bool LaunchRedirectedChild(HANDLE hChildStdIn, HANDLE hChildStdOut, HANDLE hChildStdErr);
 };
