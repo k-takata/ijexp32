@@ -16,6 +16,7 @@
 *.RES
 *.res
 *.old
+*.7z
 
 # Visual Studio files
 *.aps
@@ -34,6 +35,8 @@
 /src/build*.wrn
 /src/objchk_*/
 /src/objfre_*/
+
+tags
 
 # do not ignore ijexp32's export symbol list
 !/*.exp
