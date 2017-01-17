@@ -115,7 +115,7 @@ FONT 8, "MS Sans Serif"
 BEGIN
     LTEXT           "Copyright (C) 1999 i.j , All rights reserved.",
                     IDC_STATIC,5,207,140,10,WS_TABSTOP
-    LTEXT           "Copyright (C) 2004-2015 K.Takata, All rights reserved.",
+    LTEXT           "Copyright (C) 2004-2017 K.Takata, All rights reserved.",
                     IDC_STATIC,5,218,172,10,WS_TABSTOP
     CONTROL         "List1",IDC_HDR_LIST,"SysListView32",LVS_REPORT | 
                     LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | 
@@ -140,7 +140,7 @@ FONT 8, "MS Sans Serif"
 BEGIN
     LTEXT           "Copyright (C) 1999 i.j , All rights reserved.",
                     IDC_STATIC,5,207,140,10,WS_TABSTOP
-    LTEXT           "Copyright (C) 2004-2015 K.Takata, All rights reserved.",
+    LTEXT           "Copyright (C) 2004-2017 K.Takata, All rights reserved.",
                     IDC_STATIC,5,218,172,10,WS_TABSTOP
     EDITTEXT        IDC_MSG,5,3,250,200,ES_MULTILINE | ES_AUTOVSCROLL | 
                     ES_AUTOHSCROLL | WS_VSCROLL | WS_HSCROLL
@@ -159,7 +159,7 @@ FONT 8, "MS Sans Serif"
 BEGIN
     LTEXT           "Copyright (C) 1999 i.j , All rights reserved.",
                     IDC_STATIC,5,207,140,10,WS_TABSTOP
-    LTEXT           "Copyright (C) 2004-2015 K.Takata, All rights reserved.",
+    LTEXT           "Copyright (C) 2004-2017 K.Takata, All rights reserved.",
                     IDC_STATIC,5,218,172,10,WS_TABSTOP
     CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | 
                     LVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,5,3,250,200
@@ -200,7 +200,7 @@ BEGIN
             VALUE "FileDescription", "i.j Shell Property Sheets Export/Import 32 ver.1.01k18\0"
             VALUE "FileVersion", "1, 1, 18, 0\0"
             VALUE "InternalName", "ijexp32\0"
-            VALUE "LegalCopyright", "Copyright (C) 1999 i.j, 2004-2015 K.Takata. All rights reserved.\0"
+            VALUE "LegalCopyright", "Copyright (C) 1999 i.j, 2004-2017 K.Takata. All rights reserved.\0"
             VALUE "LegalTrademarks", "\0"
             VALUE "OriginalFilename", "ijexp32.dll\0"
             VALUE "PrivateBuild", "\0"

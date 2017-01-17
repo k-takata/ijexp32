@@ -1,7 +1,7 @@
 
 
         i.j Shell Property Sheets Export/Import 32 ver.1.01k18
-               Copyright (C) 1999 i.j, 2004-2015 K.Takata
+               Copyright (C) 1999 i.j, 2004-2017 K.Takata
 
 １．概要
     　i.j 氏の i.j Shell Property Sheets Export/Import 32 (ijexp32) (*1)
@@ -305,10 +305,11 @@
         ・Export, Import リストで、ソートして表示できるようにした。
         ・ソースコード上の細かい修正。
 
-    2015/12/xx  ver.1.01k18
+    2017/01/18  ver.1.01k18
         ・d2d1.exp を追加。
         ・c++filt.exe のパスを複数指定できるように修正。
         ・ARM64 等、いくつかのアーキテクチャに対応。
+        ・High DPI 環境での表示を改善。
 
 
 １１．注意事項、その他
@@ -317,6 +318,5 @@
     ・ライセンスはオリジナル版に従うものとします。
 
         改造版作者 : K.Takata（高田 謙）
-        URL        : http://webs.to/ken/
-                   : http://homepage3.nifty.com/k-takata/
+        URL        : http://k-takata.o.oo7.jp/
                    : https://github.com/k-takata/ijexp32
