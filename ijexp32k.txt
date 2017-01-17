@@ -104,9 +104,10 @@
 
         C:\msys64\mingw64\bin\c++filt.exe
         C:\msys32\mingw32\bin\c++filt.exe
-        C:\MinGW\bin\c++filt.exe
         C:\cygwin64\bin\c++filt.exe
         C:\cygwin\bin\c++filt.exe
+        C:\TDM-GCC-64\bin\c++filt.exe
+        C:\MinGW\bin\c++filt.exe
 
 
 ８．エクスポート名リスト

@@ -2,5 +2,5 @@ REGEDIT4
 
 [HKEY_CURRENT_USER\Software\ijexp32\ijexp32]
 "exts"=".exe;.dll;.sys;.ocx;.scr;.cpl;.mui;.ax;.acm;.spi;.vfp;.auf;.aui;.auo;.auc;.pyd"
-"c++filt"="C:\\msys64\\mingw64\\bin\\c++filt.exe;C:\\msys32\\mingw32\\bin\\c++filt.exe;C:\\MinGW\\bin\\c++filt.exe;C:\\cygwin64\\bin\\c++filt.exe;C:\\cygwin\\bin\\c++filt.exe"
+"c++filt"="C:\\msys64\\mingw64\\bin\\c++filt.exe;C:\\msys32\\mingw32\\bin\\c++filt.exe;C:\\cygwin64\\bin\\c++filt.exe;C:\\cygwin\\bin\\c++filt.exe;C:\\TDM-GCC-64\\bin\\c++filt.exe;C:\\MinGW\\bin\\c++filt.exe"
 
