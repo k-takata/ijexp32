@@ -11,13 +11,13 @@
 １．概要
     　i.j 氏の i.j Shell Property Sheets Export/Import 32 (ijexp32) (*1) の改造版です。
     　エクスプローラのプロパティにて、実行ファイルの PE 構造、インポートとエクスポートを表示します。
-    　オリジナル版の機能に加え、Delphi などでコンパイルされたプログラムのインポート情報の表示や、64bit 実行ファイル (x64, IA64) の情報表示に対応しています。
+    　オリジナル版の機能に加え、Delphi などでコンパイルされたプログラムのインポート情報の表示や、64bit 実行ファイル (x64, IA64, ARM64) の情報表示に対応しています。
 
       (*1) http://www.vector.co.jp/soft/win95/util/se111901.html
 
 
 ２．動作環境
-    　Windows 98/2000/XP/Vista/7 など
+    　Windows Vista/7/8/10 など
     　要 MFC42.DLL (MFC42u.DLL), MSVCRT.DLL, MSVCP60.DLL
 
 
@@ -266,7 +266,9 @@
 	・d2d1.exp を追加。
 	・c++filt.exe のパスを複数指定できるように修正。
 	・ARM64 等、いくつかのアーキテクチャに対応。
+	・Win9x 対応を削除。
 	・High DPI 環境での表示を改善。
+	・vcbungle.txt を更新。
 
 
 １１．注意事項、その他
