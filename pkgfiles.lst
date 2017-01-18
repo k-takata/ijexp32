@@ -24,6 +24,10 @@ mfc80.exp
 mfc80u.exp
 mfc80!x64.exp
 mfc80u!x64.exp
+mfc120u.exp
+mfc120u!x64.exp
+mfc140u.exp
+mfc140u!x64.exp
 oleaut32.exp
 olepro32.exp
 shdocvw.exp
