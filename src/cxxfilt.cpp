@@ -120,6 +120,7 @@ bool CCxxFilt::StopCxxFilt()
 //	SafeCloseHandle<INVALID_HANDLE_VALUE>(m_hErrorRead);
 	SafeCloseHandle<NULL>(m_hChildProcess);
 	m_launchfailed = false;
+	m_buf.Empty();
 	return true;
 }
 
@@ -162,19 +163,39 @@ CString CCxxFilt::Demangle(LPCTSTR lpszName)
 	}
 
 	// get the result
-	CString str;
-	while (true) {
-		if (!ReadFile(m_hOutputRead, &c, sizeof(c), &cb, NULL)) {
+	int ofs;
+	while ((ofs = m_buf.Find(_T('\n'))) < 0) {
+		DWORD avail;
+		if (!PeekNamedPipe(m_hOutputRead, NULL, 0, NULL, &avail, NULL)) {
 			return lpszName;
 		}
-		if (c == '\r') {	// skip CR
+		if (avail == 0) {
+			Sleep(0);
 			continue;
 		}
-		if (c == '\n') {
-			break;
+		char *buf = NULL;
+		try {
+			buf = new char[avail + 1];
+			if (!ReadFile(m_hOutputRead, buf, avail, &cb, NULL)) {
+				delete [] buf;
+				return lpszName;
+			}
+			buf[cb] = '\0';
+			m_buf += CString(buf);
+			delete [] buf;
+		} catch (CMemoryException* e) {
+			e->Delete();
+			delete [] buf;
+			return lpszName;
 		}
-		str += c;
 	}
+	int cr = 0;
+	if ((ofs > 0) && (m_buf[ofs - 1] == _T('\r'))) {
+		cr = 1;
+	}
+	CString str = m_buf.Left(ofs - cr);
+	m_buf.Delete(0, ofs + 1);
+
 	return str;
 }
 

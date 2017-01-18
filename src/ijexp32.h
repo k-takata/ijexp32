@@ -247,6 +247,7 @@ public:
 	HANDLE	m_hChildProcess;
 private:
 	bool	m_launchfailed;
+	CString	m_buf;
 
 public:
 	CCxxFilt();
