@@ -18,7 +18,7 @@
 
 ２．動作環境
     　Windows Vista/7/8/10 など
-    　要 MFC42.DLL (MFC42u.DLL), MSVCRT.DLL, MSVCP60.DLL
+    　要 MFC42u.DLL, MSVCRT.DLL, MSVCP60.DLL
 
 
 ３．インストール
