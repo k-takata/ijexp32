@@ -44,9 +44,13 @@ mfc80.exp = 55
 mfc80u.exp = 55
 mfc80!x64.exp = 55
 mfc80u!x64.exp = 55
+mfc120.exp = 55
 mfc120u.exp = 55
+mfc120!x64.exp = 55
 mfc120u!x64.exp = 55
+mfc140.exp = 55
 mfc140u.exp = 55
+mfc140!x64.exp = 55
 mfc140u!x64.exp = 55
 oleaut32.exp = 55
 olepro32.exp = 55
@@ -89,9 +93,13 @@ mfc80.exp
 mfc80u.exp
 mfc80!x64.exp
 mfc80u!x64.exp
+mfc120.exp
 mfc120u.exp
+mfc120!x64.exp
 mfc120u!x64.exp
+mfc140.exp
 mfc140u.exp
+mfc140!x64.exp
 mfc140u!x64.exp
 oleaut32.exp
 olepro32.exp
