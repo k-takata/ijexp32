@@ -753,6 +753,9 @@ bool CAnalyzer::AnalyzeExeHdr(HWND hwndHdrList, HWND hwndDirList, HWND hwndSecLi
 	list.SetItemText(nCount, 1, strValue);
 	nCount++;
 	strValue.Empty();
+	if (m_nt_hdr32.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_HIGH_ENTROPY_VA) {
+		strValue += _T("HighEntropyVA, ");
+	}
 	if (m_nt_hdr32.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_DYNAMIC_BASE) {
 		strValue += _T("DynamicBase, ");
 	}
@@ -771,8 +774,14 @@ bool CAnalyzer::AnalyzeExeHdr(HWND hwndHdrList, HWND hwndDirList, HWND hwndSecLi
 	if (m_nt_hdr32.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_NO_BIND) {
 		strValue += _T("NoBind, ");
 	}
+	if (m_nt_hdr32.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_APPCONTAINER) {
+		strValue += _T("AppContainer, ");
+	}
 	if (m_nt_hdr32.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_WDM_DRIVER) {
 		strValue += _T("WDM Driver, ");
+	}
+	if (m_nt_hdr32.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_GUARD_CF) {
+		strValue += _T("ControlFlowGuard, ");
 	}
 	if (m_nt_hdr32.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_TERMINAL_SERVER_AWARE) {
 		strValue += _T("TerminalServerAware, ");
