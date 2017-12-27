@@ -1,6 +1,6 @@
 
 
-        i.j Shell Property Sheets Export/Import 32 ver.1.01k18
+        i.j Shell Property Sheets Export/Import 32 ver.1.01k19
                Copyright (C) 1999 i.j, 2004-2017 K.Takata
 
 １．概要
@@ -9,15 +9,15 @@
     　エクスプローラのプロパティにて、実行ファイルの PE 構造、インポート
     とエクスポートを表示します。
     　オリジナル版の機能に加え、Delphi などでコンパイルされたプログラム
-    のインポート情報の表示や、64bit 実行ファイル (x64, IA64) の情報表示
-    に対応しています。
+    のインポート情報の表示や、64bit 実行ファイル (x64, IA64, ARM64) の情
+    報表示に対応しています。
 
       (*1) http://www.vector.co.jp/soft/win95/util/se111901.html
 
 
 ２．動作環境
-    　Windows 98/2000/XP/Vista/7 など
-    　要 MFC42.DLL (MFC42u.DLL), MSVCRT.DLL, MSVCP60.DLL
+    　Windows Vista/7/8/10 など
+    　要 MFC42u.DLL, MSVCRT.DLL, MSVCP60.DLL
 
 
 ３．インストール
@@ -131,7 +131,10 @@
 
 
     　def ファイルの代わりにインポートライブラリから作成することも可能で
-    す。
+    す。インポートライブラリは以下の場所にあります。
+
+      VS 2013/2015:
+         <VS のディレクトリ>\VC\atlmfc\lib\
 
       > dumpbin /exports mfc42d.lib | perl -ne "if(/^ +(\d+) {4}(\S+)/){printf \"%04x, %s\n\", $1, $2}" | sort > mfc42d!x64.exp
 
@@ -309,7 +312,15 @@
         ・d2d1.exp を追加。
         ・c++filt.exe のパスを複数指定できるように修正。
         ・ARM64 等、いくつかのアーキテクチャに対応。
+        ・Win9x 対応を削除。
         ・High DPI 環境での表示を改善。
+        ・vcbungle.txt を更新。
+
+    2017/12/28  ver.1.01k19
+        ・c++filt 利用時の処理速度改善。
+        ・mfc120*.exp, mfc140*.exp を追加。
+        ・DllCharacteristics の新規フラグにいくつか対応。
+        ・d2d1.exp を更新。
 
 
 １１．注意事項、その他

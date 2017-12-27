@@ -179,8 +179,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,1,17,0
- PRODUCTVERSION 1,1,17,0
+ FILEVERSION 1,1,19,0
+ PRODUCTVERSION 1,1,19,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -197,15 +197,15 @@ BEGIN
         BEGIN
             VALUE "Comments", "\0"
             VALUE "CompanyName", "i.j\0"
-            VALUE "FileDescription", "i.j Shell Property Sheets Export/Import 32 ver.1.01k18\0"
-            VALUE "FileVersion", "1, 1, 18, 0\0"
+            VALUE "FileDescription", "i.j Shell Property Sheets Export/Import 32 ver.1.01k19\0"
+            VALUE "FileVersion", "1, 1, 19, 0\0"
             VALUE "InternalName", "ijexp32\0"
             VALUE "LegalCopyright", "Copyright (C) 1999 i.j, 2004-2017 K.Takata. All rights reserved.\0"
             VALUE "LegalTrademarks", "\0"
             VALUE "OriginalFilename", "ijexp32.dll\0"
             VALUE "PrivateBuild", "\0"
             VALUE "ProductName", "i.j Shell Property Sheets Export/Import 32\0"
-            VALUE "ProductVersion", "1, 1, 18, 0\0"
+            VALUE "ProductVersion", "1, 1, 19, 0\0"
             VALUE "SpecialBuild", "\0"
         END
     END

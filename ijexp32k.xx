@@ -5,7 +5,7 @@
 
 .[ ai
 
-~>i.j Shell Property Sheets Export/Import 32 ver.1.01k18 ~<
+~>i.j Shell Property Sheets Export/Import 32 ver.1.01k19 ~<
 ~>Copyright (C) 1999 i.j, 2004-2017 K.Takata~<
 
 １．概要
@@ -273,9 +273,11 @@
 	・High DPI 環境での表示を改善。
 	・vcbungle.txt を更新。
 
-    2017/01/xx	ver.1.01k19
+    2017/12/28	ver.1.01k19
 	・c++filt 利用時の処理速度改善。
 	・mfc120*.exp, mfc140*.exp を追加。
+	・DllCharacteristics の新規フラグにいくつか対応。
+	・d2d1.exp を更新。
 
 
 １１．注意事項、その他
