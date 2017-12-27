@@ -9,3 +9,5 @@
 0009, D2D1SinCos
 000a, D2D1Tan
 000b, D2D1Vec3Length
+000c, D2D1ComputeMaximumScaleFactor
+000d, D2D1GetGradientMeshInteriorPointsFromCoonsPatch
