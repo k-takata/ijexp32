@@ -17,7 +17,7 @@ template <HANDLE T> inline BOOL SafeCloseHandle(HANDLE &handle)
 	BOOL ret = TRUE;
 
 	if (handle != T) {
-		ret = CloseHandle(handle);
+		ret = ::CloseHandle(handle);
 		if (ret) {
 			handle = T;
 		}
@@ -61,27 +61,27 @@ bool CCxxFilt::StartCxxFilt()
 	sa.bInheritHandle = TRUE;
 
 	// Create the child output pipe.
-	if (!CreatePipe(&hOutputReadTmp, &hOutputWrite, &sa, 0)) {
+	if (!::CreatePipe(&hOutputReadTmp, &hOutputWrite, &sa, 0)) {
 		goto error;
 	}
 	// Duplicate the output write handle for the child stderr write handle.
-	if (!DuplicateHandle(GetCurrentProcess(), hOutputWrite,
-				GetCurrentProcess(), &hErrorWrite, 0,
+	if (!::DuplicateHandle(::GetCurrentProcess(), hOutputWrite,
+				::GetCurrentProcess(), &hErrorWrite, 0,
 				TRUE, DUPLICATE_SAME_ACCESS)) {
 		goto error;
 	}
 	// Create the child input pipe.
-	if (!CreatePipe(&hInputRead, &hInputWriteTmp, &sa, 0)) {
+	if (!::CreatePipe(&hInputRead, &hInputWriteTmp, &sa, 0)) {
 		goto error;
 	}
-	if (!DuplicateHandle(GetCurrentProcess(), hOutputReadTmp,
-				GetCurrentProcess(), &m_hOutputRead,
+	if (!::DuplicateHandle(::GetCurrentProcess(), hOutputReadTmp,
+				::GetCurrentProcess(), &m_hOutputRead,
 				0, FALSE,  // Make it uninheritable.
 				DUPLICATE_SAME_ACCESS)) {
 		goto error;
 	}
-	if (!DuplicateHandle(GetCurrentProcess(), hInputWriteTmp,
-				GetCurrentProcess(), &m_hInputWrite,
+	if (!::DuplicateHandle(::GetCurrentProcess(), hInputWriteTmp,
+				::GetCurrentProcess(), &m_hInputWrite,
 				0, FALSE,  // Make it uninheritable.
 				DUPLICATE_SAME_ACCESS)) {
 		goto error;
@@ -136,14 +136,14 @@ CString CCxxFilt::Demangle(LPCTSTR lpszName)
 
 	// send string
 #ifdef _UNICODE
-	int len = WideCharToMultiByte(CP_ACP, 0, lpszName, -1, NULL, 0, NULL, NULL);
+	int len = ::WideCharToMultiByte(CP_ACP, 0, lpszName, -1, NULL, 0, NULL, NULL);
 	if (len == 0) {
 		return lpszName;
 	}
 	try {
 		char *buf = new char[len];
-		if (WideCharToMultiByte(CP_ACP, 0, lpszName, -1, buf, len, NULL, NULL)) {
-			ret = WriteFile(m_hInputWrite, buf, len - 1, &cb, NULL);
+		if (::WideCharToMultiByte(CP_ACP, 0, lpszName, -1, buf, len, NULL, NULL)) {
+			ret = ::WriteFile(m_hInputWrite, buf, len - 1, &cb, NULL);
 		}
 		delete [] buf;
 	} catch (CMemoryException* e) {
@@ -152,13 +152,13 @@ CString CCxxFilt::Demangle(LPCTSTR lpszName)
 		return lpszName;
 	}
 #else
-	ret = WriteFile(m_hInputWrite, lpszName, strlen(lpszName), &cb, NULL);
+	ret = ::WriteFile(m_hInputWrite, lpszName, strlen(lpszName), &cb, NULL);
 #endif
 	if (!ret) {
 		return lpszName;
 	}
 	CHAR c = '\n';
-	if (!WriteFile(m_hInputWrite, &c, sizeof(c), &cb, NULL)) {
+	if (!::WriteFile(m_hInputWrite, &c, sizeof(c), &cb, NULL)) {
 		return lpszName;
 	}
 
@@ -166,17 +166,17 @@ CString CCxxFilt::Demangle(LPCTSTR lpszName)
 	int ofs;
 	while ((ofs = m_buf.Find(_T('\n'))) < 0) {
 		DWORD avail;
-		if (!PeekNamedPipe(m_hOutputRead, NULL, 0, NULL, &avail, NULL)) {
+		if (!::PeekNamedPipe(m_hOutputRead, NULL, 0, NULL, &avail, NULL)) {
 			return lpszName;
 		}
 		if (avail == 0) {
-			Sleep(0);
+			::Sleep(0);
 			continue;
 		}
 		char *buf = NULL;
 		try {
 			buf = new char[avail + 1];
-			if (!ReadFile(m_hOutputRead, buf, avail, &cb, NULL)) {
+			if (!::ReadFile(m_hOutputRead, buf, avail, &cb, NULL)) {
 				delete [] buf;
 				return lpszName;
 			}
@@ -218,7 +218,7 @@ bool CCxxFilt::LaunchRedirectedChild(HANDLE hChildStdIn, HANDLE hChildStdOut, HA
 	LPCTSTR separator = _T(";");
 	LPTSTR tok = _tcstok(buf.GetBuffer(0), separator);
 	while (tok != NULL) {
-		DWORD attr = GetFileAttributes(tok);
+		DWORD attr = ::GetFileAttributes(tok);
 		if ((attr != INVALID_FILE_ATTRIBUTES)
 				&& ((attr & FILE_ATTRIBUTE_DIRECTORY) == 0)) {
 			// Executable file is found.
@@ -231,13 +231,13 @@ bool CCxxFilt::LaunchRedirectedChild(HANDLE hChildStdIn, HANDLE hChildStdOut, HA
 		return false;
 	}
 
-	ret = CreateProcess(NULL, cmdline.GetBuffer(0), NULL, NULL, TRUE,
+	ret = ::CreateProcess(NULL, cmdline.GetBuffer(0), NULL, NULL, TRUE,
 			CREATE_NEW_CONSOLE, NULL, NULL, &si, &pi);
 	if (!ret) {
 		//OutputDebugString(_T("CreateProcess failed"));
 		return false;
 	}
 	m_hChildProcess = pi.hProcess;
-	CloseHandle(pi.hThread);
+	::CloseHandle(pi.hThread);
 	return true;
 }
