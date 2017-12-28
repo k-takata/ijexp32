@@ -610,11 +610,15 @@ bool CAnalyzer::AnalyzeExeHdr(HWND hwndHdrList, HWND hwndDirList, HWND hwndSecLi
 	if (m_nt_hdr.FileHeader.Characteristics & IMAGE_FILE_AGGRESIVE_WS_TRIM) {
 		strValue += _T("AggresiveWsTrim, ");
 	}
-	if (!(m_nt_hdr.FileHeader.Characteristics & IMAGE_FILE_LOCAL_SYMS_STRIPPED)) {
+	if (m_nt_hdr.FileHeader.Characteristics & IMAGE_FILE_LOCAL_SYMS_STRIPPED) {
 		strValue += _T("SymbolsStripped, ");
+	} else {
+		strValue += _T("Symbols, ");
 	}
-	if (!(m_nt_hdr.FileHeader.Characteristics & IMAGE_FILE_LINE_NUMS_STRIPPED)) {
+	if (m_nt_hdr.FileHeader.Characteristics & IMAGE_FILE_LINE_NUMS_STRIPPED) {
 		strValue += _T("LineNumsStripped, ");
+	} else {
+		strValue += _T("LineNums, ");
 	}
 	if (m_nt_hdr.FileHeader.Characteristics & IMAGE_FILE_EXECUTABLE_IMAGE) {
 		strValue += _T("Executable, ");
