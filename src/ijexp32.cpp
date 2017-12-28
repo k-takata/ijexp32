@@ -48,19 +48,11 @@ DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
 
 		new CDynLinkLibrary(ijexp32DLL);
 
-#ifdef ICC_LISTVIEW_CLASSES
-		HMODULE hmodComCtl = ::LoadLibrary(_T("comctl32.dll"));
-		if (hmodComCtl) {
-			LPFNINITCOMCTLEX lpfnInitComCtlEx = (LPFNINITCOMCTLEX)::GetProcAddress(hmodComCtl, "InitCommonControlsEx");
-			if (lpfnInitComCtlEx) {
-				INITCOMMONCONTROLSEX icc;
-				icc.dwSize = sizeof(INITCOMMONCONTROLSEX);
-				icc.dwICC  = ICC_LISTVIEW_CLASSES;
-				(*lpfnInitComCtlEx)(&icc);
-			}
-			::FreeLibrary(hmodComCtl);
-		}
-#endif
+		INITCOMMONCONTROLSEX icc;
+		icc.dwSize = sizeof(INITCOMMONCONTROLSEX);
+		icc.dwICC  = ICC_LISTVIEW_CLASSES;
+		InitCommonControlsEx(&icc);
+
 		g_hModule = hInstance;
 	}
 	else if (dwReason == DLL_PROCESS_DETACH)
