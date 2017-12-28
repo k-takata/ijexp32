@@ -757,38 +757,38 @@ bool CAnalyzer::AnalyzeExeHdr(HWND hwndHdrList, HWND hwndDirList, HWND hwndSecLi
 	list.SetItemText(nCount, 1, strValue);
 	nCount++;
 	strValue.Empty();
-	if (m_nt_hdr32.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_HIGH_ENTROPY_VA) {
-		strValue += _T("HighEntropyVA, ");
-	}
-	if (m_nt_hdr32.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_DYNAMIC_BASE) {
-		strValue += _T("DynamicBase, ");
-	}
-	if (m_nt_hdr32.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_FORCE_INTEGRITY) {
-		strValue += _T("ForceIntegrity, ");
-	}
-	if (m_nt_hdr32.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_NX_COMPAT) {
-		strValue += _T("NX Compatible, ");
-	}
-	if (m_nt_hdr32.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_NO_ISOLATION) {
-		strValue += _T("NoIsolation, ");
-	}
-	if (m_nt_hdr32.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_NO_SEH) {
-		strValue += _T("NoSEH, ");
-	}
-	if (m_nt_hdr32.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_NO_BIND) {
-		strValue += _T("NoBind, ");
-	}
-	if (m_nt_hdr32.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_APPCONTAINER) {
-		strValue += _T("AppContainer, ");
-	}
-	if (m_nt_hdr32.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_WDM_DRIVER) {
-		strValue += _T("WDM Driver, ");
+	if (m_nt_hdr32.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_TERMINAL_SERVER_AWARE) {
+		strValue += _T("TerminalServerAware, ");
 	}
 	if (m_nt_hdr32.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_GUARD_CF) {
 		strValue += _T("ControlFlowGuard, ");
 	}
-	if (m_nt_hdr32.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_TERMINAL_SERVER_AWARE) {
-		strValue += _T("TerminalServerAware, ");
+	if (m_nt_hdr32.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_WDM_DRIVER) {
+		strValue += _T("WDM Driver, ");
+	}
+	if (m_nt_hdr32.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_APPCONTAINER) {
+		strValue += _T("AppContainer, ");
+	}
+	if (m_nt_hdr32.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_NO_BIND) {
+		strValue += _T("NoBind, ");
+	}
+	if (m_nt_hdr32.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_NO_SEH) {
+		strValue += _T("NoSEH, ");
+	}
+	if (m_nt_hdr32.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_NO_ISOLATION) {
+		strValue += _T("NoIsolation, ");
+	}
+	if (m_nt_hdr32.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_NX_COMPAT) {
+		strValue += _T("NX Compatible, ");
+	}
+	if (m_nt_hdr32.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_FORCE_INTEGRITY) {
+		strValue += _T("ForceIntegrity, ");
+	}
+	if (m_nt_hdr32.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_DYNAMIC_BASE) {
+		strValue += _T("DynamicBase, ");
+	}
+	if (m_nt_hdr32.OptionalHeader.DllCharacteristics & IMAGE_DLLCHARACTERISTICS_HIGH_ENTROPY_VA) {
+		strValue += _T("HighEntropyVA, ");
 	}
 	if (strValue.IsEmpty()) {
 		strTemp = szHex4Fmt;
