@@ -56,6 +56,8 @@ bool CCxxFilt::StartCxxFilt()
 		goto error;
 	}
 
+	HANDLE hProc = ::GetCurrentProcess();
+
 	sa.nLength = sizeof(SECURITY_ATTRIBUTES);
 	sa.lpSecurityDescriptor = NULL;
 	sa.bInheritHandle = TRUE;
@@ -65,23 +67,23 @@ bool CCxxFilt::StartCxxFilt()
 		goto error;
 	}
 	// Duplicate the output write handle for the child stderr write handle.
-	if (!::DuplicateHandle(::GetCurrentProcess(), hOutputWrite,
-				::GetCurrentProcess(), &hErrorWrite, 0,
-				TRUE, DUPLICATE_SAME_ACCESS)) {
+	if (!::DuplicateHandle(hProc, hOutputWrite,
+				hProc, &hErrorWrite,
+				0, TRUE, DUPLICATE_SAME_ACCESS)) {
 		goto error;
 	}
 	// Create the child input pipe.
 	if (!::CreatePipe(&hInputRead, &hInputWriteTmp, &sa, 0)) {
 		goto error;
 	}
-	if (!::DuplicateHandle(::GetCurrentProcess(), hOutputReadTmp,
-				::GetCurrentProcess(), &m_hOutputRead,
+	if (!::DuplicateHandle(hProc, hOutputReadTmp,
+				hProc, &m_hOutputRead,
 				0, FALSE,  // Make it uninheritable.
 				DUPLICATE_SAME_ACCESS)) {
 		goto error;
 	}
-	if (!::DuplicateHandle(::GetCurrentProcess(), hInputWriteTmp,
-				::GetCurrentProcess(), &m_hInputWrite,
+	if (!::DuplicateHandle(hProc, hInputWriteTmp,
+				hProc, &m_hInputWrite,
 				0, FALSE,  // Make it uninheritable.
 				DUPLICATE_SAME_ACCESS)) {
 		goto error;
