@@ -167,16 +167,18 @@ void LoadSetting(LPCTSTR lpKey, LPTSTR lpBuf, DWORD nSize, LPCTSTR lpDefault)
 	::lstrcpy(lpBuf, lpDefault);
 
 	DWORD cb = nSize * sizeof(TCHAR), type = 0;
-	// Try to read from the registry first.
+	// Try reading from the registry first.
 	if ((::SHGetValue(HKEY_CURRENT_USER, IJE_REG_KEY, lpKey,
-				&type, lpBuf, &cb) != ERROR_SUCCESS) || (type != REG_SZ)) {
-		// Try to read from the .ini file.
-		TCHAR szIni[MAX_PATH];
-		if (::GetModuleFileName(g_hModule, szIni, lengthof(szIni))) {
-			int len = ::lstrlen(szIni) - 4;
-			::lstrcpy(szIni + len, _T(".ini"));
-			::GetPrivateProfileString(_T("ijexp32"), lpKey, lpDefault,
-					lpBuf, nSize, szIni);
-		}
+				&type, lpBuf, &cb) == ERROR_SUCCESS) && (type != REG_SZ)) {
+		return;
+	}
+
+	// Try reading from the .ini file.
+	TCHAR szIni[MAX_PATH];
+	if (::GetModuleFileName(g_hModule, szIni, lengthof(szIni))) {
+		int len = ::lstrlen(szIni) - 6;		// Cut "32.dll" or "64.dll".
+		::lstrcpy(szIni + len, _T(".ini"));
+		::GetPrivateProfileString(IJE_INI_KEY, lpKey, lpDefault,
+				lpBuf, nSize, szIni);
 	}
 }
