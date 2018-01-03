@@ -180,5 +180,13 @@ void LoadSetting(LPCTSTR lpKey, LPTSTR lpBuf, DWORD nSize, LPCTSTR lpDefault)
 		::lstrcpy(szIni + len, _T(".ini"));
 		::GetPrivateProfileString(IJE_INI_KEY, lpKey, lpDefault,
 				lpBuf, nSize, szIni);
+
+		// Read from %APPDATA%\ijexp\ijexp.ini if available.
+		TCHAR szAppData[MAX_PATH];
+		if (::SHGetSpecialFolderPath(NULL, szAppData, CSIDL_APPDATA, FALSE)) {
+			::lstrcat(szAppData, _T("\\ijexp\\ijexp.ini"));
+			::GetPrivateProfileString(IJE_INI_KEY, lpKey, szIni,
+					lpBuf, nSize, szIni);
+		}
 	}
 }
