@@ -9,10 +9,10 @@
 Unicode true
 !define MUI_PRODUCT "ijexp"
 !define MUI_PRODUCT_LONG "i.j Shell Property Sheets Export/Import"
-!define MUI_VERSION "1.01k20"
+;!define MUI_VERSION "1.01k20"
 !define MUI_PRODUCT_FULL "${MUI_PRODUCT_LONG} ${MUI_VERSION}"
 Name "${MUI_PRODUCT_FULL}"
-OutFile "ijexp_101k20.exe"
+;OutFile "ijexp_101k20.exe"
 
 !define UNINSTALL_REG "Software\Microsoft\Windows\CurrentVersion\Uninstall\${MUI_PRODUCT}"
 !define UNINSTALL_REG_OLD "Software\Microsoft\Windows\CurrentVersion\Uninstall\ijexp32"
@@ -80,9 +80,9 @@ Section "main files" main_section
   SetOutPath "$INSTDIR"
 
   ; DLLs
-  !insertmacro TryFile "..\src\objfre_wxp_x86\i386\ijexp32.dll" "ijexp32.dll"
+  !insertmacro TryFile "..\x86\ijexp32.dll" "ijexp32.dll"
   ${If} ${RunningX64}
-    !insertmacro TryFile "..\src\objfre_win7_amd64\amd64\ijexp64.dll" "ijexp64.dll"
+    !insertmacro TryFile "..\x64\ijexp64.dll" "ijexp64.dll"
   ${EndIf}
   File "..\ijexp.ini"
 
