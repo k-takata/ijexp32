@@ -5,8 +5,8 @@
 
 .[ ai
 
-~>i.j Shell Property Sheets Export/Import 32 ver.1.01k19 ~<
-~>Copyright (C) 1999 i.j, 2004-2017 K.Takata~<
+~>i.j Shell Property Sheets Export/Import ver.1.01k20 ~<
+~>Copyright (C) 1999 i.j, 2004-2018 K.Takata~<
 
 １．概要
     　i.j 氏の i.j Shell Property Sheets Export/Import 32 (ijexp32) (*1) の改造版です。
@@ -274,7 +274,7 @@
 	・DllCharacteristics の新規フラグにいくつか対応。
 	・d2d1.exp を更新。
 
-    2018/01/xx	ver.1.01k20
+    2018/01/05	ver.1.01k20
 	・.inf ファイルによるインストールを廃止し、インストーラによるインストールに変更。
 	・ソースコードの同梱を取りやめ。
 	・64bit 版の DLL ファイル名を ijexp32.dll から ijexp64.dll に変更。

@@ -1,4 +1,4 @@
-;LIBRARY     IJEXP32
+;LIBRARY     IJEXP64
 ;DESCRIPTION  "i.j Shell Property Sheets Export/Import 32 ver.1.01: Copyright (C) 1999 i.j , All rights reserved."
 VERSION      1, 1
 EXPORTS
