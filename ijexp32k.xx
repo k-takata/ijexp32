@@ -22,22 +22,12 @@
 
 
 ３．インストール
-    　本パッケージは配布ファイルサイズ削減のため、7-Zip 形式で圧縮しています。そのため、アーカイブの解凍には、7-Zip (*2) あるいは 7-zip32.dll (*3) を使用したアーカイブソフトなどが必要になります。
-
-      (*2) http://www.7-zip.org/
-      (*3) http://www.csdinc.co.jp/archiver/lib/7-zip32.html
-
-
-    　アーカイブを解凍後、エクスプローラ上で ijexp32.inf を右クリックし、インストールを選択してください。なお、インストールには Admin 権限が必要です。
-
-    　64bit 版の Windows の場合は、必要に応じて、64bit エクスプローラと 32bit エクスプローラの両方からインストールしてください。通常であれば、それぞれ、以下の場所にインストールされます。
-
-      64bit版: C:\Windows\System32\ShellExt
-      32bit版: C:\Windows\SysWOW64\ShellExt
+    　インストーラを実行してインストールしてください。インストールには管理者権限が必要です。
+    　ver.1.01k19 以前のバージョンをインストールしていた場合は、最初に旧バージョンのアンインストールを行うか聞かれますので、「はい」を選択してください。
 
 
 ４．アンインストール
-    　オリジナル版の ijexp32.txt を参照してください。
+    　Win10 の場合、「Windows の設定」→「アプリ」で本ソフトウェアを選択し、アンインストールしてください。
 
 
 ５．レジストリ
@@ -46,34 +36,28 @@
 
         +- HKEY_CLASSES_ROOT
         |  +- CLSID
-        |  |  +- 00000001-23D0-0001-8000-004026419740  ←追加
+        |  |  +- {00000001-23D0-0001-8000-004026419740}  ←追加
         |  |     +- 以下全部
         |  +- *
         |  |  +- shellex
         |  |     +- PropertySheetHandlers
-        |  |        +- 00000001-23D0-0001-8000-004026419740  ←追加
+        |  |        +- {00000001-23D0-0001-8000-004026419740}  ←追加
         |  +- WOW6432Node
         |     +- CLSID
-        |        +- 00000001-23D0-0001-8000-004026419740  ←追加 (*4)
+        |        +- {00000001-23D0-0001-8000-004026419740}  ←追加 (*4)
         |           +- 以下全部
         |
         +- HKEY_LOCAL_MACHINE
-        |  +- SOFTWARE
-        |     +- Microsoft
-        |        +- Windows
-        |           +- CurrentVersion
-        |              +- Uninstall
-        |                 +- ijexp32  ←追加
-        +- HKEY_LOCAL_MACHINE
            +- SOFTWARE
-              +- Wow6432Node
-                 +- Microsoft
-                    +- Windows
-                       +- CurrentVersion
-                          +- Uninstall
-                             +- ijexp32  ←追加 (*4)
+              +- ijexp	←追加
+              |
+              +- Microsoft
+                 +- Windows
+                    +- CurrentVersion
+                       +- Uninstall
+                          +- ijexp  ←追加
 
-      (*4) 64bit 版 Windows に 32bit 版 ijexp32 をインストールした場合。
+      (*4) 64bit 版 Windows にインストールした場合。
 
 
 ６．使用法
@@ -81,16 +65,22 @@
 
 
 ７．設定
-    　一部の動作をレジストリで設定することができます。添付の ijexp32_sample_settings.reg を書き換えて、ダブルクリックしてレジストリに読み込ませることで設定変更ができます。（現バージョンでは、設定変更用の UI は用意していません。）
+    　一部の動作をレジストリで設定することができます。添付の ijexp_sample_settings.reg を書き換えて、ダブルクリックしてレジストリに読み込ませることで設定変更ができます。（現バージョンでは、設定変更用の UI は用意していません。）
 
-    　インストール先の ijexp32.ini にはデフォルトの設定が書き込まれています。ijexp32.ini よりもレジストリの設定が優先されます。
+    　インストール先の ijexp.ini にはデフォルトの設定が書き込まれています。ijexp.ini よりもレジストリの設定が優先されます。
+
+    　%APPDATA%\ijexp\ijexp.ini を用意することでも設定を変更することができます。設定の優先順位は以下のようになっています。（上が優先度高）
+
+	1. レジストリ (HKCU\Software\ijexp)
+	2. %APPDATA%\ijexp\ijexp.ini
+	3. インストール先の ijexp.ini (%ProgramFiles%\ijexp\ijexp.ini)
 
 7.1. 対応拡張子の設定
-    　ExeHdr,Export,Import タブを表示させる拡張子をレジストリで設定することができます。ijexp32_sample_settings.reg の "exts" の値を参照してください。
+    　ExeHdr,Export,Import タブを表示させる拡張子をレジストリまたは ijexp.ini で設定することができます。ijexp_sample_settings.reg や ijexp.ini の "exts" の値を参照してください。
 
 7.2. c++filt の設定
     　MinGW あるいは Cygwin の c++filt.exe があれば、GCC のシンボルをデコード（デマングル）して表示することができるようになります。
-    　c++filt.exe の場所は、レジストリで設定可能です。ijexp32_sample_settings.reg の "c++filt" の値を参照してください。
+    　c++filt.exe の場所は、レジストリまたは ijexp.ini で設定可能です。ijexp_sample_settings.reg や ijexp.ini の "c++filt" の値を参照してください。
     　デフォルトでは以下の順で検索を行い、最初に見つかったものを使用します。
 
 	C:\msys64\mingw64\bin\c++filt.exe
@@ -132,7 +122,7 @@
 
 
 ９．ソースファイル
-    　本ソフトのソースは、GitHub から入手可能です。（同梱の src.7z にも含まれています。）
+    　本ソフトのソースは、GitHub から入手可能です。
 
 	https://github.com/k-takata/ijexp32
 
@@ -283,6 +273,14 @@
 	・mfc120*.exp, mfc140*.exp を追加。
 	・DllCharacteristics の新規フラグにいくつか対応。
 	・d2d1.exp を更新。
+
+    2018/01/xx	ver.1.01k20
+	・.inf ファイルによるインストールを廃止し、インストーラによるインストールに変更。
+	・ソースコードの同梱を取りやめ。
+	・64bit 版の DLL ファイル名を ijexp32.dll から ijexp64.dll に変更。
+	・設定の読み込み場所・順序を変更。（レジストリ位置、ini ファイル名。）
+	・1.01k9 以降、Symbols および LineNums が strip されているかどうかの表示が逆になっていたのを修正。
+	・DllCharacteristics のフラグを LSB ではなく MSB から先に表示するように変更。
 
 
 １１．注意事項、その他

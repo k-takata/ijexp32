@@ -97,7 +97,8 @@ typedef unsigned long ULONG_PTR;
 #define lengthof(x) (sizeof(x) / sizeof(*(x)))
 #endif
 
-#define IJE_REG_KEY				_T("Software\\ijexp32\\ijexp32")
+#define IJE_REG_KEY				_T("Software\\ijexp")
+#define IJE_INI_KEY				_T("ijexp")
 #define DEFAULT_CXXFILT_PATH	_T("C:\\MinGW\\bin\\c++filt.exe")
 #define DEFAULT_EXTS			_T(".exe;.dll;.sys")
 

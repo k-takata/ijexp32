@@ -3,6 +3,7 @@
 *.a
 *.obj
 *.dll
+*.exe
 *.exp
 *.lib
 *.pyc

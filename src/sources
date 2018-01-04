@@ -3,7 +3,12 @@
 # the target (component) that is being built by this makefile.
 # It should not include any path or filename extension.
 #
+!if $(AMD64) || $(IA64)
+TARGETNAME=ijexp64
+!else
 TARGETNAME=ijexp32
+!endif
+
 #
 # The developer defines the TARGETPATH and TARGETTYPE variables.
 # The first variable specifies where the target will be built. The second specifies
