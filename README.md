@@ -36,22 +36,23 @@ Imported or exported symbols are shown demangled if they are available.
 ### ExeHdr sheet
 
 This property sheet shows information of executable file header.
-If you click `SAVE` button, you can save the information to a file.
+
+If you click `SAVE` button, you can save the information to a file.<br />
 If you click `COPY` button, you can copy the information to the clipboard.
 
-#### ExeHdr sheet, Hdr tab
+#### Hdr tab
 
 This tab shows information of MZ header and PE header.
 
 ![ExeHdr sheet, Hdr tab](images/exehdr.png)
 
-#### ExeHdr sheet, Dir tab
+#### Dir tab
 
 This tab shows information of PE directories.
 
 ![ExeHdr sheet, Dir tab](images/exehdr_dir.png)
 
-#### ExeHdr sheet, Sec tab
+#### Sec tab
 
 This tab shows information of PE sections.
 
@@ -63,7 +64,7 @@ This property sheet shows information of exported symbols.
 
 ![Export sheet](images/export.png)
 
-If `VC` check box is checked, VC++ or MinGW symbols are shown demangled.
+If `VC` check box is checked, VC++ or MinGW symbols are shown demangled.<br />
 If not checked, ordinal numbers and non-demangled symbols are shown.
 
 ### Import sheet
@@ -72,7 +73,7 @@ This property sheet shows information of imported symbols.
 
 ![Import sheet](images/import.png)
 
-If `VC` check box is checked, VC++ or MinGW symbols are shown demangled.
+If `VC` check box is checked, VC++ or MinGW symbols are shown demangled.<br />
 If `FN` check box is unchecked, only imported DLLs are shown.
 
 
@@ -80,7 +81,7 @@ If `FN` check box is unchecked, only imported DLLs are shown.
 
 You can configure ijexp in the following ways:
 
-1. Registory (`HKCU\Software\ijexp`)
+1. Registory (`HKCU\Software\ijexp`)<br />
    See `ijexp_sample_settings.reg` for an example.
 2. `%APPDATA%\ijexp\ijexp.ini`
 3. `ijexp.ini` in the installed folder (`%ProgramFiles%\ijexp\ijexp.ini`)
@@ -88,5 +89,5 @@ You can configure ijexp in the following ways:
 
 ## License
 
-This is freeware. You can use it without charge.
+This is freeware. You can use it without charge.<br />
 See [ijexp32.txt](ijexp32.txt) for detail. (Written in Japanese.)
