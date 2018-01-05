@@ -8,3 +8,5 @@
 
 *.inf		whitespace=-blank-at-eof
 *.reg		whitespace=-blank-at-eof
+
+*.png		binary
