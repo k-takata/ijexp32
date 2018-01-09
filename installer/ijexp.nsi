@@ -23,6 +23,7 @@ InstallDir "$PROGRAMFILES\${MUI_PRODUCT}"
 
 SetCompressor /SOLID lzma
 RequestExecutionLevel admin
+ManifestDPIAware true
 
 ;--------------------------------
 ; Interface Settings
