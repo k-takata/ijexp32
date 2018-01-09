@@ -45,9 +45,11 @@ ManifestDPIAware true
 
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
+!insertmacro MUI_PAGE_FINISH
 
 !insertmacro MUI_UNPAGE_CONFIRM
 !insertmacro MUI_UNPAGE_INSTFILES
+!insertmacro MUI_UNPAGE_FINISH
 
 ;--------------------------------
 ; Languages
@@ -81,10 +83,12 @@ Section "main files" main_section
   SetOutPath "$INSTDIR"
 
   ; DLLs
+  SetOverwrite try
   !insertmacro TryFile "..\x86\ijexp32.dll" "ijexp32.dll"
   ${If} ${RunningX64}
     !insertmacro TryFile "..\x64\ijexp64.dll" "ijexp64.dll"
   ${EndIf}
+  SetOverwrite lastused
   File "..\ijexp.ini"
 
   ; Documents
