@@ -683,10 +683,7 @@ bool CAnalyzer::AnalyzeExeHdr(HWND hwndHdrList, HWND hwndDirList, HWND hwndSecLi
 		list.InsertItem (nCount, _T("Code section base addr."));
 		list.SetItemText(nCount, 1, strValue);
 		nCount++;
-//		strValue.Format(szHex16Fmt, m_nt_hdr64.OptionalHeader.ImageBase + m_nt_hdr64.OptionalHeader.BaseOfData);
-//		list.InsertItem (nCount, _T("Data section base addr."));
-//		list.SetItemText(nCount, 1, strValue);
-//		nCount++;
+		// IMAGE_OPTIONAL_HEADER64 doesn't have BaseOfData member.
 
 		strValue.Format(szHex16Fmt, m_nt_hdr64.OptionalHeader.ImageBase);
 		list.InsertItem (nCount, _T("Image base address"));
@@ -799,6 +796,7 @@ bool CAnalyzer::AnalyzeExeHdr(HWND hwndHdrList, HWND hwndDirList, HWND hwndSecLi
 	list.InsertItem (nCount, _T("DLL init.func.flags"));
 	list.SetItemText(nCount, 1, strValue);
 	nCount++;
+	// After this, IMAGE_OPTIONAL_HEADER64 and IMAGE_OPTIONAL_HEADER32 have different member addresses.
 	if (m_b32bit) {
 		strValue.Format(szHex8Fmt, m_nt_hdr32.OptionalHeader.SizeOfStackReserve);
 		list.InsertItem (nCount, _T("Reserved stack size"));
