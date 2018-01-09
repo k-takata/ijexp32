@@ -138,7 +138,7 @@ Section "main files" main_section
   ${EndIf}
 
   ; Uninstall list
-  ;WriteRegStr HKLM "${UNINSTALL_REG}" "DisplayIcon" "$\"$INSTDIR\ijexp.exe$\",0"
+  ;WriteRegStr HKLM "${UNINSTALL_REG}" "DisplayIcon" '"$INSTDIR\ijexp.exe",0'
   WriteRegStr HKLM "${UNINSTALL_REG}" "DisplayName" "${MUI_PRODUCT_FULL}"
   WriteRegStr HKLM "${UNINSTALL_REG}" "Publisher" "${MUI_PUBLISHER}"
   WriteRegStr HKLM "${UNINSTALL_REG}" "UninstallString" '"$INSTDIR\Uninstall.exe"'
