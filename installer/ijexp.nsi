@@ -174,10 +174,12 @@ Function .onInit
 
   ${If} "$0$1" != ""
     retry:
-    MessageBox MB_YESNO|MB_ICONQUESTION $(MES_UNINST_OLD) /SD IDYES IDYES uninst
-      MessageBox MB_YESNO|MB_ICONEXCLAMATION "${MUI_ABORTWARNING_TEXT}" IDNO retry
+    ${If} ${Cmd} `MessageBox MB_YESNO|MB_ICONQUESTION $(MES_UNINST_OLD) /SD IDYES IDNO`
+      ${If} ${Cmd} `MessageBox MB_YESNO|MB_ICONEXCLAMATION "${MUI_ABORTWARNING_TEXT}" IDYES`
         Abort
-    uninst:
+      ${EndIf}
+      Goto retry
+    ${EndIf}
 
     ; Uninstall 64-bit version
     ${If} "$1" != ""
