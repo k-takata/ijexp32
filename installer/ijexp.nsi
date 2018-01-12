@@ -130,7 +130,7 @@ Section "main files" main_section
   File "..\ws2_32.exp"
   File "..\wsock32.exp"
 
-  ; Register severs
+  ; Register servers
   WriteRegStr HKCR "*\shellex\PropertySheetHandlers\${IJE_CLSID}" "" "${MUI_PRODUCT_LONG}"
   WriteRegStr HKCR32 "CLSID\${IJE_CLSID}" "" "${MUI_PRODUCT_LONG}"
   WriteRegStr HKCR32 "CLSID\${IJE_CLSID}\InProcServer32" "" "$INSTDIR\ijexp32.dll"
@@ -275,7 +275,7 @@ Section "Uninstall"
 SectionEnd
 
 ;--------------------------------
-;Uninstaller Functions
+; Uninstaller Functions
 
 Function un.onInit
 
