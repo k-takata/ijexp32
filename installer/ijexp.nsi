@@ -22,6 +22,7 @@ Name "${MUI_PRODUCT_FULL}"
 InstallDir "$PROGRAMFILES\${MUI_PRODUCT}"
 
 SetCompressor /SOLID lzma
+SetCompressorDictSize 16
 RequestExecutionLevel admin
 ManifestDPIAware true
 
