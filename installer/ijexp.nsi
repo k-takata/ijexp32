@@ -19,7 +19,7 @@ Name "${MUI_PRODUCT_FULL}"
 !define MUI_PUBLISHER "K.Takata"
 !define IJE_CLSID "{00000001-23D0-0001-8000-004026419740}"
 
-InstallDir "$PROGRAMFILES\${MUI_PRODUCT}"
+;InstallDir "$PROGRAMFILES\${MUI_PRODUCT}"
 
 SetCompressor /SOLID lzma
 SetCompressorDictSize 16
@@ -197,13 +197,20 @@ Function .onInit
   ${EndIf}
 
   ; Load install folder
-  ReadRegStr $INSTDIR HKLM "Software\${MUI_PRODUCT}" "path"
-  ${If} "$INSTDIR" == ""
-    ${If} ${RunningX64}
-      StrCpy $INSTDIR "$PROGRAMFILES64\${MUI_PRODUCT}"
-    ${Else}
-      StrCpy $INSTDIR "$PROGRAMFILES\${MUI_PRODUCT}"
+  ReadRegStr $0 HKLM "Software\${MUI_PRODUCT}" "path"
+  ${If} "$0" == ""
+    ; Not previously installed.
+    ${If} "$INSTDIR" == ""
+      ; Install folder is not specified by the command line. (/D=path)
+      ${If} ${RunningX64}
+        StrCpy $INSTDIR "$PROGRAMFILES64\${MUI_PRODUCT}"
+      ${Else}
+        StrCpy $INSTDIR "$PROGRAMFILES\${MUI_PRODUCT}"
+      ${EndIf}
     ${EndIf}
+  ${Else}
+    ; Old version might be already installed. Install there.
+    StrCpy $INSTDIR $0
   ${EndIf}
 
 FunctionEnd
