@@ -79,6 +79,7 @@ LangString MES_UNINST_OLD ${LANG_JAPANESE} "古いバージョンのijexp32が�
 ; Reserve Files
 
 !insertmacro MUI_RESERVEFILE_LANGDLL
+ReserveFile /plugin UserInfo.dll
 
 ;--------------------------------
 ; Installer Sections
