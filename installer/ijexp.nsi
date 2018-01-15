@@ -1,16 +1,33 @@
 ﻿; Installer for i.j Shell Property Sheets Export/Import
 
+Unicode true
+SetCompressor /SOLID lzma
+SetCompressorDictSize 16
+ManifestDPIAware true
+
+!define MUI_PRODUCT "ijexp"
+!define MUI_PRODUCT_LONG "i.j Shell Property Sheets Export/Import"
+;!define MUI_VERSION "1.01k20"
+!define MUI_PRODUCT_FULL "${MUI_PRODUCT_LONG} ${MUI_VERSION}"
+
+!define MULTIUSER_EXECUTIONLEVEL Highest
+;!define MULTIUSER_USE_PROGRAMFILES64
+!define MULTIUSER_MUI
+!define MULTIUSER_INSTALLMODE_COMMANDLINE
+;!define MULTIUSER_INSTALLMODE_INSTDIR "${MUI_PRODUCT}"
+!define MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_KEY "Software\${MUI_PRODUCT}"
+!define MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_VALUENAME "path"
+!define MULTIUSER_INSTALLMODE_DEFAULT_REGISTRY_KEY "Software\${MUI_PRODUCT}"
+!define MULTIUSER_INSTALLMODE_DEFAULT_REGISTRY_VALUENAME "mode"
+!define MULTIUSER_INSTALLMODE_FUNCTION InitInstDir
+!include "MultiUser.nsh"
+
 !include "MUI2.nsh"
 !include "LogicLib.nsh"
 !include "x64.nsh"
 
 !packhdr "$%TEMP%\exehead.tmp" '"upx.exe" -9 "$%TEMP%\exehead.tmp"'
 
-Unicode true
-!define MUI_PRODUCT "ijexp"
-!define MUI_PRODUCT_LONG "i.j Shell Property Sheets Export/Import"
-;!define MUI_VERSION "1.01k20"
-!define MUI_PRODUCT_FULL "${MUI_PRODUCT_LONG} ${MUI_VERSION}"
 Name "${MUI_PRODUCT_FULL}"
 ;OutFile "ijexp_101k20.exe"
 
@@ -21,10 +38,6 @@ Name "${MUI_PRODUCT_FULL}"
 
 ;InstallDir "$PROGRAMFILES\${MUI_PRODUCT}"
 
-SetCompressor /SOLID lzma
-SetCompressorDictSize 16
-RequestExecutionLevel admin
-ManifestDPIAware true
 
 ;--------------------------------
 ; Interface Settings
@@ -37,13 +50,14 @@ ManifestDPIAware true
 ; Language Selection Dialog Settings
 
 ; Remember the installer language
-!define MUI_LANGDLL_REGISTRY_ROOT "HKLM"
+!define MUI_LANGDLL_REGISTRY_ROOT "SHCTX"
 !define MUI_LANGDLL_REGISTRY_KEY "Software\${MUI_PRODUCT}"
 !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
 
 ;--------------------------------
 ; Pages
 
+!insertmacro MULTIUSER_PAGE_INSTALLMODE
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_PAGE_FINISH
@@ -132,26 +146,29 @@ Section "main files" main_section
   File "..\wsock32.exp"
 
   ; Register servers
-  WriteRegStr HKCR "*\shellex\PropertySheetHandlers\${IJE_CLSID}" "" "${MUI_PRODUCT_LONG}"
-  WriteRegStr HKCR32 "CLSID\${IJE_CLSID}" "" "${MUI_PRODUCT_LONG}"
-  WriteRegStr HKCR32 "CLSID\${IJE_CLSID}\InProcServer32" "" "$INSTDIR\ijexp32.dll"
-  WriteRegStr HKCR32 "CLSID\${IJE_CLSID}\InProcServer32" "ThreadingModel" "Apartment"
+  WriteRegStr SHCTX "Software\Classes\*\shellex\PropertySheetHandlers\${IJE_CLSID}" "" "${MUI_PRODUCT_LONG}"
+  SetRegView 32
+  WriteRegStr SHCTX "Software\Classes\CLSID\${IJE_CLSID}" "" "${MUI_PRODUCT_LONG}"
+  WriteRegStr SHCTX "Software\Classes\CLSID\${IJE_CLSID}\InProcServer32" "" "$INSTDIR\ijexp32.dll"
+  WriteRegStr SHCTX "Software\Classes\CLSID\${IJE_CLSID}\InProcServer32" "ThreadingModel" "Apartment"
+  SetRegView lastused
   ${If} ${RunningX64}
-    WriteRegStr HKCR64 "CLSID\${IJE_CLSID}" "" "${MUI_PRODUCT_LONG}"
-    WriteRegStr HKCR64 "CLSID\${IJE_CLSID}\InProcServer32" "" "$INSTDIR\ijexp64.dll"
-    WriteRegStr HKCR64 "CLSID\${IJE_CLSID}\InProcServer32" "ThreadingModel" "Apartment"
+    WriteRegStr SHCTX "Software\Classes\CLSID\${IJE_CLSID}" "" "${MUI_PRODUCT_LONG}"
+    WriteRegStr SHCTX "Software\Classes\CLSID\${IJE_CLSID}\InProcServer32" "" "$INSTDIR\ijexp64.dll"
+    WriteRegStr SHCTX "Software\Classes\CLSID\${IJE_CLSID}\InProcServer32" "ThreadingModel" "Apartment"
   ${EndIf}
 
   ; Uninstall list
-  ;WriteRegStr HKLM "${UNINSTALL_REG}" "DisplayIcon" '"$INSTDIR\ijexp.exe",0'
-  WriteRegStr HKLM "${UNINSTALL_REG}" "DisplayName" "${MUI_PRODUCT_FULL}"
-  WriteRegStr HKLM "${UNINSTALL_REG}" "Publisher" "${MUI_PUBLISHER}"
-  WriteRegStr HKLM "${UNINSTALL_REG}" "UninstallString" '"$INSTDIR\Uninstall.exe"'
+  ;WriteRegStr SHCTX "${UNINSTALL_REG}" "DisplayIcon" '"$INSTDIR\ijexp.exe",0'
+  WriteRegStr SHCTX "${UNINSTALL_REG}" "DisplayName" "${MUI_PRODUCT_FULL}"
+  WriteRegStr SHCTX "${UNINSTALL_REG}" "Publisher" "${MUI_PUBLISHER}"
+  WriteRegStr SHCTX "${UNINSTALL_REG}" "UninstallString" '"$INSTDIR\Uninstall.exe"'
   SectionGetSize ${main_section} $0
-  WriteRegDWORD HKLM "${UNINSTALL_REG}" "EstimatedSize" $0
+  WriteRegDWORD SHCTX "${UNINSTALL_REG}" "EstimatedSize" $0
 
   ; Store install folder
-  WriteRegStr HKLM "Software\${MUI_PRODUCT}" "path" $INSTDIR
+  WriteRegStr SHCTX "${MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_KEY}" "${MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_VALUENAME}" $INSTDIR
+  WriteRegStr SHCTX "${MULTIUSER_INSTALLMODE_DEFAULT_REGISTRY_KEY}" "${MULTIUSER_INSTALLMODE_DEFAULT_REGISTRY_VALUENAME}" $MultiUser.InstallMode
 
   WriteUninstaller "$INSTDIR\Uninstall.exe"
 
@@ -163,6 +180,7 @@ Function .onInit
     SetRegView 64
   ${EndIf}
 
+  !insertmacro MULTIUSER_INIT
   !insertmacro MUI_LANGDLL_DISPLAY
 
   ; Check old version of ijexp32
@@ -196,16 +214,36 @@ Function .onInit
     ${EndIf}
   ${EndIf}
 
+FunctionEnd
+
+
+Var CmdInstDir
+Var CmdInstDirLoaded
+
+Function InitInstDir
+
+  ; MultiUser.nsh doesn't handle the /D=path command line option.
+  ; Handle it by ourself.
+
+  ${If} $CmdInstDirLoaded = 0
+    StrCpy $CmdInstDir $INSTDIR
+    StrCpy $CmdInstDirLoaded 1
+  ${EndIf}
+
   ; Load install folder
-  ReadRegStr $0 HKLM "Software\${MUI_PRODUCT}" "path"
+  ReadRegStr $0 SHCTX "${MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_KEY}" "${MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_VALUENAME}"
   ${If} "$0" == ""
     ; Not previously installed.
-    ${If} "$INSTDIR" == ""
+    ${If} "$CmdInstDir" == ""
       ; Install folder is not specified by the command line. (/D=path)
-      ${If} ${RunningX64}
-        StrCpy $INSTDIR "$PROGRAMFILES64\${MUI_PRODUCT}"
+      ${If} $MultiUser.InstallMode == "AllUsers"
+        ${If} ${RunningX64}
+          StrCpy $INSTDIR "$PROGRAMFILES64\${MUI_PRODUCT}"
+        ${Else}
+          StrCpy $INSTDIR "$PROGRAMFILES\${MUI_PRODUCT}"
+        ${EndIf}
       ${Else}
-        StrCpy $INSTDIR "$PROGRAMFILES\${MUI_PRODUCT}"
+        StrCpy $INSTDIR "$LOCALAPPDATA\${MUI_PRODUCT}"
       ${EndIf}
     ${EndIf}
   ${Else}
@@ -221,10 +259,12 @@ FunctionEnd
 Section "Uninstall"
 
   ; Unregister servers
-  DeleteRegKey HKCR "*\shellex\PropertySheetHandlers\${IJE_CLSID}"
-  DeleteRegKey HKCR32 "CLSID\${IJE_CLSID}"
+  DeleteRegKey SHCTX "Software\Classes\*\shellex\PropertySheetHandlers\${IJE_CLSID}"
+  SetRegView 32
+  DeleteRegKey SHCTX "Software\Classes\CLSID\${IJE_CLSID}"
+  SetRegView lastused
   ${If} ${RunningX64}
-    DeleteRegKey HKCR64 "CLSID\${IJE_CLSID}"
+    DeleteRegKey SHCTX "Software\Classes\CLSID\${IJE_CLSID}"
   ${EndIf}
 
   ; DLLs
@@ -277,8 +317,8 @@ Section "Uninstall"
 
   RMDir /REBOOTOK "$INSTDIR"
 
-  DeleteRegKey HKLM "${UNINSTALL_REG}"
-  DeleteRegKey HKLM "Software\${MUI_PRODUCT}"
+  DeleteRegKey SHCTX "${UNINSTALL_REG}"
+  DeleteRegKey SHCTX "Software\${MUI_PRODUCT}"
 
 SectionEnd
 
@@ -291,6 +331,7 @@ Function un.onInit
     SetRegView 64
   ${EndIf}
 
+  !insertmacro MULTIUSER_UNINIT
   !insertmacro MUI_UNGETLANGUAGE
 
 FunctionEnd
