@@ -86,9 +86,9 @@ ReserveFile /plugin UserInfo.dll
 
 !macro TryFile INFILE OUTFILE
   ClearErrors
-  File "${INFILE}"
+  File /oname=${OUTFILE} "${INFILE}"
   ${If} ${Errors}
-    GetTempFileName $0
+    GetTempFileName $0 $OUTDIR
     File /oname=$0 "${INFILE}"
     Rename /REBOOTOK $0 "${OUTFILE}"
   ${EndIf}
