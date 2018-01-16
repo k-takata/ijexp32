@@ -107,10 +107,11 @@ Section "main files" main_section
   SetOverwrite lastused
   File "..\ijexp.ini"
 
-  ; Documents
+  ; Documents & sample settings
   File "..\ijexp32.txt"
   File "..\ijexp32k.txt"
   File "..\vcbungle.txt"
+  File "..\ijexp_sample_settings.reg"
 
   ; .exp files
   File "..\comctl32.exp"
@@ -272,10 +273,11 @@ Section "Uninstall"
   Delete /REBOOTOK "$INSTDIR\ijexp32.dll"
   Delete /REBOOTOK "$INSTDIR\ijexp.ini"
 
-  ; Documents
+  ; Documents & sample settings
   Delete /REBOOTOK "$INSTDIR\ijexp32.txt"
   Delete /REBOOTOK "$INSTDIR\ijexp32k.txt"
   Delete /REBOOTOK "$INSTDIR\vcbungle.txt"
+  Delete /REBOOTOK "$INSTDIR\ijexp_sample_settings.reg"
 
   ; .exp files
   Delete /REBOOTOK "$INSTDIR\comctl32.exp"
