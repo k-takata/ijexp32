@@ -175,7 +175,13 @@ Section "main files" main_section
 
 SectionEnd
 
+
+Var CmdInstDir
+
 Function .onInit
+
+  ; Save the /D=path command line option (if available).
+  StrCpy $CmdInstDir $INSTDIR
 
   ${If} ${RunningX64}
     SetRegView 64
@@ -217,19 +223,10 @@ Function .onInit
 
 FunctionEnd
 
-
-Var CmdInstDir
-Var CmdInstDirLoaded
-
 Function InitInstDir
 
   ; MultiUser.nsh doesn't handle the /D=path command line option.
   ; Handle it by ourself.
-
-  ${If} $CmdInstDirLoaded = 0
-    StrCpy $CmdInstDir $INSTDIR
-    StrCpy $CmdInstDirLoaded 1
-  ${EndIf}
 
   ; Load install folder
   ReadRegStr $0 SHCTX "${MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_KEY}" "${MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_VALUENAME}"
