@@ -49,13 +49,13 @@
         |
         +- HKEY_LOCAL_MACHINE (*3)
            +- SOFTWARE
-              +- ijexp	←追加
+              +- ijexp	←追加 (インストーラ設定情報)
               |
               +- Microsoft
                  +- Windows
                     +- CurrentVersion
                        +- Uninstall
-                          +- ijexp  ←追加
+                          +- ijexp  ←追加 (アンインストール情報)
 
       (*2) 64bit 版 Windows にインストールした場合。
       (*3) 自分専用にインストールした場合は HKEY_CURRENT_USER。
