@@ -19,7 +19,7 @@ set filever=%version:/=_%
 set filever=%filever:.=%
 
 
-rem Copy dll files to simpler direcotries
+rem Copy dll files to simpler directories
 
 if not exist ..\x86 mkdir ..\x86
 if not exist ..\x64 mkdir ..\x64
@@ -29,4 +29,4 @@ copy ..\src\objfre_%target_x64%_amd64\amd64\ijexp64.dll ..\x64 /y
 
 
 rem Create an installer
-"%ProgramFiles(x86)%\NSIS\makensis.exe" "/DMUI_VERSION=%version%" "/XOutFile ije%filever%.exe" ijexp.nsi
+"%ProgramFiles(x86)%\NSIS\makensis.exe" "/DVERSION=%version%" "/XOutFile ije%filever%.exe" ijexp.nsi
