@@ -9,9 +9,12 @@ ManifestDPIAware true
 !define PRODUCT_LONG "i.j Shell Property Sheets Export/Import"
 ;!define VERSION "1.01k20"
 !define PRODUCT_FULL "${PRODUCT_LONG} ${VERSION}"
-!define PRODUCT_REGISTRY_KEY "Software\${PRODUCT}"
-!define UNINSTALL_REG     "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT}"
-!define UNINSTALL_REG_OLD "Software\Microsoft\Windows\CurrentVersion\Uninstall\ijexp32"
+!define PRODUCT_REG_KEY "Software\${PRODUCT}"
+!define INSTDIR_REG_VALNAME  "path"
+!define INSTMODE_REG_VALNAME "mode"
+!define INSTLANG_REG_VALNAME "Installer Language"
+!define UNINST_REG_KEY     "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT}"
+!define UNINST_REG_KEY_OLD "Software\Microsoft\Windows\CurrentVersion\Uninstall\ijexp32"
 !define PUBLISHER "K.Takata"
 !define IJE_CLSID "{00000001-23D0-0001-8000-004026419740}"
 
@@ -20,10 +23,10 @@ ManifestDPIAware true
 !define MULTIUSER_MUI
 !define MULTIUSER_INSTALLMODE_COMMANDLINE
 ;!define MULTIUSER_INSTALLMODE_INSTDIR "${PRODUCT}"
-!define MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_KEY "${PRODUCT_REGISTRY_KEY}"
-!define MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_VALUENAME "path"
-!define MULTIUSER_INSTALLMODE_DEFAULT_REGISTRY_KEY "${PRODUCT_REGISTRY_KEY}"
-!define MULTIUSER_INSTALLMODE_DEFAULT_REGISTRY_VALUENAME "mode"
+!define MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_KEY "${PRODUCT_REG_KEY}"
+!define MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_VALUENAME "${INSTDIR_REG_VALNAME}"
+!define MULTIUSER_INSTALLMODE_DEFAULT_REGISTRY_KEY "${PRODUCT_REG_KEY}"
+!define MULTIUSER_INSTALLMODE_DEFAULT_REGISTRY_VALUENAME "${INSTMODE_REG_VALNAME}"
 !define MULTIUSER_INSTALLMODE_FUNCTION InitInstDir
 !include "MultiUser.nsh"
 
@@ -51,8 +54,8 @@ Name "${PRODUCT_FULL}"
 
 ; Remember the installer language
 !define MUI_LANGDLL_REGISTRY_ROOT "SHCTX"
-!define MUI_LANGDLL_REGISTRY_KEY "${PRODUCT_REGISTRY_KEY}"
-!define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
+!define MUI_LANGDLL_REGISTRY_KEY "${PRODUCT_REG_KEY}"
+!define MUI_LANGDLL_REGISTRY_VALUENAME "${INSTLANG_REG_VALNAME}"
 
 ;--------------------------------
 ; Pages
@@ -161,16 +164,16 @@ Section "main files" main_section
   ${EndIf}
 
   ; Uninstall list
-  ;WriteRegStr SHCTX "${UNINSTALL_REG}" "DisplayIcon" '"$INSTDIR\ijexp.exe",0'
-  WriteRegStr SHCTX "${UNINSTALL_REG}" "DisplayName" "${PRODUCT_FULL}"
-  WriteRegStr SHCTX "${UNINSTALL_REG}" "Publisher" "${PUBLISHER}"
-  WriteRegStr SHCTX "${UNINSTALL_REG}" "UninstallString" '"$INSTDIR\Uninstall.exe"'
+  ;WriteRegStr SHCTX "${UNINST_REG_KEY}" "DisplayIcon" '"$INSTDIR\ijexp.exe",0'
+  WriteRegStr SHCTX "${UNINST_REG_KEY}" "DisplayName" "${PRODUCT_FULL}"
+  WriteRegStr SHCTX "${UNINST_REG_KEY}" "Publisher" "${PUBLISHER}"
+  WriteRegStr SHCTX "${UNINST_REG_KEY}" "UninstallString" '"$INSTDIR\Uninstall.exe"'
   SectionGetSize ${main_section} $0
-  WriteRegDWORD SHCTX "${UNINSTALL_REG}" "EstimatedSize" $0
+  WriteRegDWORD SHCTX "${UNINST_REG_KEY}" "EstimatedSize" $0
 
-  ; Store install folder
-  WriteRegStr SHCTX "${PRODUCT_REGISTRY_KEY}" "${MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_VALUENAME}" $INSTDIR
-  WriteRegStr SHCTX "${PRODUCT_REGISTRY_KEY}" "${MULTIUSER_INSTALLMODE_DEFAULT_REGISTRY_VALUENAME}" $MultiUser.InstallMode
+  ; Store install folder & mode
+  WriteRegStr SHCTX "${PRODUCT_REG_KEY}" "${INSTDIR_REG_VALNAME}" $INSTDIR
+  WriteRegStr SHCTX "${PRODUCT_REG_KEY}" "${INSTMODE_REG_VALNAME}" $MultiUser.InstallMode
 
   WriteUninstaller "$INSTDIR\Uninstall.exe"
 
@@ -194,9 +197,9 @@ Function .onInit
   ; Check old version of ijexp32
   ; $0: Uninstall command for 32-bit, $1: for 64-bit
   StrCpy $1 ""
-  ReadRegStr $0 HKLM32 "${UNINSTALL_REG_OLD}" "UninstallString"
+  ReadRegStr $0 HKLM32 "${UNINST_REG_KEY_OLD}" "UninstallString"
   ${If} ${RunningX64}
-    ReadRegStr $1 HKLM64 "${UNINSTALL_REG_OLD}" "UninstallString"
+    ReadRegStr $1 HKLM64 "${UNINST_REG_KEY_OLD}" "UninstallString"
   ${EndIf}
 
   ${If} "$0$1" != ""
@@ -230,7 +233,7 @@ Function InitInstDir
   ; Handle it by ourself.
 
   ; Load install folder
-  ReadRegStr $0 SHCTX "${PRODUCT_REGISTRY_KEY}" "${MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_VALUENAME}"
+  ReadRegStr $0 SHCTX "${PRODUCT_REG_KEY}" "${INSTMODE_REG_VALNAME}"
   ${If} "$0" == ""
     ; Not previously installed.
     ${If} "$CmdInstDir" == ""
@@ -246,7 +249,7 @@ Function InitInstDir
       ${EndIf}
     ${EndIf}
   ${Else}
-    ; Old version might be already installed. Install there.
+    ; Old version might be already installed. Install there. (Ignore /D.)
     StrCpy $INSTDIR $0
   ${EndIf}
 
@@ -317,8 +320,8 @@ Section "Uninstall"
 
   RMDir /REBOOTOK "$INSTDIR"
 
-  DeleteRegKey SHCTX "${UNINSTALL_REG}"
-  DeleteRegKey SHCTX "${PRODUCT_REGISTRY_KEY}"
+  DeleteRegKey SHCTX "${UNINST_REG_KEY}"
+  DeleteRegKey SHCTX "${PRODUCT_REG_KEY}"
 
 SectionEnd
 
