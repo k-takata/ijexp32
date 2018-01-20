@@ -166,6 +166,7 @@ Section "main files" main_section
   ; Uninstall list
   ;WriteRegStr SHCTX "${UNINST_REG_KEY}" "DisplayIcon" '"$INSTDIR\ijexp.exe",0'
   WriteRegStr SHCTX "${UNINST_REG_KEY}" "DisplayName" "${PRODUCT_FULL}"
+  WriteRegStr SHCTX "${UNINST_REG_KEY}" "DisplayVersion" "${VERSION}"
   WriteRegStr SHCTX "${UNINST_REG_KEY}" "Publisher" "${PUBLISHER}"
   WriteRegStr SHCTX "${UNINST_REG_KEY}" "UninstallString" '"$INSTDIR\Uninstall.exe"'
   SectionGetSize ${main_section} $0
