@@ -15,7 +15,7 @@ ManifestDPIAware true
 !define INSTLANG_REG_VALNAME "Installer Language"
 !define UNINST_REG_KEY     "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT}"
 !define UNINST_REG_KEY_OLD "Software\Microsoft\Windows\CurrentVersion\Uninstall\ijexp32"
-!define PUBLISHER "K.Takata"
+!define PUBLISHER "i.j and K.Takata"
 !define IJE_CLSID "{00000001-23D0-0001-8000-004026419740}"
 
 !define MULTIUSER_EXECUTIONLEVEL Highest
