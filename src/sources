@@ -56,6 +56,9 @@ SOURCES=analyzer.cpp \
 i386_SOURCES=
 AMD64_SOURCES=
 IA64_SOURCES=
+
+DLLDEF=ijexp32.def
+
 #
 # Next, specify options for the compiler using C_DEFINES.
 # All parameters specified here will be passed to both the C
