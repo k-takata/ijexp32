@@ -234,7 +234,7 @@ Function InitInstDir
   ; Handle it by ourself.
 
   ; Load install folder
-  ReadRegStr $0 SHCTX "${PRODUCT_REG_KEY}" "${INSTMODE_REG_VALNAME}"
+  ReadRegStr $0 SHCTX "${PRODUCT_REG_KEY}" "${INSTDIR_REG_VALNAME}"
   ${If} "$0" == ""
     ; Not previously installed.
     ${If} "$CmdInstDir" == ""
