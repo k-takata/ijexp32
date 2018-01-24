@@ -49,6 +49,10 @@ Name "${PRODUCT_FULL}"
 !define MUI_UNABORTWARNING
 !define MUI_LANGDLL_ALLLANGUAGES
 
+; Uncomment the following lines for debugging.
+;!define MUI_FINISHPAGE_NOAUTOCLOSE
+;!define MUI_UNFINISHPAGE_NOAUTOCLOSE
+
 ;--------------------------------
 ; Language Selection Dialog Settings
 
