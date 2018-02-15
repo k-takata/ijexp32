@@ -81,7 +81,7 @@ If `FN` check box is unchecked, only imported DLLs are shown.
 
 You can configure ijexp in the following ways:
 
-1. Registory (`HKCU\Software\ijexp`)<br />
+1. Registry (`HKCU\Software\ijexp`)<br />
    See `ijexp_sample_settings.reg` for an example.
 2. `%APPDATA%\ijexp\ijexp.ini`
 3. `ijexp.ini` in the installed folder (`%ProgramFiles%\ijexp\ijexp.ini`)
