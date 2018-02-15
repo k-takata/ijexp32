@@ -117,6 +117,10 @@
       VS 2013/2015:
 	 <VS のディレクトリ>\VC\atlmfc\lib\
 
+      VS 2017 Community:
+	 %ProgramFiles(x86)%\Microsoft Visual Studio\2017\Community\
+		VC\Tools\MSVC\<version>\atlmfc\lib\<arch>\
+
 .w130
       > dumpbin /exports mfc42d.lib | perl -ne "if(/^ +(\d+) {4}(\S+)/){printf \"%04x, %s\n\", $1, $2}" | sort > mfc42d!x64.exp
 .w72
