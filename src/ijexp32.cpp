@@ -156,37 +156,39 @@ bool SetClipboardText(HWND hwnd, const CString &strText)
 	return ret;
 }
 
-void LoadSetting(LPCTSTR lpKey, LPTSTR lpBuf, DWORD nSize, LPCTSTR lpDefault)
+CString LoadSetting(LPCTSTR lpKey, LPCTSTR lpDefault)
 {
-	if (lpBuf == NULL) {
-		return;
-	}
+	CString strRet;
+
 	if (lpDefault == NULL) {
 		lpDefault = _T("");
 	}
-	::lstrcpy(lpBuf, lpDefault);
+	strRet = lpDefault;
 
-	DWORD cb = nSize * sizeof(TCHAR), type = 0;
+	TCHAR lpBuf[MAX_PATH * 10];		// FIXME: Is this enough?
+	DWORD cb = sizeof(lpBuf), type = 0;
 	// Try reading from the registry first.
 	if ((::SHGetValue(HKEY_CURRENT_USER, IJE_REG_KEY, lpKey,
-				&type, lpBuf, &cb) == ERROR_SUCCESS) && (type != REG_SZ)) {
-		return;
+				&type, lpBuf, &cb) == ERROR_SUCCESS) && (type == REG_SZ)) {
+		strRet = lpBuf;
 	}
 
 	// Try reading from the .ini file.
 	TCHAR szIni[MAX_PATH];
 	if (::GetModuleFileName(g_hModule, szIni, lengthof(szIni))) {
-		int len = ::lstrlen(szIni) - 6;		// Cut "32.dll" or "64.dll".
-		::lstrcpy(szIni + len, _T(".ini"));
-		::GetPrivateProfileString(IJE_INI_KEY, lpKey, lpDefault,
-				lpBuf, nSize, szIni);
+		CString strIni(szIni, ::lstrlen(szIni) - 6);	// Cut "32.dll" or "64.dll".
+		strIni += _T(".ini");
+		::GetPrivateProfileString(IJE_INI_KEY, lpKey, strRet,
+				lpBuf, lengthof(lpBuf), strIni);
+		strRet = lpBuf;
 
 		// Read from %APPDATA%\ijexp\ijexp.ini if available.
-		TCHAR szAppData[MAX_PATH];
-		if (::SHGetSpecialFolderPath(NULL, szAppData, CSIDL_APPDATA, FALSE)) {
-			::lstrcat(szAppData, _T("\\ijexp\\ijexp.ini"));
-			::GetPrivateProfileString(IJE_INI_KEY, lpKey, szIni,
-					lpBuf, nSize, szIni);
+		if (::SHGetSpecialFolderPath(NULL, szIni, CSIDL_APPDATA, FALSE)) {
+			strIni = CString(szIni) + _T("\\ijexp\\ijexp.ini");
+			::GetPrivateProfileString(IJE_INI_KEY, lpKey, strRet,
+					lpBuf, lengthof(lpBuf), strIni);
+			strRet = lpBuf;
 		}
 	}
+	return strRet;
 }

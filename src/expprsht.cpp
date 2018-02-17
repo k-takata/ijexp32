@@ -19,7 +19,6 @@ CExpPropSheet::CExpPropSheet()
 {
 //OutputDebugString(_T("CExpPropSheet::CExpPropSheet()\n"));
 	m_nRef = 1;
-	m_szPath[0] = _T('\0');
 	::InterlockedIncrement(&g_nComponents);
 }
 
@@ -98,9 +97,9 @@ HRESULT STDMETHODCALLTYPE CExpPropSheet::ReplacePage(UINT uPageID, LPFNADDPROPSH
 	return E_FAIL;
 }
 
-void CExpPropSheet::SetPath(LPCTSTR szPath)
+void CExpPropSheet::SetPath(const CString &strPath)
 {
-	::lstrcpy(m_szPath, szPath);
+	m_strPath = strPath;
 }
 
 UINT CALLBACK CExpPropSheet::PropSheetPageProc(HWND hwnd, UINT msg, LPPROPSHEETPAGE ppsp)
@@ -121,7 +120,7 @@ INT_PTR CALLBACK CExpPropSheet::DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
 			PROPSHEETPAGE *pPSP = reinterpret_cast<PROPSHEETPAGE *>(lParam);
 			::SetWindowLongPtr(hwnd, DWLP_USER, pPSP->lParam);
 			CAnalyzer ana;
-			if (ana.Open(hwnd, reinterpret_cast<CExpPropSheet *>(pPSP->lParam)->m_szPath)) {
+			if (ana.Open(hwnd, reinterpret_cast<CExpPropSheet *>(pPSP->lParam)->m_strPath)) {
 				if (ana.ReadSection(hwnd, IMAGE_DIRECTORY_ENTRY_EXPORT)) {
 					HWND hwndMsg  = ::GetDlgItem(hwnd, IDC_MSG);
 					HWND hwndList = ::GetDlgItem(hwnd, IDC_LIST);

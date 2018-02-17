@@ -127,7 +127,7 @@ DEFINE_GUID(CLSID_Import,
 // ijexp32.cpp
 void MsgBox(HWND hwnd, LPCTSTR lpszCaption, UINT nId);
 bool SetClipboardText(HWND hwnd, const CString &strText);
-void LoadSetting(LPCTSTR lpKey, LPTSTR lpBuf, DWORD nSize, LPCTSTR lpDefault = NULL);
+CString LoadSetting(LPCTSTR lpKey, LPCTSTR lpDefault = NULL);
 
 // factory.cpp
 class CFactory : public IClassFactory
@@ -152,7 +152,7 @@ class CHdrPropSheet : public IShellExtInit, IShellPropSheetExt
 {
 public:
 	LONG  m_nRef;
-	TCHAR m_szPath[1024];
+	CString m_strPath;
 public:
 	CHdrPropSheet();
 	~CHdrPropSheet();
@@ -179,7 +179,7 @@ class CExpPropSheet : public IShellExtInit, IShellPropSheetExt
 {
 public:
 	LONG  m_nRef;
-	TCHAR m_szPath[1024];
+	CString m_strPath;
 	int m_SortStatus[EXP_STATUS_NUM];
 public:
 	CExpPropSheet();
@@ -194,7 +194,7 @@ public: // IShellPropSheetExt
 	virtual HRESULT STDMETHODCALLTYPE AddPages(LPFNADDPROPSHEETPAGE lpfnAddPage, LPARAM lParam);
 	virtual HRESULT STDMETHODCALLTYPE ReplacePage(UINT uPageID, LPFNADDPROPSHEETPAGE lpfnReplacePage, LPARAM lParam);
 public:
-	void SetPath(LPCTSTR szPath);
+	void SetPath(const CString &strPath);
 	static INT_PTR CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	static UINT CALLBACK PropSheetPageProc(HWND hwnd, UINT msg, LPPROPSHEETPAGE ppsp);
 private:
@@ -209,7 +209,7 @@ class CImpPropSheet : public IShellExtInit, IShellPropSheetExt
 {
 public:
 	LONG  m_nRef;
-	TCHAR m_szPath[1024];
+	CString m_strPath;
 	int m_SortStatus[IMP_STATUS_NUM];
 public:
 	CImpPropSheet();
@@ -224,7 +224,7 @@ public: // IShellPropSheetExt
 	virtual HRESULT STDMETHODCALLTYPE AddPages(LPFNADDPROPSHEETPAGE lpfnAddPage, LPARAM lParam);
 	virtual HRESULT STDMETHODCALLTYPE ReplacePage(UINT uPageID, LPFNADDPROPSHEETPAGE lpfnReplacePage, LPARAM lParam);
 public:
-	void SetPath(LPCTSTR szPath);
+	void SetPath(const CString &strPath);
 	static INT_PTR CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	static UINT CALLBACK PropSheetPageProc(HWND hwnd, UINT msg, LPPROPSHEETPAGE ppsp);
 private:

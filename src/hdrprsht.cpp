@@ -18,7 +18,6 @@ CHdrPropSheet::CHdrPropSheet()
 {
 //OutputDebugString(_T("CHdrPropSheet::CHdrPropSheet()\n"));
 	m_nRef = 1;
-	m_szPath[0] = _T('\0');
 	::InterlockedIncrement(&g_nComponents);
 }
 
@@ -84,7 +83,9 @@ HRESULT STDMETHODCALLTYPE CHdrPropSheet::Initialize(LPCITEMIDLIST pidlFolder, LP
 		::ReleaseStgMedium(&medium);
 		return E_FAIL;
 	}
-	::DragQueryFile(hDrop, 0, m_szPath, lengthof(m_szPath));
+	TCHAR szPath[1024];
+	::DragQueryFile(hDrop, 0, szPath, lengthof(szPath));
+	m_strPath = szPath;
 	::ReleaseStgMedium(&medium);
 	return CheckFileType();
 }
@@ -114,16 +115,16 @@ HRESULT STDMETHODCALLTYPE CHdrPropSheet::AddPages(LPFNADDPROPSHEETPAGE lpfnAddPa
 	AddRef();
 
 	CAnalyzer ana;
-	if (ana.Open(NULL, m_szPath, true)) {
+	if (ana.Open(NULL, m_strPath, true)) {
 		if (ana.FindSection(NULL, IMAGE_DIRECTORY_ENTRY_EXPORT)) {
 			CExpPropSheet *exp = new CExpPropSheet;
-			exp->SetPath(m_szPath);
+			exp->SetPath(m_strPath);
 			exp->AddPages(lpfnAddPage, lParam);
 			exp->Release();
 		}
 		if (ana.FindSection(NULL, IMAGE_DIRECTORY_ENTRY_IMPORT)) {
 			CImpPropSheet *imp = new CImpPropSheet;
-			imp->SetPath(m_szPath);
+			imp->SetPath(m_strPath);
 			imp->AddPages(lpfnAddPage, lParam);
 			imp->Release();
 		}
@@ -156,7 +157,7 @@ INT_PTR CALLBACK CHdrPropSheet::DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
 			PROPSHEETPAGE *pPSP = reinterpret_cast<PROPSHEETPAGE *>(lParam);
 			::SetWindowLongPtr(hwnd, DWLP_USER, pPSP->lParam);
 			CAnalyzer ana;
-			if (ana.Open(hwnd, reinterpret_cast<CHdrPropSheet *>(pPSP->lParam)->m_szPath)) {
+			if (ana.Open(hwnd, reinterpret_cast<CHdrPropSheet *>(pPSP->lParam)->m_strPath)) {
 				ana.Close();
 				HWND hwndHdrList = ::GetDlgItem(hwnd, IDC_HDR_LIST);
 				HWND hwndDirList = ::GetDlgItem(hwnd, IDC_DIR_LIST);
@@ -258,13 +259,12 @@ CString CHdrPropSheet::GetText(HWND hwnd, bool bBinary)
 HRESULT CHdrPropSheet::CheckFileType()
 {
 	TCHAR ext[_MAX_EXT];
-	_tsplitpath(m_szPath, NULL, NULL, NULL, ext);
+	_tsplitpath(m_strPath, NULL, NULL, NULL, ext);
 
-	TCHAR exts[1024];
-	LoadSetting(_T("exts"), exts, lengthof(exts), DEFAULT_EXTS);
+	CString exts = LoadSetting(_T("exts"), DEFAULT_EXTS);
 
 	LPCTSTR separator = _T(";");
-	LPTSTR tok = _tcstok(exts, separator);
+	LPTSTR tok = _tcstok(exts.GetBuffer(0), separator);
 	while (tok != NULL) {
 		if (::lstrcmpi(tok, ext) == 0) {
 			return S_OK;

@@ -44,25 +44,24 @@ void CAnalyzer::LoadExpFile(LPCTSTR lpszServer, bool b64bit)
 {
 	TCHAR szBuff[1024];
 	if (::GetModuleFileName(g_hModule, szBuff, lengthof(szBuff))) {
-		LPTSTR lpszTemp = _tcsrchr(szBuff, _T('\\'));
-		if (lpszTemp) {
-			::lstrcpy(lpszTemp + 1, lpszServer);
-			lpszTemp = _tcsrchr(szBuff, _T('.'));
-			if (lpszTemp) {
-				*lpszTemp = _T('\0');
+		CString strFile = szBuff;
+		int idx = strFile.ReverseFind(_T('\\'));
+		if (idx >= 0) {
+			CString strDir = strFile.Left(idx + 1);
+			CString strName = lpszServer;
+			idx = strName.ReverseFind(_T('.'));
+			if (idx >= 0) {
+				strName = strName.Left(idx);
 			}
-			lpszTemp = szBuff + ::lstrlen(szBuff);
+			strFile = strDir + strName + _T(".exp");
 			if (b64bit) {
-				::lstrcpy(lpszTemp, _T("!x64.exp"));
-				if (::GetFileAttributes(szBuff) == INVALID_FILE_ATTRIBUTES) {
-					::lstrcpy(lpszTemp, _T(".exp"));
+				CString strTemp = strDir + strName + _T("!x64.exp");
+				if (::GetFileAttributes(strTemp) != INVALID_FILE_ATTRIBUTES) {
+					strFile = strTemp;
 				}
-			} else {
-				::lstrcpy(lpszTemp, _T(".exp"));
 			}
-		//	::lstrcat(szBuff, _T(".exp"));
 			CStdioFile file;
-			if (file.Open(szBuff, CFile::modeRead | CFile::shareDenyWrite | CFile::typeText)) {
+			if (file.Open(strFile, CFile::modeRead | CFile::shareDenyWrite | CFile::typeText)) {
 				try {
 					CString strLine, strOrdinal, strName;
 					while (file.ReadString(strLine)) {
@@ -151,8 +150,7 @@ void CAnalyzer::Close(void)
 
 void CAnalyzer::LoadCxxFiltPath()
 {
-	TCHAR path[MAX_PATH * 10];
-	LoadSetting(_T("c++filt"), path, lengthof(path), DEFAULT_CXXFILT_PATH);
+	CString path = LoadSetting(_T("c++filt"), DEFAULT_CXXFILT_PATH);
 	m_cxxfilt.SetCxxFiltPath(path);
 }
 

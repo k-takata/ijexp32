@@ -19,7 +19,6 @@ CImpPropSheet::CImpPropSheet()
 {
 //OutputDebugString(_T("CImpPropSheet::CImpPropSheet()\n"));
 	m_nRef = 1;
-	m_szPath[0] = _T('\0');
 	::InterlockedIncrement(&g_nComponents);
 }
 
@@ -101,9 +100,9 @@ HRESULT STDMETHODCALLTYPE CImpPropSheet::ReplacePage(UINT uPageID, LPFNADDPROPSH
 	return E_FAIL;
 }
 
-void CImpPropSheet::SetPath(LPCTSTR szPath)
+void CImpPropSheet::SetPath(const CString &strPath)
 {
-	::lstrcpy(m_szPath, szPath);
+	m_strPath = strPath;
 }
 
 UINT CALLBACK CImpPropSheet::PropSheetPageProc(HWND hwnd, UINT msg, LPPROPSHEETPAGE ppsp)
@@ -124,7 +123,7 @@ INT_PTR CALLBACK CImpPropSheet::DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
 			PROPSHEETPAGE *pPSP = reinterpret_cast<PROPSHEETPAGE *>(lParam);
 			::SetWindowLongPtr(hwnd, DWLP_USER, pPSP->lParam);
 			CAnalyzer ana;
-			if (ana.Open(hwnd, reinterpret_cast<CImpPropSheet *>(pPSP->lParam)->m_szPath)) {
+			if (ana.Open(hwnd, reinterpret_cast<CImpPropSheet *>(pPSP->lParam)->m_strPath)) {
 				if (ana.ReadSection(hwnd, IMAGE_DIRECTORY_ENTRY_IMPORT)) {
 					::SendMessage(::GetDlgItem(hwnd, IDC_FUNC), BM_SETCHECK, BST_CHECKED, 0);
 					::SendMessage(::GetDlgItem(hwnd, IDC_VC),   BM_SETCHECK, BST_CHECKED, 0);
@@ -147,7 +146,7 @@ INT_PTR CALLBACK CImpPropSheet::DlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
 				{
 					CAnalyzer ana;
 					CImpPropSheet *impprop = reinterpret_cast<CImpPropSheet *>(::GetWindowLongPtr(hwnd, DWLP_USER));
-					if (ana.Open(hwnd, impprop->m_szPath)) {
+					if (ana.Open(hwnd, impprop->m_strPath)) {
 						if (ana.ReadSection(hwnd, IMAGE_DIRECTORY_ENTRY_IMPORT)) {
 							bool bFunc   = ::SendMessage(::GetDlgItem(hwnd, IDC_FUNC), BM_GETCHECK, 0, 0) == BST_CHECKED;
 							bool bDecode = ::SendMessage(::GetDlgItem(hwnd, IDC_VC),   BM_GETCHECK, 0, 0) == BST_CHECKED;
