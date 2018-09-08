@@ -73,6 +73,10 @@ void CAnalyzer::LoadExpFile(LPCTSTR lpszServer, bool b64bit)
 								strOrdinal.TrimRight();
 								strName = strLine.Mid(nOffset + 1);
 								strName.TrimLeft();
+								nOffset = strName.Find(_T(','));
+								if (nOffset > 1) {
+									strName = strName.Left(nOffset);
+								}
 								DWORD dwOrdinal = _tcstoul(strOrdinal, NULL, 16); // string -> hex.
 								if (dwOrdinal) {
 									m_mapExp[lpszServer][dwOrdinal] = strName;
