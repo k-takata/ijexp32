@@ -159,8 +159,10 @@ bool CAnalyzer::ReadSection(HWND hwnd, int nDirectory, bool bQuiet, bool bCheckO
 	try {
 		if (m_b32bit) {
 			m_dwDirAddr = m_nt_hdr32.OptionalHeader.DataDirectory[nDirectory].VirtualAddress;
+			m_dwDirSize = m_nt_hdr32.OptionalHeader.DataDirectory[nDirectory].Size;
 		} else {
 			m_dwDirAddr = m_nt_hdr64.OptionalHeader.DataDirectory[nDirectory].VirtualAddress;
+			m_dwDirSize = m_nt_hdr64.OptionalHeader.DataDirectory[nDirectory].Size;
 		}
 		for (vector<IMAGE_SECTION_HEADER>::const_iterator it = m_vecSecHdr.begin(); it != m_vecSecHdr.end(); ++it) {
 			m_dwSecAddr = it->VirtualAddress;
@@ -363,6 +365,13 @@ void CAnalyzer::AnalyzeExportInit(HWND hwndList)
 //	lvcolumn.iSubItem = 0;
 	lvcolumn.cx = GetDpiScaledX(292);
 	list.InsertColumn(1, &lvcolumn);
+
+//	lvcolumn.mask = LVCF_FMT | LVCF_SUBITEM | LVCF_TEXT | LVCF_WIDTH;
+//	lvcolumn.fmt = LVCFMT_LEFT;
+	lvcolumn.pszText = _T("Forwarder");
+//	lvcolumn.iSubItem = 0;
+	lvcolumn.cx = GetDpiScaledX(80);
+	list.InsertColumn(2, &lvcolumn);
 
 	list.Detach();
 }
@@ -992,21 +1001,32 @@ bool CAnalyzer::AnalyzeExport(HWND hwndMsg, HWND hwndList, bool bDecode)
 	list.Attach(hwndList);
 	list.DeleteAllItems();
 	int nCount = 0;
-	CString strMsg, strOrdinal, strName;
+	CString strMsg, strOrdinal, strName, strFunc;
 	m_mapCls.clear();
 	PIMAGE_EXPORT_DIRECTORY pExpDir = reinterpret_cast<PIMAGE_EXPORT_DIRECTORY>(&m_vecBuff[m_dwDirAddr - m_dwSecAddr]);
 	DWORD dwAddrOfNameOrds = pExpDir->AddressOfNameOrdinals;
 	LPWORD lpwOrdTable = reinterpret_cast<LPWORD>(&m_vecBuff[dwAddrOfNameOrds - m_dwSecAddr]);
 	DWORD dwAddrOfNames = pExpDir->AddressOfNames;
 	LPDWORD lpdwNameTable = reinterpret_cast<LPDWORD>(&m_vecBuff[dwAddrOfNames - m_dwSecAddr]);
+	DWORD dwAddrOfFunctions = pExpDir->AddressOfFunctions;
+	LPDWORD lpdwFunctionTable = reinterpret_cast<LPDWORD>(&m_vecBuff[dwAddrOfFunctions - m_dwSecAddr]);
 	strMsg.Format(_T("# Number of functions: %u\r\n# Number of names: %u\r\n\r\n"),
 			pExpDir->NumberOfFunctions, pExpDir->NumberOfNames);
 //	m_cxxfilt.StartCxxFilt();
+	bool bSetFunc = false;
 	for (DWORD dwCount = 0; dwCount < pExpDir->NumberOfNames; dwCount++) {
 		strOrdinal.Format(szHex4Fmt, *lpwOrdTable++ + pExpDir->Base);
 		list.InsertItem(LVIF_TEXT | LVIF_PARAM, nCount, strOrdinal, 0, 0, 0, nCount);
 		strName = reinterpret_cast<LPSTR>(&m_vecBuff[*lpdwNameTable++ - m_dwSecAddr]);
 		list.SetItemText(nCount, 1, strName);
+		if ((m_dwDirAddr <= *lpdwFunctionTable) && (*lpdwFunctionTable < m_dwDirAddr + m_dwDirSize)) {
+			strFunc = reinterpret_cast<LPSTR>(&m_vecBuff[*lpdwFunctionTable - m_dwSecAddr]);
+			list.SetItemText(nCount, 2, strFunc);
+			bSetFunc = true;
+		} else {
+			list.SetItemText(nCount, 2, _T(""));
+		}
+		lpdwFunctionTable++;
 		nCount++;
 		strName = AnalyzeName(strName, true);
 		if (!strName.IsEmpty()) {
@@ -1016,6 +1036,9 @@ bool CAnalyzer::AnalyzeExport(HWND hwndMsg, HWND hwndList, bool bDecode)
 	}
 	m_cxxfilt.StopCxxFilt();
 	list.SetColumnWidth(1, LVSCW_AUTOSIZE);
+	if (bSetFunc) {
+		list.SetColumnWidth(2, LVSCW_AUTOSIZE);
+	}
 	list.Detach();
 	for (mapcls_t::const_iterator mit = m_mapCls.begin(); mit != m_mapCls.end(); ++mit) {
 		strMsg += _T("class ") + mit->first + _T(" {\r\n");

@@ -278,6 +278,7 @@ class CAnalyzer
 public:
 	bool             m_bOpCast;
 	DWORD            m_dwDirAddr;
+	DWORD            m_dwDirSize;
 	DWORD            m_dwSecAddr;
 	CFile            m_file;
 	mapcls_t         m_mapCls;  // classes list

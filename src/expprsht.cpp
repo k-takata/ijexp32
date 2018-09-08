@@ -220,7 +220,8 @@ CString CExpPropSheet::GetText(HWND hwnd, bool bBinary, bool bDecode, bool bSele
 				continue;
 			}
 			strText += list.GetItemText(nCount, 0) + _T(", ");
-			strText += list.GetItemText(nCount, 1) + strEOL;
+			strText += list.GetItemText(nCount, 1) + _T(", ");
+			strText += list.GetItemText(nCount, 2) + strEOL;
 		}
 		list.Detach();
 	}
