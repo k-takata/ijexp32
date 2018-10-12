@@ -82,6 +82,9 @@ Name "${PRODUCT_FULL}"
 LangString MES_UNINST_OLD ${LANG_ENGLISH} "Old versions of ijexp32 are found. You should uninstall them to continue the installation. Uninstall them?"
 LangString MES_UNINST_OLD ${LANG_JAPANESE} "古いバージョンのijexp32が見つかりました。インストールを進めるには、旧バージョンのアンインストールが必要です。アンインストールしますか？"
 
+# Fix an NSIS Japanese translation. The access key was missing.
+LangString ^InstallBtn ${LANG_JAPANESE} "インストール(&I)"
+
 ;--------------------------------
 ; Reserve Files
 
