@@ -1018,25 +1018,31 @@ bool CAnalyzer::AnalyzeExport(HWND hwndMsg, HWND hwndList, bool bDecode)
 			pExpDir->NumberOfFunctions, pExpDir->NumberOfNames);
 //	m_cxxfilt.StartCxxFilt();
 	bool bSetFunc = false;
-	for (DWORD dwCount = 0; dwCount < pExpDir->NumberOfNames; dwCount++) {
-		strOrdinal.Format(szHex4Fmt, *lpwOrdTable++ + pExpDir->Base);
-		list.InsertItem(LVIF_TEXT | LVIF_PARAM, nCount, strOrdinal, 0, 0, 0, nCount);
-		strName = reinterpret_cast<LPSTR>(&m_vecBuff[*lpdwNameTable++ - m_dwSecAddr]);
-		list.SetItemText(nCount, 1, strName);
-		if ((m_dwDirAddr <= *lpdwFunctionTable) && (*lpdwFunctionTable < m_dwDirAddr + m_dwDirSize)) {
-			strFunc = reinterpret_cast<LPSTR>(&m_vecBuff[*lpdwFunctionTable - m_dwSecAddr]);
-			list.SetItemText(nCount, 2, strFunc);
-			bSetFunc = true;
-		} else {
-			list.SetItemText(nCount, 2, _T(""));
+	for (DWORD dwFuncCount = 0; dwFuncCount < pExpDir->NumberOfFunctions; dwFuncCount++) {
+		for (DWORD dwCount = 0; dwCount < pExpDir->NumberOfNames; dwCount++) {
+			if (lpwOrdTable[dwCount] != dwFuncCount)
+				continue;
+			strOrdinal.Format(szHex4Fmt, lpwOrdTable[dwCount] + pExpDir->Base);
+			list.InsertItem(LVIF_TEXT | LVIF_PARAM, nCount, strOrdinal, 0, 0, 0, nCount);
+			strName = reinterpret_cast<LPSTR>(&m_vecBuff[lpdwNameTable[dwCount] - m_dwSecAddr]);
+			list.SetItemText(nCount, 1, strName);
+			if ((m_dwDirAddr <= *lpdwFunctionTable) && (*lpdwFunctionTable < m_dwDirAddr + m_dwDirSize)) {
+				// Function forwarder
+				strFunc = reinterpret_cast<LPSTR>(&m_vecBuff[*lpdwFunctionTable - m_dwSecAddr]);
+				list.SetItemText(nCount, 2, strFunc);
+				bSetFunc = true;
+			} else {
+				list.SetItemText(nCount, 2, _T(""));
+			}
+			nCount++;
+			strName = AnalyzeName(strName, true);
+			if (!strName.IsEmpty()) {
+				strMsg += strName;
+				strMsg += _T("\r\n");
+			}
+			break;
 		}
 		lpdwFunctionTable++;
-		nCount++;
-		strName = AnalyzeName(strName, true);
-		if (!strName.IsEmpty()) {
-			strMsg += strName;
-			strMsg += _T("\r\n");
-		}
 	}
 	m_cxxfilt.StopCxxFilt();
 	list.SetColumnWidth(1, LVSCW_AUTOSIZE);
