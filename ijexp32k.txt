@@ -1,7 +1,7 @@
 
 
-          i.j Shell Property Sheets Export/Import ver.1.01k22
-               Copyright (C) 1999 i.j, 2004-2018 K.Takata
+          i.j Shell Property Sheets Export/Import ver.1.01k23
+               Copyright (C) 1999 i.j, 2004-2020 K.Takata
 
 １．概要
     　i.j 氏の i.j Shell Property Sheets Export/Import 32 (ijexp32) (*1)
@@ -350,6 +350,11 @@
           情報をファイルに保存、あるいはクリップボードにコピーした際のフ
           ォーマットを変更。
         ・上記の新フォーマットの *.exp の読み込みに対応。
+
+    2020/11/18  ver.1.01k23
+        ・shlwapi.dll でシンボルの転送先が正しく表示されていなかったのを
+          修正。
+        ・shlwapi.exp を Win10 20H2 の最新版に基づいて更新。
 
 
 １１．注意事項、その他
